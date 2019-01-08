@@ -1,0 +1,9 @@
+1) Prepare UUID for byting
+2) Dissect PIN
+3) Import keccak256()
+4) Convert UUID and dissected PIN in bytes
+5) Generate a private key using the method in the task (ABI?)
+6) Generate a public key using libraries
+7) Calculate an address from the public key (the last 20 bytes of the keccak256(public key))
+8) Invoke an API call to the Sokol net node
+9) Voila!
