@@ -1,3 +1,6 @@
+import web3
+from web3.auto import w3
+
 class User(object):
     def __init__(self, UUID, PIN):
         self.UUID = str(UUID)
@@ -12,12 +15,7 @@ class User(object):
     def generatePrivateKey(self): # UUID <- str ... PIN <- [int]
         UUID = self.extractedUUID()
         PIN = self.extractPIN()
-        privateKey = keccak256('')
+        privateKey = web3.utils.soliditySha3('')
         for k in range(4):
-            privateKey = keccak256(privateKey, UUID, PIN[k]) # add abi.encodePacked()
-        return str(privateKey)
-
-class Key(object):
-    def __init__(self, extractedUUID, extractedPIN):
-        self.privateKey = generatePrivateKey(extractUUID, extractedPIN)
-# web3 !!!
+            privateKey = web3.utils.soliditySha3(privateKey, UUID, PIN[k]) # add abi.encodePacked()
+        self.privateKey = privateKey
