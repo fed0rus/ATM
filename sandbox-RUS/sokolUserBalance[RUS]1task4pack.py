@@ -16,7 +16,7 @@ class User(object):
         PIN = self.extractPIN()
         privateKey = Web3.soliditySha3(["bytes16"], [b''])
         for k in range(4):
-            privateKey = Web3.soliditySha3(["bytes16", "bytes16", "int8[]"], [privateKey, bytearray.fromhex(UUID), PIN[k]]) # add abi.encodePacked()
+            privateKey = Web3.soliditySha3(["bytes16", "bytes16", "int8[]"], [privateKey, bytearray.fromhex(UUID), [PIN[k]]]) # add abi.encodePacked()
         self.privateKey = privateKey
 
 uuid = input()
