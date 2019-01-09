@@ -1,8 +1,9 @@
 # Stages:
 # 0 [DONE]   Configure the host [SKL]
-# 1 [INPR]   Generate privateKey
-# 2 [INPR]   Generate address
-# 3 [AWAT]   Send a request to the Sokol server and receive the fucking account!
+# 1 [DONE]   Generate privateKey
+# 2 [DONE]   Generate address
+# 3 [DONE]   Send a request to the Sokol server and receive the fucking account!
+# 4 [INPR]   Be happy
 
 import web3
 from web3 import Web3, HTTPProvider
@@ -10,7 +11,7 @@ from eth_account import Account
 
 class User(object):
     def __init__(self, UUID, PIN):
-        self.UUID = str(UUID)
+        self.UUID = "0x" + str(UUID)
         self.PIN = str(PIN)
 
     def extractPIN(self):
@@ -22,12 +23,9 @@ class User(object):
     def generatePrivateKey(self):
         UUID = self.extractUUID()
         PIN = self.extractPIN()
-        print("-----------------------------")
-        print("\t\tTesting field")
         privateKey = Web3.soliditySha3(["bytes16"], [b''])
         for k in range(4):
-            privateKey = Web3.soliditySha3(["bytes16", "bytes16", "int8"], [privateKey, UUID.encode("utf-8"), PIN[k]]) # ABI-packed, keccak256 hashed
-        print("\n-----------------------------")
+            privateKey = Web3.soliditySha3(["bytes16", "bytes16", "int8"], [privateKey, UUID, PIN[k]]) # ABI-packed, keccak256 hashed
         self.privateKey = privateKey
 
     def generateAddress(self):
@@ -46,28 +44,15 @@ user = User(UUID, PIN)
 user.generatePrivateKey()
 print("-----------------------------")
 
-print("\t\tAnswer field\n")
+print("\t\tSokol Testnet\n")
 
 # Stage 2
 
 user.generateAddress()
-print("Address: ", user.address) # WRONG!
+print("Address: ", user.address)
 
 # Stage 3
 
-print("Amount:  ", server.eth.getBalance(user.address))
+print("Credit:  ", server.eth.getBalance(user.address))
 
 print("-----------------------------")
-# Sandbox
-
-'''
-[TI]
-a52b5033-35d1-4aa6-8190-72f0116edba3
-1741
-[TO]
-0x16d3F647d12853DFae28015DBdbD392AFff33Ce6
-0
-
-[AFTER CHANGING BYTES METHOD TO UNCODE("UTF-8")]
-'''
-# hashfunc works OK
