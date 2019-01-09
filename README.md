@@ -1,3 +1,3 @@
-'''
-Current score: 80 / 105
-'''
+```
+Current score: 80 / 105.
+```
