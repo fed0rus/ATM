@@ -11,7 +11,7 @@ class User(object):
     def extractUUID(self):
         return (self.UUID).replace('-', '')
 
-    def generatePrivateKey(self): # UUID <- str ... PIN <- [int]
+    def generatePrivateKey(self):
         UUID = self.extractUUID()
         PIN = self.extractPIN()
         privateKey = Web3.soliditySha3(["bytes16"], [b''])
