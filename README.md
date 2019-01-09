@@ -1,1 +1,1 @@
-<b>Current score: 80 / 105</b>
+h1 Current score: 80 / 105
