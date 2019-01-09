@@ -4,6 +4,7 @@
 # 2 [INPR]   Generate address
 # 3 [AWAT]   Send a request to the Sokol server and receive the fucking account!
 
+import web3
 from web3 import Web3, HTTPProvider
 from eth_account import Account
 
@@ -44,10 +45,10 @@ user.generatePrivateKey()
 # Stage 2
 
 user.generateAddress()
-print(user.address)
-print((Web3.soliditySha3(["bytes32"], ["Ethereum is a distributed database".encode("utf-8")])).hex())
-
+print(user.address) # WRONG!
+print(server.eth.getBalance(user.address))
 '''
 a52b5033-35d1-4aa6-8190-72f0116edba3
 1741
 '''
+# hashfunc works OK
