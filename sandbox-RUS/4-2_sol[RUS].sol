@@ -19,15 +19,16 @@ contract UTXOBasedToken {
     }
 
     function transfer(bytes32 _txHash, uint256 _vout, address[] memory _recipients, uint256[] memory _values) public {
+        /* INPUT TX */
         require(_recipients.length == _values.length);
         require(_recipients.length <= 20);
         uint256 total;
-        bytes32 db_key = keccak256(abi.encodePacked(_txHash, _vout)); // db_key = hash(nOutputs, txHash)
-        require(utxoPool[db_key].recipient == msg.sender); // WTF???
+        bytes32 db_key = keccak256(abi.encodePacked(_txHash, _vout));
+        require(utxoPool[db_key].recipient == msg.sender);
         uint256 utxo_value = utxoPool[db_key].value;
 
         bytes32 newTxHash = keccak256(abi.encodePacked(_txHash, _vout, _recipients, _values));
-
+        /* OUTPUT TXs */
         for(uint256 vout=0; vout<_recipients.length; vout++) {
             require(_recipients[vout] != address(0));
             bytes32 new_db_key = keccak256(abi.encodePacked(newTxHash, vout));
@@ -47,7 +48,7 @@ contract UTXOBasedToken {
         bytes32 db_key = keccak256(abi.encodePacked(txHash, uint256(0)));
         utxoPool[db_key] = Transaction(msg.sender, msg.value);
         coinbaseSeq++;
-        emit Transfer(bytes32(0), txHash, msg.sender, msg.value, uint256(0));
+        emit Transfer(bytes32(0), txHash, msg.sender, msg.value, uint256(0)); // CLUE!!!
     }
 
     function withdraw(uint256 _value) public {
