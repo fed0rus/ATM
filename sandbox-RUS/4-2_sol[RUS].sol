@@ -23,7 +23,7 @@ contract UTXOBasedToken {
         require(_recipients.length <= 20);
         uint256 total;
         bytes32 db_key = keccak256(abi.encodePacked(_txHash, _vout)); // db_key = hash(nOutputs, txHash)
-        require(utxoPool[db_key].recipient == msg.sender);
+        require(utxoPool[db_key].recipient == msg.sender); // WTF???
         uint256 utxo_value = utxoPool[db_key].value;
 
         bytes32 newTxHash = keccak256(abi.encodePacked(_txHash, _vout, _recipients, _values));
