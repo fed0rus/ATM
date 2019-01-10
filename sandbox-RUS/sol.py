@@ -13,11 +13,12 @@ for k in range(len(masterLog)):
         blocks.append(txReceipt['blockNumber'])
         print("-------------------------------")
         print("-------------------------------")
-        print("Found a record on " + str(k) + " with BN " + txReceipt['blockNumber'])
+        print("Found a record on " + str(k) + " with BN " + str(txReceipt['blockNumber']))
         print("-------------------------------")
         print("-------------------------------")
 
 print(blocks)
+print(set(blocks))
 
 # --TX::EXAMPLE
 #     RETURNS
