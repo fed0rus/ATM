@@ -3,7 +3,6 @@ pragma solidity ^0.5.1;
 contract UTXOBasedToken {
 
     event Transfer(bytes32 indexed tx_source, bytes32 indexed tx_address, address indexed recipient, uint256 value, uint256 vout);
-
     address owner;
 
     struct Transaction {
