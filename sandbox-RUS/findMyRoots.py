@@ -47,8 +47,11 @@ for event in eventLogs:
             trans[event['args']['recipient']].append(filteredTX(server.eth.getTransaction(event['transactionHash']))['from'])
             print(n)
             n += 1
+utxoPool = open("pool.txt", "w+")
+utxoPool.write(str(trans))
+utxoPool.close()
 
-print(blocks)
+
 
 i = 0
 print('112212')
@@ -67,6 +70,7 @@ def dfs(used, current): # current = node address
             senders = trans[current]
             '''
     for sender in trans[current]:
+        f = 1
         if used.get(sender) == None:
             i += 1
             print(i)
