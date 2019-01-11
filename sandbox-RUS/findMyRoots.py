@@ -2,6 +2,17 @@ import web3
 from web3 import Web3, HTTPProvider
 server = Web3(HTTPProvider("https://sokol.poa.network/"))
 
+# Clean tx's receipt
+
+def AttributeDict(self):
+    return self
+
+def HexBytes(self):
+    return self
+
+def filteredTX(tx):
+    return eval(tx[14:-1])
+
 class User(object):
     def __init__(self, address):
         self.address = address
@@ -12,10 +23,25 @@ class User(object):
 user = User(input("Your address: "))
 
 parent = user.account
-for event in eventLogs:
-    if event['args']['recipient'] == parent:
+used = {} # key is address,
+blocks = []
+global blocks
+def dfs(used, current): # current = node address
 
-
+    used[current] = 1
+    senders = []
+    for event in eventLogs:
+        tx = filteredTX(server.eth.getTransaction(event['transactionHash']))
+        if event['args']['tx_source'] == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
+            BN = tx['blockNumber']
+            blocks.append(BN)
+        if event['args']['recipient'] == current:
+            sender = tx['from']
+            senders += sender
+    for sender in senders:
+        if used[sender] == None:
+            dfs(used, sender)
+print(blocks)
 
 '''
 EL example
