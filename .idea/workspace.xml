@@ -18,7 +18,7 @@
     <SUITE FILE_PATH="coverage/fintech$sokolUserBalance_RUS_1task4pack.coverage" NAME="sokolUserBalance[RUS]1task4pack Coverage Results" MODIFIED="1547026780183" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
     <SUITE FILE_PATH="coverage/fintech$getVault.coverage" NAME="getVault Coverage Results" MODIFIED="1547177943358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
     <SUITE FILE_PATH="coverage/fintech$test.coverage" NAME="test Coverage Results" MODIFIED="1547192322087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
-    <SUITE FILE_PATH="coverage/fintech$findMyRoots.coverage" NAME="findMyRoots Coverage Results" MODIFIED="1547197116836" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
+    <SUITE FILE_PATH="coverage/fintech$findMyRoots.coverage" NAME="findMyRoots Coverage Results" MODIFIED="1547201380309" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
     <SUITE FILE_PATH="coverage/fintech$vault.coverage" NAME="vault Coverage Results" MODIFIED="1547177622100" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
     <SUITE FILE_PATH="coverage/fintech$ANS.coverage" NAME="ANS Coverage Results" MODIFIED="1547142062872" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
     <SUITE FILE_PATH="coverage/fintech$sol.coverage" NAME="sol Coverage Results" MODIFIED="1547175250720" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
@@ -28,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sandbox-RUS/findMyRoots.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret line="50" column="26" lean-forward="true" selection-start-line="50" selection-start-column="26" selection-end-line="50" selection-end-column="26" />
+            <state relative-caret-position="293">
+              <caret line="43" column="12" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -60,8 +60,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="44" />
-    <option name="y" value="-11" />
+    <option name="x" value="458" />
+    <option name="y" value="-14" />
     <option name="width" value="697" />
     <option name="height" value="735" />
   </component>
@@ -249,22 +249,23 @@
       <workItem from="1547041175889" duration="47000" />
       <workItem from="1547138545383" duration="6462000" />
       <workItem from="1547147212347" duration="525000" />
-      <workItem from="1547175217401" duration="11225000" />
+      <workItem from="1547175217401" duration="12821000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="29265000" />
+    <option name="totallyTimeSpent" value="30861000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.18305598" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.30932897" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.30769232" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.9198036" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -483,8 +484,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sandbox-RUS/findMyRoots.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="50" column="26" lean-forward="true" selection-start-line="50" selection-start-column="26" selection-end-line="50" selection-end-column="26" />
+        <state relative-caret-position="293">
+          <caret line="43" column="12" selection-start-line="43" selection-start-column="12" selection-end-line="43" selection-end-column="12" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
