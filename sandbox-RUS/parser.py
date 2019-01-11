@@ -1,6 +1,6 @@
 userAddress = input("User address: ")
 print("Preparing data...")
-log = open("fullLog.txt", 'r')
+log = open("eventLog.txt", 'r')
 masterLog = eval(log.read())
 log.close()
 
@@ -9,7 +9,7 @@ print("Extracting data...")
 for k in range(len(masterLog)):
     print("Processing " + str(k))
     txReceipt = masterLog[k]
-    if txReceipt['from'] == userAddress:
+    if txReceipt['args']['recipient'] == userAddress:
         blocks.append(txReceipt['blockNumber'])
         print("-------------------------------")
         print("-------------------------------")
