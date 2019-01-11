@@ -48,7 +48,7 @@ contract UTXOBasedToken {
         bytes32 db_key = keccak256(abi.encodePacked(txHash, uint256(0)));
         utxoPool[db_key] = Transaction(msg.sender, msg.value);
         coinbaseSeq++;
-        emit Transfer(bytes32(0), txHash, msg.sender, msg.value, uint256(0)); // CLUE!!!
+        emit Transfer(bytes32(0), txHash, msg.sender, msg.value, uint256(0));
     }
 
     function withdraw(uint256 _value) public {
