@@ -11,37 +11,68 @@ def HexBytes(self):
     return self
 
 def filteredTX(tx):
-    return eval(tx[14:-1])
+    return eval(str(tx)[14:-1])
 
 class User(object):
     def __init__(self, address):
         self.address = address
         self.rootTokens = []
-    def findRoot(self, eventLogs):
 
 
 user = User(input("Your address: "))
 
-parent = user.account
-used = {} # key is address,
-blocks = []
-global blocks
-def dfs(used, current): # current = node address
+file = open("eventLogs.txt", 'r')
+eventLogs = ''
+for i in file:
+    eventLogs += i.strip() + '\n'
+eventLogs = eval(eventLogs)
+file.close()
 
+parent = user.address
+used = {} # key is address,
+global blocks
+blocks = []
+
+trans = dict()
+n = 0
+for event in eventLogs:
+    if event['args']['tx_source'] == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
+        continue
+    else:
+        if trans.get(event['args']['recipient']) == None:
+            trans[event['args']['recipient']] = [filteredTX(server.eth.getTransaction(event['transactionHash']))['from']]
+            print(n)
+            n += 1
+        else:
+            trans[event['args']['recipient']].append(filteredTX(server.eth.getTransaction(event['transactionHash']))['from'])
+            print(n)
+            n += 1
+
+print(blocks)
+
+i = 0
+print('112212')
+def dfs(used, current): # current = node address
+    global i
     used[current] = 1
     senders = []
+    print('in')
+    o = 0
+    '''
     for event in eventLogs:
-        tx = filteredTX(server.eth.getTransaction(event['transactionHash']))
         if event['args']['tx_source'] == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00':
-            BN = tx['blockNumber']
+            BN = filteredTX(server.eth.getTransaction(event['transactionHash']))['blockNumber']
             blocks.append(BN)
         if event['args']['recipient'] == current:
-            sender = tx['from']
-            senders += sender
-    for sender in senders:
-        if used[sender] == None:
+            senders = trans[current]
+            '''
+    for sender in trans[current]:
+        if used.get(sender) == None:
+            i += 1
+            print(i)
             dfs(used, sender)
-print(blocks)
+dfs(used, parent)
+print(set(blocks))
 
 '''
 EL example
