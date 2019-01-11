@@ -23,9 +23,9 @@ for index in range(len(log)):
     log[index] = eval(str(log[index]))
 
 eventLog = open("eventLog.txt", "w+")
-
+eventLog.flush()
 for event in log:
-    eventLog.write(str(event) + "\n")
+    eventLog.write(str(event) + ",\n")
 
 eventLog.close()
 
