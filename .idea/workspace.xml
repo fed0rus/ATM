@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="28f28a50-ffc2-4a4b-adeb-8cb38c40699d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/sandbox-RUS/findMyRoots.py" beforeDir="false" afterPath="$PROJECT_DIR$/sandbox-RUS/findMyRoots.py" afterDir="false" />
-    </list>
+    <list default="true" id="28f28a50-ffc2-4a4b-adeb-8cb38c40699d" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +38,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sandbox-RUS/findMyRoots.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
+            <state relative-caret-position="-177">
               <caret line="48" column="18" selection-start-line="48" selection-start-column="18" selection-end-line="48" selection-end-column="18" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
@@ -270,12 +268,12 @@
       <workItem from="1547041175889" duration="47000" />
       <workItem from="1547138545383" duration="6462000" />
       <workItem from="1547147212347" duration="525000" />
-      <workItem from="1547175217401" duration="8533000" />
+      <workItem from="1547175217401" duration="8554000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26573000" />
+    <option name="totallyTimeSpent" value="26594000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -501,7 +499,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/sandbox-RUS/findMyRoots.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
+        <state relative-caret-position="-177">
           <caret line="48" column="18" selection-start-line="48" selection-start-column="18" selection-end-line="48" selection-end-column="18" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
