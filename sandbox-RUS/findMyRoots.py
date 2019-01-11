@@ -20,7 +20,6 @@ class User(object):
 
 
 user = User(input("Your address: "))
-
 file = open("eventLogs.txt", 'r')
 eventLogs = ''
 for i in file:
