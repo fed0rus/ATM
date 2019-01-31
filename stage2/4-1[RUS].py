@@ -2,7 +2,7 @@
 # 0 [DONE]   Configure the host [SKL]
 # 1 [DONE]   Generate privateKey
 # 2 [DONE]   Generate address
-# 3 [DONE]   Send a request to the Sokol server and receive the fucking account!
+# 3 [DONE]   Send a request to the Sokol server
 # 4 [INPR]   Be happy
 
 import web3
