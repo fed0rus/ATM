@@ -6,6 +6,4 @@ privateKey = bytes.fromhex(input("Private key: "))
 
 userAddress = server.personal.importRawKey(privateKey, '')
 
-print(server.personal.))
-
---rpcapi "eth,net,web3,personal"
+print(userAddress)
