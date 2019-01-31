@@ -1,5 +1,11 @@
 from web3 import Web3, HTTPProvider
 
-server = Web3(HTTPProvider("https://sokol.poa.network/"))
+server = Web3(HTTPProvider("https://sokol.poa.network"))
 
-print(server.eth.blockNumber)
+privateKey = bytes.fromhex(input("Private key: "))
+
+userAddress = server.personal.importRawKey(privateKey, '')
+
+print(server.personal.))
+
+--rpcapi "eth,net,web3,personal"
