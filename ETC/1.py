@@ -12,4 +12,8 @@ privateKey = bytes.fromhex(input("Private key: "))
 
 userAddress = server.personal.importRawKey(privateKey, '')
 
+<<<<<<< HEAD
 print()
+=======
+print(userAddress)
+>>>>>>> d33e2a39c6ece9d4aecedd84b146af2ef8eda0f5
