@@ -8,12 +8,8 @@ args = parser.parse_args()
 
 server = Web3(HTTPProvider("https://sokol.poa.network"))
 
-privateKey = bytes.fromhex(input("Private key: "))
+privateKey = bytes.fromhex(args.key)
 
 userAddress = server.personal.importRawKey(privateKey, '')
 
-<<<<<<< HEAD
-print()
-=======
 print(userAddress)
->>>>>>> d33e2a39c6ece9d4aecedd84b146af2ef8eda0f5
