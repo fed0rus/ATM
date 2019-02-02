@@ -16,33 +16,10 @@
     <SUITE FILE_PATH="coverage/fintech$1.coverage" NAME="1 Coverage Results" MODIFIED="1549091441259" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/ETC/qadwallet.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="244">
-              <caret line="104" column="30" lean-forward="true" selection-start-line="104" selection-start-column="30" selection-end-line="104" selection-end-column="30" />
-              <folding>
-                <element signature="e#86#121#0" expanded="true" />
-                <element signature="e#2467#2554#0" />
-                <element signature="e#2426#2809#0" />
-                <element signature="e#2736#3138#0" />
-                <element signature="e#2933#2945#0" />
-                <element signature="e#3318#3389#0" />
-                <element signature="e#2240#3327#0" />
-                <element signature="e#3570#3902#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/ETC/qadwallet.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -142,23 +119,22 @@
       <workItem from="1548907168421" duration="631000" />
       <workItem from="1548907805011" duration="2947000" />
       <workItem from="1549008344397" duration="19481000" />
-      <workItem from="1549073589663" duration="7670000" />
+      <workItem from="1549073589663" duration="8273000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30729000" />
+    <option name="totallyTimeSpent" value="31332000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.32810047" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.062193125" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.062193125" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39934534" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -284,7 +260,7 @@
     <entry file="file://$PROJECT_DIR$/ETC/qadwallet.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="244">
-          <caret line="104" column="30" lean-forward="true" selection-start-line="104" selection-start-column="30" selection-end-line="104" selection-end-column="30" />
+          <caret line="97" column="17" selection-end-line="125" />
           <folding>
             <element signature="e#86#121#0" expanded="true" />
             <element signature="e#2467#2554#0" />
@@ -293,7 +269,6 @@
             <element signature="e#2933#2945#0" />
             <element signature="e#3318#3389#0" />
             <element signature="e#2240#3327#0" />
-            <element signature="e#3570#3902#0" />
           </folding>
         </state>
       </provider>
