@@ -28,7 +28,7 @@ class User(object):
         txJSON = dict()
         txJSON["nonce"] = server.eth.getTransactionCount(self.address)
         txJSON['gasPrice'] = gasPrice
-        txJSON['gas'] = 21000
+        txJSON['gas'] = 30000
         txJSON['to'] = to
         txJSON['value'] = value # add scaling
         return txJSON

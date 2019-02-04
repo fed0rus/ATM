@@ -1,11 +1,11 @@
-pragma solidity ^5.0.1;
+pragma solidity ^0.5.3;
 
 contract Mortal {
-    address owner;
+    address payable owner;
 
     constructor() public {
-        require(OWNERADDRESS != address(0));
-        owner = [OWNERADDRESS];
+        require(0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69 != address(0));
+        owner = 0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69;
     }
 
     modifier ownerOnly {
@@ -14,29 +14,27 @@ contract Mortal {
     }
 }
 
-contract KYC is mortal {
+contract KYC is Mortal {
+    event Register(address indexed customerAddress, string indexed customerName);
+    mapping (address => string) addressToCustomerName;
+    mapping (string => address) customerNameToAddress;
 
-    event Register(indexed address customerAddress, indexed string customerName)
-    mapping (address => string) public addressToCustomerName;
-    mapping (string => address) public customerNameToAddress
-
-    function registerCustomer(string customerName) public {
-        require(name != '', "Please, enter valid name");
+    function registerCustomer(string memory customerName) public {
         require(msg.sender != address(0));
-        require(addressToCustomerName[msg.sender] == false, "You are already registered")
-        require(customerNameToAddress[customerName] == false)
+        require(addressToCustomerName[msg.sender] == flag, "You are already registered");
+        require(customerNameToAddress[customerName] == flag, "You are already registered");
         addressToCustomerName[msg.sender] = customerName;
         customerNameToAddress[customerName] = msg.sender;
         emit Register(msg.sender, customerName);
     }
-
-    function deleteCustomer(address customerAddressToDelete) public {
+    /* function deleteCustomer(address customerAddressToDelete) public {
         require(msg.sender == customerAddressToDelete);
         // Delete from DBs
     }
 
+    function () external payable {}
     // Add some mortality
     function deleteContract() public ownerOnly {
-        selfdestruct(owner);
-    }
+        selfdestruct(address(owner));
+    } */
 }
