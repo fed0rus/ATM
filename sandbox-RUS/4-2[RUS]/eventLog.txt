@@ -1,0 +1,1 @@
+{'args': {'name': ''}, 'event': 'AddName', 'logIndex': 0, 'transactionIndex': 0, 'transactionHash': '0x25cb728a843f4cd8baaf5b6719ffccab72f1de7b64be361192be04757a6167c3', 'address': '0x119041553c1d9f7d0D6Af5B7A0954B2591d8C2dC', 'blockHash': '0x6744ee6b2e90d680d1fb8675714f91fc52316eea2325d6d7c484272b8e565d05', 'blockNumber': 6990270},
