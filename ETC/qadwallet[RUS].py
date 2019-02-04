@@ -2,6 +2,10 @@
 
 # WARNING! You can adjust the `speed` parameter when initialize a `gasPrice` variable
 
+# In case of testing in terminal, uncomment the following 2 lines and change the path to used libs
+import sys
+sys.path.append("C:\Python_Interpreter\Lib\site-packages")
+
 from web3 import Web3, HTTPProvider
 from eth_account import Account
 import requests
