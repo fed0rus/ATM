@@ -15,26 +15,31 @@ contract Mortal {
 }
 
 contract KYC is Mortal {
-    event Register(address indexed customerAddress, string indexed customerName);
+
     mapping (address => string) addressToCustomerName;
     mapping (string => address) customerNameToAddress;
 
-    function registerCustomer(string memory customerName) public {
+    function addCustomer(string memory customerName) public {
         require(msg.sender != address(0));
-        require(addressToCustomerName[msg.sender] == flag, "You are already registered");
-        require(customerNameToAddress[customerName] == flag, "You are already registered");
         addressToCustomerName[msg.sender] = customerName;
         customerNameToAddress[customerName] = msg.sender;
-        emit Register(msg.sender, customerName);
     }
-    /* function deleteCustomer(address customerAddressToDelete) public {
-        require(msg.sender == customerAddressToDelete);
-        // Delete from DBs
+
+    function deleteCustomer() public {
+        addressToCustomerName[msg.sender] = '';
+    }
+
+    function retrieveName(address customerAddress) public returns (string memory) {
+        return addressToCustomerName[customerAddress];
+    }
+
+    function retrieveAddress(string memory customerName) public returns (address) {
+        return customerNameToAddress[customerName];
     }
 
     function () external payable {}
-    // Add some mortality
+
     function deleteContract() public ownerOnly {
         selfdestruct(address(owner));
-    } */
+    }
 }
