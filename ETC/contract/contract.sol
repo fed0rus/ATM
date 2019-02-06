@@ -1,11 +1,11 @@
-pragma solidity ^0.5.3;
+pragma solidity ^0.4.24;
 
 contract Mortal {
-    address payable owner;
+    address owner;
 
     constructor() public {
-        require(0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69 != address(0));
-        owner = 0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69;
+        require(%s != address(0));
+        owner = %s;
     }
 
     modifier ownerOnly {

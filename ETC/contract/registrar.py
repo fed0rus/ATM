@@ -18,14 +18,12 @@ def generateAddressFromPrivateKey(privateKey):
     privateKey = "0x" + str(privateKey)
     return str((Account.privateKeyToAccount(privateKey)).address)
 
-def generateContract():
-    privateKey = extractPrivateKey()
-    contractOwnerAddress = generateAddressFromPrivateKey(privateKey)
+def retrieveContractSourceCode(potentialOwnerAddress):
     soliditySource = '''
-    pragma solidity ^0.5.3;
+    pragma solidity ^0.4.24;
 
     contract Mortal {
-        address payable owner;
+        address owner;
 
         constructor() public {
             require(%s != address(0));
@@ -67,11 +65,15 @@ def generateContract():
             selfdestruct(address(owner));
         }
     }
-    ''' % (contractOwnerAddress, contractOwnerAddress)
-    compiledSource = compile_source(soliditySource)
+    ''' % (potentialOwnerAddress, potentialOwnerAddress)
+    return soliditySource
+
+def generateContract(server, contractOwnerAddress):
+    contractSource = retrieveContractSourceCode(contractOwnerAddress)
+    compiledSource = compile_source(contractSource)
     contractInterface = compiledSource["<stdin>:KYC"]
     rawKYC = server.eth.contract(abi=contractInterface['abi'], bytecode=contractInterface['bin'])
-    registTxHash = KYC.constructor().transact()
+    registTxHash = rawKYC.constructor().transact()
     txReceipt = server.eth.waitForTransactionReceipt(registTxHash)
     KYC = server.eth.contract(
         address=txReceipt.contractAddress,
@@ -81,12 +83,14 @@ def generateContract():
 
 def main():
     server = Web3(HTTPProvider("https://sokol.poa.network"))
-    contract = generateContract()
-    contract.functions.addCustomer("Ruslan").call()
-    print("Name:")
-    userAddress = generateAddressFromPrivateKey(extractPrivateKey())
-    response = contract.functions.retrieveName(userAddress).call()
-    print(response)
+    # contractOwnerAddress = generateAddressFromPrivateKey(extractPrivateKey())
+    # server.eth.defaultAccount = contractOwnerAddress
+    # ans = generateContract(server, contractOwnerAddress)
+    # contract.functions.addCustomer("Ruslan").call()
+    # print("Name:")
+    # userAddress = generateAddressFromPrivateKey(extractPrivateKey())
+    # response = contract.functions.retrieveName(userAddress).call()
+    # print(response)
 
 if __name__ == "__main__":
     main()
