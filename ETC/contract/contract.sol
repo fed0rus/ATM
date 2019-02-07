@@ -4,8 +4,8 @@ contract Mortal {
     address owner;
 
     constructor() public {
-        require(%s != address(0));
-        owner = %s;
+        require(0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69 != address(0));
+        owner = 0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69;
     }
 
     modifier ownerOnly {
