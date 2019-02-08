@@ -9,6 +9,11 @@ from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
 
+class Owner(object):
+    def __init__(self, address, privateKey):
+        self.address = address
+        self.privateKey = privateKey
+
 def extractPrivateKey():
     account = open("account.json", 'r')
     privateKey = eval(account.read())["account"]
@@ -107,27 +112,51 @@ def generateContract(server, contractOwnerAddress):
     contractData["contractAddress"] = cleanTxResponse(txReceipt)["contractAddress"]
     return contractData
 
-def main():
-    server = Web3(HTTPProvider("https://sokol.poa.network"))
-    contractOwnerAddress = generateAddressFromPrivateKey(extractPrivateKey())
-    # contractData = generateContract(server, contractOwnerAddress)
-    contractData = {'abi': [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}], 'contractAddress': '0xd49cf73edD179cfc33E7220d158895E2f13fCe51'}
-    KYC = server.eth.contract(address=contractData["contractAddress"], abi=contractData["abi"])
-    tx = {
-        "nonce": server.eth.getTransactionCount(contractOwnerAddress),
-        "gasPrice": getGasPrice(speed="fast"),
-        "from": "0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69",
-        "to": "0xd49cf73edD179cfc33E7220d158895E2f13fCe51",
-        "value": 0,
+def invokeContract(server, sender, contract, functionNameSig, functionName, functionArgs, value=0):
+    methodSignature = server.sha3(text=functionNameSig)[0:4].hex()
+    print("sig: ", methodSignature)
+    params = ""
+    for param in functionArgs:
+        if type(param) == int:
+            params += param.to_bytes(32, byteorder="big").hex()
+            print("paramINT: ", param.to_bytes(32, byteorder="big").hex())
+        elif type(param) == str:
+            params += param.encode("utf-8").hex()
+            print("paramSTR: ", param.encode("utf-8").hex())
+    payloadData = "0x" + methodSignature + params
+    print("Payload: ", payloadData)
+    estimateData = {
+        "to": contract.address,
+        "value": value,
+        "data": payloadData
+    }
+    rawTX = {
+        "to": contract.address,
+        "data": payloadData,
+        "value": value,
+        "from": sender.address,
+        "nonce": server.eth.getTransactionCount(sender.address),
         "gas": 100000,
+        # "gas": eval("contract.functions.{}.estimateGas(estimateData)".format(functionName)),
+        "gasPrice": getGasPrice(speed="fast")
     }
     signedTX = server.eth.account.signTransaction(
-        tx,
-        extractPrivateKey()
+        rawTX,
+        sender.privateKey
     )
-    check = KYC.functions.addCustomer("Naruto").transact(tx)
-    print(check)
-    # how to transact()?
+    txReceipt = server.eth.sendRawTransaction(signedTX.rawTransaction)
+    return txReceipt
+
+def main():
+    # server = Web3(HTTPProvider("https://sokol.poa.network"))
+    # owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
+    # # # contractData = generateContract(server, contractOwnerAddress)
+    # contractData = {'abi': [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}], 'contractAddress': '0xd49cf73edD179cfc33E7220d158895E2f13fCe51'}
+    # KYC = server.eth.contract(address=contractData["contractAddress"], abi=contractData["abi"])
+    # ans = invokeContract(server=server, sender=owner, contract=KYC, functionNameSig="addCustomer(string)", functionName="addCustomer", functionArgs=["Naruto"])
+    # print(ans.hex())
+    print((bytearray.fromhex("86d6520616761696e")).decode("utf-8"))
+
 if __name__ == "__main__":
     main()
 
