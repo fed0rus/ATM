@@ -88,7 +88,7 @@ def cleanTxResponse(rawReceipt):
 
 # essential
 
-def generateContract(server, contractOwnerAddress):
+def deployContract(server, contractOwnerAddress):
     contractData = {}
     contractSource = retrieveContractSourceCode(contractOwnerAddress)
     compiledSource = compile_source(contractSource)
@@ -111,16 +111,17 @@ def generateContract(server, contractOwnerAddress):
     deploymentHash = server.eth.sendRawTransaction(contractDeploymentTransactionSigned.rawTransaction)
     txReceipt = server.eth.waitForTransactionReceipt(deploymentHash)
     contractData["contractAddress"] = cleanTxResponse(txReceipt)["contractAddress"]
-    return contractData
+    contract = server.eth.contract(
+        address=contractData["contractAddress"],
+        abi=contractData["abi"],
+    )
+    return contract
 
 def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, methodArgsTypes, value=0):
 
     methodSignature = server.sha3(text=methodSig)[0:4].hex()
-    print("sig: ", methodSignature)
     params = encode_abi(methodArgsTypes, methodArgs)
     payloadData = "0x" + methodSignature + params.hex()
-    print("Payload: ", payloadData)
-    return
     estimateData = {
         "to": contract.address,
         "value": value,
@@ -132,35 +133,25 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
         "value": value,
         "from": sender.address,
         "nonce": server.eth.getTransactionCount(sender.address),
-        "gas": 100000,
-        # "gas": eval("contract.functions.{}.estimateGas(estimateData)".format(functionName)),
-        "gasPrice": getGasPrice(speed="fast")
+        "gasPrice": getGasPrice(speed="fast"),
     }
+    gas = server.eth.estimateGas(rawTX)
+    rawTX["gas"] = gas
     signedTX = server.eth.account.signTransaction(
         rawTX,
-        sender.privateKey
+        sender.privateKey,
     )
-    txReceipt = server.eth.sendRawTransaction(signedTX.rawTransaction)
-    return txReceipt
+    txHash = server.eth.sendRawTransaction(signedTX.rawTransaction).hex()
+    return txHash
+
+def callContract(contract, methodName, methodArgs):
+    args = str(methodArgs)[1:-1]
+    response = eval("contract.functions.{}({}).call()".format(methodName, args))
+    print(response)
 
 def main():
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
-    # # # contractData = generateContract(server, contractOwnerAddress)
-    contractData = {'abi': [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}], 'contractAddress': '0xd49cf73edD179cfc33E7220d158895E2f13fCe51'}
-    KYC = server.eth.contract(
-        address=contractData["contractAddress"],
-        abi=contractData["abi"],
-    )
-    ans = invokeContract(
-        server=server,
-        sender=owner,
-        contract=KYC,
-        methodSig="addCustomer(string)",
-        methodName="addCustomer",
-        methodArgs=["Ruslan Fedorov"],
-        methodArgsTypes=["string"],
-    )
 
 if __name__ == "__main__":
     main()

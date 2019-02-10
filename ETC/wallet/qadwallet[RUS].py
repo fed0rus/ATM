@@ -53,8 +53,7 @@ def printTransaction(to, value):
         print("Transaction Hash: " + str(txHash.hex()))
 
 def printTxStatus(txHash):
-    receipt = cleanTxResponse(server.eth.getTransactionReceipt(txHash))
-    print("rec: ", receipt)
+    receipt = cleanTxResponse(server.eth.getTransaction(txHash))
     if receipt is None:
         print("No such transaction in the chain")
     elif receipt["blockHash"] is None:
