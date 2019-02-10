@@ -155,8 +155,6 @@ def main():
     # KYC = server.eth.contract(address=contractData["contractAddress"], abi=contractData["abi"])
     # ans = invokeContract(server=server, sender=owner, contract=KYC, functionNameSig="addCustomer(string)", functionName="addCustomer", functionArgs=["Naruto"])
     # print(ans.hex())
-    print((bytearray.fromhex("86d6520616761696e")).decode("utf-8"))
-
 if __name__ == "__main__":
     main()
 
