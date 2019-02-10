@@ -2,6 +2,7 @@ import sys
 sys.path.append("C:\Solc")
 sys.path.append("C:\Python_Interpreter\Lib\site-packages")
 
+from eth_abi import encode_abi
 import json
 import requests
 from solc import compile_source
@@ -112,19 +113,14 @@ def generateContract(server, contractOwnerAddress):
     contractData["contractAddress"] = cleanTxResponse(txReceipt)["contractAddress"]
     return contractData
 
-def invokeContract(server, sender, contract, functionNameSig, functionName, functionArgs, value=0):
-    methodSignature = server.sha3(text=functionNameSig)[0:4].hex()
+def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, methodArgsTypes, value=0):
+
+    methodSignature = server.sha3(text=methodSig)[0:4].hex()
     print("sig: ", methodSignature)
-    params = ""
-    for param in functionArgs:
-        if type(param) == int:
-            params += param.to_bytes(32, byteorder="big").hex()
-            print("paramINT: ", param.to_bytes(32, byteorder="big").hex())
-        elif type(param) == str:
-            params += param.encode("utf-8").hex()
-            print("paramSTR: ", param.encode("utf-8").hex())
-    payloadData = "0x" + methodSignature + params
+    params = encode_abi(methodArgsTypes, methodArgs)
+    payloadData = "0x" + methodSignature + params.hex()
     print("Payload: ", payloadData)
+    return
     estimateData = {
         "to": contract.address,
         "value": value,
@@ -148,13 +144,24 @@ def invokeContract(server, sender, contract, functionNameSig, functionName, func
     return txReceipt
 
 def main():
-    # server = Web3(HTTPProvider("https://sokol.poa.network"))
-    # owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
+    server = Web3(HTTPProvider("https://sokol.poa.network"))
+    owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
     # # # contractData = generateContract(server, contractOwnerAddress)
-    # contractData = {'abi': [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}], 'contractAddress': '0xd49cf73edD179cfc33E7220d158895E2f13fCe51'}
-    # KYC = server.eth.contract(address=contractData["contractAddress"], abi=contractData["abi"])
-    # ans = invokeContract(server=server, sender=owner, contract=KYC, functionNameSig="addCustomer(string)", functionName="addCustomer", functionArgs=["Naruto"])
-    # print(ans.hex())
+    contractData = {'abi': [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}], 'contractAddress': '0xd49cf73edD179cfc33E7220d158895E2f13fCe51'}
+    KYC = server.eth.contract(
+        address=contractData["contractAddress"],
+        abi=contractData["abi"],
+    )
+    ans = invokeContract(
+        server=server,
+        sender=owner,
+        contract=KYC,
+        methodSig="addCustomer(string)",
+        methodName="addCustomer",
+        methodArgs=["Ruslan Fedorov"],
+        methodArgsTypes=["string"],
+    )
+
 if __name__ == "__main__":
     main()
 
