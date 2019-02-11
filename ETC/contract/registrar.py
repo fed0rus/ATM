@@ -195,6 +195,8 @@ def handleArgs(server, owner):
         )
         if len(txHash) == 66:
             print("Successfully added by {tx}".format(tx=txHash))
+        else:
+            print("Error")
 
 def main():
     initParser()
