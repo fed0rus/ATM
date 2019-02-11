@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/account.json" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/account.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/contract.sol" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/contract.sol" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -13,7 +12,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/fintech$registrar.coverage" NAME="registrar Coverage Results" MODIFIED="1549887753183" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC/contract" />
+    <SUITE FILE_PATH="coverage/fintech$registrar.coverage" NAME="registrar Coverage Results" MODIFIED="1549895797705" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC/contract" />
     <SUITE FILE_PATH="coverage/fintech$registrar_RUS_.coverage" NAME="registrar[RUS] Coverage Results" MODIFIED="1549458783212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC/contract" />
     <SUITE FILE_PATH="coverage/fintech$registrar0.coverage" NAME="registrar0 Coverage Results" MODIFIED="1549889229934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC/contract" />
     <SUITE FILE_PATH="coverage/fintech$test.coverage" NAME="test Coverage Results" MODIFIED="1549162177088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/sandbox-RUS" />
@@ -23,7 +22,35 @@
     <SUITE FILE_PATH="coverage/fintech$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1549290979992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ETC/wallet" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2567">
+              <caret line="124" column="46" selection-start-line="124" selection-start-column="46" selection-end-line="124" selection-end-column="46" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="125">
+              <caret line="119" selection-start-line="119" selection-end-line="119" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -63,7 +90,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="664" />
     <option name="y" value="-15" />
     <option name="width" value="683" />
@@ -133,7 +160,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.registrar0">
+  <component name="RunManager" selected="Python.registrar">
     <configuration name="atatta" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="fintech" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -299,15 +326,16 @@
       <workItem from="1549619361477" duration="4587000" />
       <workItem from="1549792814498" duration="1704000" />
       <workItem from="1549812322434" duration="4982000" />
-      <workItem from="1549875716700" duration="5936000" />
+      <workItem from="1549875716700" duration="7866000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70004000" />
+    <option name="totallyTimeSpent" value="71934000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11951589" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -315,7 +343,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33387887" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.30932897" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.5859247" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -368,9 +396,7 @@
       </provider>
     </entry>
     <entry file="file://$USER_HOME$/.PyCharm2018.3/system/python_stubs/1825094471/builtins.py" />
-    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py" />
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/__init__.py" />
-    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/main.py" />
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/tester.py" />
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/personal.py" />
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/admin.py" />
@@ -435,13 +461,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/eth.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="227">
@@ -456,17 +475,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="205" column="90" selection-start-line="205" selection-start-column="90" selection-end-line="205" selection-end-column="90" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ETC/contract/registrar0.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="10" column="31" lean-forward="true" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="119" selection-start-line="119" selection-end-line="119" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2567">
+          <caret line="124" column="46" selection-start-line="124" selection-start-column="46" selection-end-line="124" selection-end-column="46" />
         </state>
       </provider>
     </entry>

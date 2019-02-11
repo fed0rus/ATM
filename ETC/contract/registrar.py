@@ -167,8 +167,8 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
     return txHash
 
 def callContract(contract, methodName, methodArgs):
-    args = str(methodArgs)[1:-1]
-    response = eval("contract.functions.{}({}).call()".format(methodName, args))
+    _args = str(methodArgs)[1:-1]
+    response = eval("contract.functions.{}({}).call()".format(methodName, _args))
     return response
 
 def getContract(server, owner):
@@ -188,19 +188,24 @@ def getContract(server, owner):
 def initParser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--deploy", action="store_true", help="Deploy a new contract")
-    parser.add_argument("-a", "--add", action="store", help="Bind your name with current address in the KYC contract")
-
+    parser.add_argument("-a", "--add", action="store", help="Bind your name with current address")
+    parser.add_argument("-D", "--del", action="store_true", help="Unbind your name from your address")
     global args
     args = parser.parse_args()
+    args = vars(args)
 
 def handleArgs(server, owner):
     # US 01-02
-    if args.deploy is True:
+    if args["deploy"] == True:
         contract = deployContract(server, owner)
         owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
-    # US 03-04-05
-    elif args.add is not None:
+
+    # US 07-10
+
+
+    # US 03-06
+    elif args["add"] == None:
         _contract = getContract(server, owner)
         flag = callContract(
             contract=_contract,
@@ -215,7 +220,7 @@ def handleArgs(server, owner):
                     contract=_contract,
                     methodSig="addCustomer(string)",
                     methodName="addCustomer",
-                    methodArgs=[str(args.add)],
+                    methodArgs=[str(args["add"])],
                     methodArgsTypes=["string"],
                 )
                 if len(txHash) == 66:
@@ -227,9 +232,36 @@ def handleArgs(server, owner):
         else:
             print("One account must correspond one name")
 
+    elif args["del"] == True:
+        _contract = getContract(server, owner)
+        flag = callContract(
+            contract=_contract,
+            methodName="isAddressUsed",
+            methodArgs=[owner.address],
+        )
+        if flag:
+            try:
+                txHash = invokeContract(
+                server=server,
+                sender=owner,
+                contract=_contract,
+                methodSig="deleteCustomer()",
+                methodName="deleteCustomer",
+                methodArgs=[],
+                methodArgsTypes=[],
+                )
+                if len(txHash) == 66:
+                    print("Successfully deleted by {tx}".format(tx=txHash))
+                else:
+                    print("Error while invoking the contract was occured")
+            except ValueError:
+                    print("No enough funds to delete name")
+        else:
+            print("No name found for your account")
 
 def main():
     initParser()
+    print(args)
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
     handleArgs(server, owner)

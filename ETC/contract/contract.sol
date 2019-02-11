@@ -33,7 +33,10 @@ contract KYC is Mortal {
         addressToCustomerName[msg.sender] = '';
         uint _length = customerNameToAddress[name].length;
         for (uint i = 0; i < _length; ++i) {
-            customerNameToAddress[name][i] = 0x0000000000000000000000000000000000000000;
+            if (customerNameToAddress[name][i] == msg.sender) {
+                customerNameToAddress[name][i] = 0x0000000000000000000000000000000000000000;
+                break;
+            }
         }
     }
 
