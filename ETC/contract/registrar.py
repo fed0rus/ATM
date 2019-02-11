@@ -169,7 +169,7 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
 def callContract(contract, methodName, methodArgs):
     args = str(methodArgs)[1:-1]
     response = eval("contract.functions.{}({}).call()".format(methodName, args))
-    print(response)
+    return response
 
 def getContract(server, owner):
     # fetch contract address from database.json
@@ -194,36 +194,45 @@ def initParser():
     args = parser.parse_args()
 
 def handleArgs(server, owner):
+    # US 01-02
     if args.deploy is True:
         contract = deployContract(server, owner)
         owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
+    # US 03-04-05
     elif args.add is not None:
         _contract = getContract(server, owner)
-        txHash = invokeContract(
-            server=server,
-            sender=owner,
+        flag = callContract(
             contract=_contract,
-            methodSig="addCustomer(string)",
-            methodName="addCustomer",
-            methodArgs=[str(args.add)],
-            methodArgsTypes=["string"],
+            methodName="isAddressUsed",
+            methodArgs=[owner.address],
         )
-        if len(txHash) == 66:
-            print("Successfully added by {tx}".format(tx=txHash))
+        if not flag:
+            try:
+                txHash = invokeContract(
+                    server=server,
+                    sender=owner,
+                    contract=_contract,
+                    methodSig="addCustomer(string)",
+                    methodName="addCustomer",
+                    methodArgs=[str(args.add)],
+                    methodArgsTypes=["string"],
+                )
+                if len(txHash) == 66:
+                    print("Successfully added by {tx}".format(tx=txHash))
+                else:
+                    print("Error while invoking the contract was occured")
+            except ValueError:
+                print("No enough funds to add name")
         else:
-            print("Error")
+            print("One account must correspond one name")
+
 
 def main():
     initParser()
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
-    # handleArgs(server, owner)
-    r = callContract(
-        contract=getContract(server, owner),
-        methodName="isAddressUsed",
-        methodArgs=[owner.address],
-    )
+    handleArgs(server, owner)
 
 if __name__ == "__main__":
     main()
