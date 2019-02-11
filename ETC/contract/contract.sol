@@ -17,24 +17,36 @@ contract Mortal {
 contract KYC is Mortal {
 
     mapping (address => string) addressToCustomerName;
-    mapping (string => address) customerNameToAddress;
+    mapping (string => address[]) customerNameToAddress;
 
     function addCustomer(string memory customerName) public {
         require(msg.sender != address(0));
+        require(msg.sender == tx.origin);
         addressToCustomerName[msg.sender] = customerName;
-        customerNameToAddress[customerName] = msg.sender;
+        customerNameToAddress[customerName].push(msg.sender);
     }
 
     function deleteCustomer() public {
+        require(msg.sender != address(0));
+        require(msg.sender == tx.origin);
+        string memory name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = '';
+        uint _length = customerNameToAddress[name].length;
+        for (uint i = 0; i < _length; ++i) {
+            customerNameToAddress[name][i] = 0x0000000000000000000000000000000000000000;
+        }
     }
 
     function retrieveName(address customerAddress) public returns (string memory) {
         return addressToCustomerName[customerAddress];
     }
 
-    function retrieveAddress(string memory customerName) public returns (address) {
+    function retrieveAddresses(string memory customerName) public returns (address[]) {
         return customerNameToAddress[customerName];
+    }
+
+    function isAddressUsed(address customerAddress) public returns (bool) {
+        return bytes(addressToCustomerName[customerAddress]).length != 0;
     }
 
     function () external payable {}

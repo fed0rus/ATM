@@ -27,7 +27,7 @@ def generateAddressFromPrivateKey(privateKey):
     privateKey = "0x" + str(privateKey)
     return str((Account.privateKeyToAccount(privateKey)).address)
 
-def retrieveContractSourceCode(ownerAddress):
+def getContractSource(ownerAddress):
     soliditySource = '''
     pragma solidity ^0.4.24;
 
@@ -48,24 +48,36 @@ def retrieveContractSourceCode(ownerAddress):
     contract KYC is Mortal {
 
         mapping (address => string) addressToCustomerName;
-        mapping (string => address) customerNameToAddress;
+        mapping (string => address[]) customerNameToAddress;
 
         function addCustomer(string memory customerName) public {
             require(msg.sender != address(0));
+            require(msg.sender == tx.origin);
             addressToCustomerName[msg.sender] = customerName;
-            customerNameToAddress[customerName] = msg.sender;
+            customerNameToAddress[customerName].push(msg.sender);
         }
 
         function deleteCustomer() public {
+            require(msg.sender != address(0));
+            require(msg.sender == tx.origin);
+            string memory name = addressToCustomerName[msg.sender];
             addressToCustomerName[msg.sender] = '';
+            uint _length = customerNameToAddress[name].length;
+            for (uint i = 0; i < _length; ++i) {
+                customerNameToAddress[name][i] = 0x0000000000000000000000000000000000000000;
+            }
         }
 
         function retrieveName(address customerAddress) public returns (string memory) {
             return addressToCustomerName[customerAddress];
         }
 
-        function retrieveAddress(string memory customerName) public returns (address) {
+        function retrieveAddresses(string memory customerName) public returns (address[]) {
             return customerNameToAddress[customerName];
+        }
+
+        function isAddressUsed(address customerAddress) public returns (bool) {
+            return bytes(addressToCustomerName[customerAddress]).length != 0;
         }
 
         function () external payable {}
@@ -92,7 +104,7 @@ def cleanTxResponse(rawReceipt):
 
 def deployContract(server, owner):
     contractData = {}
-    contractSource = retrieveContractSourceCode(owner.address)
+    contractSource = getContractSource(owner.address)
     compiledSource = compile_source(contractSource)
     contractInterface = compiledSource["<stdin>:KYC"]
     contractData["abi"] = contractInterface['abi']
@@ -159,6 +171,20 @@ def callContract(contract, methodName, methodArgs):
     response = eval("contract.functions.{}({}).call()".format(methodName, args))
     print(response)
 
+def getContract(server, owner):
+    # fetch contract address from database.json
+    db = open("database.json", 'r')
+    data = eval(db.read())
+    db.close()
+    contractAddress = data["registrar"]
+    # generate contract abi
+    contractSource = getContractSource(owner.address)
+    compiledSource = compile_source(contractSource)
+    contractInterface = compiledSource["<stdin>:KYC"]
+    _abi = contractInterface['abi']
+    _contract = server.eth.contract(address=contractAddress, abi=_abi)
+    return _contract
+
 def initParser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--deploy", action="store_true", help="Deploy a new contract")
@@ -173,17 +199,7 @@ def handleArgs(server, owner):
         owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
     elif args.add is not None:
-        # fetch contract address from database.json
-        db = open("database.json", 'r')
-        data = eval(db.read())
-        db.close()
-        contractAddress = data["registrar"]
-        # generate contract abi
-        contractSource = retrieveContractSourceCode(owner.address)
-        compiledSource = compile_source(contractSource)
-        contractInterface = compiledSource["<stdin>:KYC"]
-        _abi = contractInterface['abi']
-        _contract = server.eth.contract(address=contractAddress, abi=_abi)
+        _contract = getContract(server, owner)
         txHash = invokeContract(
             server=server,
             sender=owner,
@@ -202,9 +218,14 @@ def main():
     initParser()
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
-    handleArgs(server, owner)
+    # handleArgs(server, owner)
+    r = callContract(
+        contract=getContract(server, owner),
+        methodName="isAddressUsed",
+        methodArgs=[owner.address],
+    )
 
 if __name__ == "__main__":
     main()
-
-# cd Documents/github/fintech/etc/contract
+# CA: 0x922979B074FC62E8ffc68838E33b355Ffd64DA99
+# DIR: cd Documents/github/fintech/etc/contract
