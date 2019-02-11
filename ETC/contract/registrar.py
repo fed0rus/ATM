@@ -159,9 +159,6 @@ def callContract(contract, methodName, methodArgs):
     response = eval("contract.functions.{}({}).call()".format(methodName, args))
     print(response)
 
-def loadContract(contractAddress):
-
-
 def initParser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--deploy", action="store_true", help="Deploy a new contract")
@@ -195,7 +192,11 @@ def main():
     initParser()
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
-    handleArgs(server, owner)
+    # contract = server.eth.getCode("0xd49cf73edD179cfc33E7220d158895E2f13fCe51")
+    # print(contract.hex())
+    # handleArgs(server, owner)
+
+    # store ABI in SC?
 
 if __name__ == "__main__":
     main()
