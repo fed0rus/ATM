@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ETC/contract/contract.sol" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/contract.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/database.json" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/database.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2567">
-              <caret line="124" column="46" selection-start-line="124" selection-start-column="46" selection-end-line="124" selection-end-column="46" />
+            <state relative-caret-position="131">
+              <caret line="131" column="46" selection-start-line="131" selection-start-column="46" selection-end-line="131" selection-end-column="46" />
             </state>
           </provider>
         </entry>
@@ -90,11 +92,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="664" />
-    <option name="y" value="-15" />
-    <option name="width" value="683" />
-    <option name="height" value="741" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="676" />
+    <option name="width" value="697" />
+    <option name="height" value="735" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -326,12 +327,12 @@
       <workItem from="1549619361477" duration="4587000" />
       <workItem from="1549792814498" duration="1704000" />
       <workItem from="1549812322434" duration="4982000" />
-      <workItem from="1549875716700" duration="7866000" />
+      <workItem from="1549875716700" duration="8464000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="71934000" />
+    <option name="totallyTimeSpent" value="72532000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -505,8 +506,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2567">
-          <caret line="124" column="46" selection-start-line="124" selection-start-column="46" selection-end-line="124" selection-end-column="46" />
+        <state relative-caret-position="131">
+          <caret line="131" column="46" selection-start-line="131" selection-start-column="46" selection-end-line="131" selection-end-column="46" />
         </state>
       </provider>
     </entry>

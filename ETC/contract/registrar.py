@@ -60,12 +60,19 @@ def getContractSource(ownerAddress):
         function deleteCustomer() public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
+            address[] storage saved;
             string memory name = addressToCustomerName[msg.sender];
             addressToCustomerName[msg.sender] = '';
             uint _length = customerNameToAddress[name].length;
             for (uint i = 0; i < _length; ++i) {
-                customerNameToAddress[name][i] = 0x0000000000000000000000000000000000000000;
+                if (customerNameToAddress[name][i] == msg.sender) {
+                    continue;
+                }
+                else {
+                    saved.push(customerNameToAddress[name][i]);
+                }
             }
+            customerNameToAddress[name] = saved;
         }
 
         function retrieveName(address customerAddress) public returns (string memory) {
@@ -187,25 +194,25 @@ def getContract(server, owner):
 
 def initParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--deploy", action="store_true", help="Deploy a new contract")
-    parser.add_argument("-a", "--add", action="store", help="Bind your name with current address")
-    parser.add_argument("-D", "--del", action="store_true", help="Unbind your name from your address")
+    parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
+    parser.add_argument("--add", action="store", help="Bind your name with current address")
+    parser.add_argument("--del", action="store_true", help="Unbind your name from your address")
+    parser.add_argument("--getacc", action="store", help="Retrieve the addresses binded with your name")
+    parser.add_argument("--getname", action="store", help="Retrieve the name binded with your address")
     global args
     args = parser.parse_args()
     args = vars(args)
 
+# main mutex
 def handleArgs(server, owner):
     # US 01-02
-    if args["deploy"] == True:
+    if args["deploy"] is True:
         contract = deployContract(server, owner)
         owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
 
-    # US 07-10
-
-
     # US 03-06
-    elif args["add"] == None:
+    elif args["add"] is not None:
         _contract = getContract(server, owner)
         flag = callContract(
             contract=_contract,
@@ -232,7 +239,8 @@ def handleArgs(server, owner):
         else:
             print("One account must correspond one name")
 
-    elif args["del"] == True:
+    # US 07-10
+    elif args["del"] is True:
         _contract = getContract(server, owner)
         flag = callContract(
             contract=_contract,
@@ -240,28 +248,51 @@ def handleArgs(server, owner):
             methodArgs=[owner.address],
         )
         if flag:
-            try:
+            # try:
                 txHash = invokeContract(
-                server=server,
-                sender=owner,
-                contract=_contract,
-                methodSig="deleteCustomer()",
-                methodName="deleteCustomer",
-                methodArgs=[],
-                methodArgsTypes=[],
+                    server=server,
+                    sender=owner,
+                    contract=_contract,
+                    methodSig="deleteCustomer()",
+                    methodName="deleteCustomer",
+                    methodArgs=[],
+                    methodArgsTypes=[],
                 )
                 if len(txHash) == 66:
                     print("Successfully deleted by {tx}".format(tx=txHash))
                 else:
                     print("Error while invoking the contract was occured")
-            except ValueError:
-                    print("No enough funds to delete name")
+            # except ValueError:
+            #         print("No enough funds to delete name")
         else:
             print("No name found for your account")
 
+    # US 08
+    elif args["getacc"] is not None:
+        addresses = callContract(
+            contract = getContract(server, owner),
+            methodName="retrieveAddresses",
+            methodArgs=[args["getacc"]],
+        )
+        print(addresses)
+        zeros = addresses.count("0x0000000000000000000000000000000000000000")
+        nValid = len(addresses) - zeros
+        if nValid == 1:
+            for addr in addresses:
+                if addr != "0x0000000000000000000000000000000000000000":
+                    print("Registered account is ".format(addr))
+                    break
+        elif nValid == 0:
+            print("No account registered for this name")
+        else:
+            print("Registered accounts are:")
+            for addr in addresses:
+                if addr != "0x0000000000000000000000000000000000000000":
+                    print(addr)
+
+# entry point
 def main():
     initParser()
-    print(args)
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
     handleArgs(server, owner)
