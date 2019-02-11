@@ -173,35 +173,36 @@ def handleArgs(server, owner):
         owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
     elif args.add is not None:
-        db = open("database.json", "r")
-        contractAddress = eval(db)["registrar"]
+        # fetch contract address from database.json
+        db = open("database.json", 'r')
+        data = eval(db.read())
         db.close()
-        _contract = loadContract(contractAddress)
+        contractAddress = data["registrar"]
+        # generate contract abi
+        contractSource = retrieveContractSourceCode(owner.address)
+        compiledSource = compile_source(contractSource)
+        contractInterface = compiledSource["<stdin>:KYC"]
+        _abi = contractInterface['abi']
+        _contract = server.eth.contract(address=contractAddress, abi=_abi)
         txHash = invokeContract(
             server=server,
-            sender=owner.address,
+            sender=owner,
             contract=_contract,
             methodSig="addCustomer(string)",
             methodName="addCustomer",
             methodArgs=[str(args.add)],
             methodArgsTypes=["string"],
         )
-        print(txHash)
+        if len(txHash) == 66:
+            print("Successfully added by {tx}".format(tx=txHash))
 
 def main():
     initParser()
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
-    # contract = server.eth.getCode("0xd49cf73edD179cfc33E7220d158895E2f13fCe51")
-    # print(contract.hex())
-    # handleArgs(server, owner)
-
-    # store ABI in SC?
+    handleArgs(server, owner)
 
 if __name__ == "__main__":
     main()
-
-# contractAddress -- 0xd49cf73edD179cfc33E7220d158895E2f13fCe51
-# abi -- [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}]
 
 # cd Documents/github/fintech/etc/contract
