@@ -14,6 +14,8 @@ class Owner(object):
     def __init__(self, address, privateKey):
         self.address = address
         self.privateKey = privateKey
+    def addContract(self, contract):
+        self.possessedContract = contract
 
 def extractPrivateKey():
     account = open("account.json", 'r')
@@ -25,7 +27,7 @@ def generateAddressFromPrivateKey(privateKey):
     privateKey = "0x" + str(privateKey)
     return str((Account.privateKeyToAccount(privateKey)).address)
 
-def retrieveContractSourceCode(potentialOwnerAddress):
+def retrieveContractSourceCode(ownerAddress):
     soliditySource = '''
     pragma solidity ^0.4.24;
 
@@ -72,32 +74,32 @@ def retrieveContractSourceCode(potentialOwnerAddress):
             selfdestruct(address(owner));
         }
     }
-    ''' % (potentialOwnerAddress, potentialOwnerAddress)
+    ''' % (ownerAddress, ownerAddress)
     return soliditySource
 
 # utils
 
+HexBytes = lambda x: x
+
 def getGasPrice(speed):
     response = requests.get("https://gasprice.poa.network")
     return int((response.json())[speed] * 1e9)
-
-HexBytes = lambda x: x
 
 def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
 # essential
 
-def deployContract(server, contractOwnerAddress):
+def deployContract(server, owner):
     contractData = {}
-    contractSource = retrieveContractSourceCode(contractOwnerAddress)
+    contractSource = retrieveContractSourceCode(owner.address)
     compiledSource = compile_source(contractSource)
     contractInterface = compiledSource["<stdin>:KYC"]
     contractData["abi"] = contractInterface['abi']
     rawKYC = server.eth.contract(abi=contractInterface['abi'], bytecode=contractInterface['bin'])
     gasCost = server.eth.estimateGas({"to": None, "value": 0, "data": rawKYC.bytecode})
     tx = {
-        "nonce": server.eth.getTransactionCount(contractOwnerAddress),
+        "nonce": server.eth.getTransactionCount(owner.address),
         "gasPrice": getGasPrice(speed="fast"),
         "gas": gasCost,
         "to": None,
@@ -115,6 +117,14 @@ def deployContract(server, contractOwnerAddress):
         address=contractData["contractAddress"],
         abi=contractData["abi"],
     )
+    file = open("database.json", "w+")
+    startBlock = cleanTxResponse(txReceipt)["blockNumber"]
+    dataToStore = {
+        "registrar": contract.address,
+        "startBlock": startBlock,
+    }
+    file.write(str(dataToStore))
+    file.close()
     return contract
 
 def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, methodArgsTypes, value=0):
@@ -149,12 +159,48 @@ def callContract(contract, methodName, methodArgs):
     response = eval("contract.functions.{}({}).call()".format(methodName, args))
     print(response)
 
+def loadContract(contractAddress):
+
+
+def initParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--deploy", action="store_true", help="Deploy a new contract")
+    parser.add_argument("-a", "--add", action="store", help="Bind your name with current address in the KYC contract")
+
+    global args
+    args = parser.parse_args()
+
+def handleArgs(server, owner):
+    if args.deploy is True:
+        contract = deployContract(server, owner)
+        owner.addContract(contract)
+        print("Contract address: {0}".format(contract.address))
+    elif args.add is not None:
+        db = open("database.json", "r")
+        contractAddress = eval(db)["registrar"]
+        db.close()
+        _contract = loadContract(contractAddress)
+        txHash = invokeContract(
+            server=server,
+            sender=owner.address,
+            contract=_contract,
+            methodSig="addCustomer(string)",
+            methodName="addCustomer",
+            methodArgs=[str(args.add)],
+            methodArgsTypes=["string"],
+        )
+        print(txHash)
+
 def main():
+    initParser()
     server = Web3(HTTPProvider("https://sokol.poa.network"))
     owner = Owner(generateAddressFromPrivateKey(extractPrivateKey()), extractPrivateKey())
+    handleArgs(server, owner)
 
 if __name__ == "__main__":
     main()
 
 # contractAddress -- 0xd49cf73edD179cfc33E7220d158895E2f13fCe51
 # abi -- [{'constant': False, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'string'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'string'}], 'name': 'retrieveAddress', 'outputs': [{'name': '', 'type': 'address'}], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}]
+
+# cd Documents/github/fintech/etc/contract
