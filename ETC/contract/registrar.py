@@ -10,29 +10,6 @@ from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
 
-# store local copy of contract data
-global DatabaseNtA
-global DatabaseAtN
-DatabaseNtA = dict()
-DatabaseAtN = dict()
-def writeDB(name, address):
-    address = str(address)
-    if DatabaseNtA[name] is None:
-        DatabaseNtA[name] = list()
-        DatabaseNtA[name].append(address)
-    else:
-        DatabaseNtA[name].append(address)
-    DatabaseAtN[address] = name
-
-def purgeDB(_address):
-    _name = DatabaseAtN[_address]
-    saved = list()
-    for addr in DatabaseNtA[_name]:
-        if addr != _address:
-            saved.append(addr)
-    DatabaseAtN[_address] = ''
-    DatabaseNtA[_name] = saved
-
 class Owner(object):
     def __init__(self, address, privateKey):
         self.address = address
@@ -226,6 +203,7 @@ def initParser():
     parser.add_argument("--del", action="store_true", help="Unbind your name from your address")
     parser.add_argument("--getacc", action="store", help="Retrieve the addresses binded with your name")
     parser.add_argument("--getname", action="store", help="Retrieve the name binded with your address")
+    parser.add_argument("--list", action="store_true", help="List all customers")
     global args
     args = parser.parse_args()
     args = vars(args)
@@ -257,13 +235,9 @@ def handleArgs(server, owner):
                     methodArgs=[str(args["add"])],
                     methodArgsTypes=["string"],
                 )
-                if len(txHash) == 66:
-                    writeDB(name=args["add"])
-                    print("Successfully added by {tx}".format(tx=txHash))
-                else:
-                    print("Error while invoking the contract was occured")
             except ValueError:
                 print("No enough funds to add name")
+            print("Successfully added by {tx}".format(tx=txHash))
         else:
             print("One account must correspond one name")
 
@@ -287,7 +261,6 @@ def handleArgs(server, owner):
                     methodArgsTypes=[],
                 )
                 if len(txHash) == 66:
-                    purgeDB(address)
                     print("Successfully deleted by {tx}".format(tx=txHash))
                 else:
                     print("Error while invoking the contract was occured")
@@ -323,6 +296,10 @@ def handleArgs(server, owner):
             print("Registered account is \"{name}\"".format(name=_name))
         else:
             print("No name registered for this account")
+    elif args["list"] is True:
+        pass
+    else:
+        print("Enter a valid command")
 
 # entry point
 def main():
