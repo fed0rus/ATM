@@ -60,16 +60,22 @@ def getContractSource(ownerAddress):
         function deleteCustomer() public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
-            address[] storage saved;
+            address[] memory saved;
             string memory name = addressToCustomerName[msg.sender];
             addressToCustomerName[msg.sender] = '';
+            bool flag = false;
             uint _length = customerNameToAddress[name].length;
             for (uint i = 0; i < _length; ++i) {
                 if (customerNameToAddress[name][i] == msg.sender) {
-                    continue;
+                    flag = true;
                 }
                 else {
-                    saved.push(customerNameToAddress[name][i]);
+                    if (flag){
+                        saved[i - 1] = customerNameToAddress[name][i];
+                    }
+                    else {
+                        saved[i] = customerNameToAddress[name][i];
+                    }
                 }
             }
             customerNameToAddress[name] = saved;
@@ -267,28 +273,33 @@ def handleArgs(server, owner):
         else:
             print("No name found for your account")
 
-    # US 08
+    # US 11-13
     elif args["getacc"] is not None:
         addresses = callContract(
-            contract = getContract(server, owner),
+            contract=getContract(server, owner),
             methodName="retrieveAddresses",
             methodArgs=[args["getacc"]],
         )
-        print(addresses)
-        zeros = addresses.count("0x0000000000000000000000000000000000000000")
-        nValid = len(addresses) - zeros
-        if nValid == 1:
-            for addr in addresses:
-                if addr != "0x0000000000000000000000000000000000000000":
-                    print("Registered account is ".format(addr))
-                    break
-        elif nValid == 0:
+        if len(addresses) == 1:
+            print("Registered account is {addr}".format(addr=addresses[0]))
+        elif len(addresses) == 0:
             print("No account registered for this name")
         else:
             print("Registered accounts are:")
             for addr in addresses:
-                if addr != "0x0000000000000000000000000000000000000000":
-                    print(addr)
+                print(addr)
+
+    # US 14-16
+    elif args["getname"] is not None:
+        _name = callContract(
+            contract=getContract(server, owner),
+            methodName="retrieveName",
+            methodArgs=[server.toChecksumAddress(args["getname"])]
+        )
+        if _name != "":
+            print("Registered account is \"{name}\"".format(name=_name))
+        else:
+            print("No name registered for this account")
 
 # entry point
 def main():

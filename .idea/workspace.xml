@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/contract.sol" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/contract.sol" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/database.json" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/database.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
-    </list>
+    <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -335,15 +330,15 @@
     <option name="totallyTimeSpent" value="72532000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="676" y="0" width="697" height="735" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11951589" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24803768" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33387887" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.33887044" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.5859247" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />

@@ -29,16 +29,22 @@ contract KYC is Mortal {
     function deleteCustomer() public {
         require(msg.sender != address(0));
         require(msg.sender == tx.origin);
-        address[] storage saved;
+        address[] memory saved;
         string memory name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = '';
+        bool flag = false;
         uint _length = customerNameToAddress[name].length;
         for (uint i = 0; i < _length; ++i) {
             if (customerNameToAddress[name][i] == msg.sender) {
-                continue;
+                flag = true;
             }
             else {
-                saved.push(customerNameToAddress[name][i]);
+                if (flag){
+                    saved[i - 1] = customerNameToAddress[name][i];
+                }
+                else {
+                    saved[i] = customerNameToAddress[name][i];
+                }
             }
         }
         customerNameToAddress[name] = saved;
