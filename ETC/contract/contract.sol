@@ -58,6 +58,10 @@ contract KYC is Mortal {
         return customerNameToAddress[customerName];
     }
 
+    function listAll() public returns (mapping(string => address)) {
+        
+    }
+
     function isAddressUsed(address customerAddress) public returns (bool) {
         return bytes(addressToCustomerName[customerAddress]).length != 0;
     }

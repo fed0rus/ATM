@@ -10,6 +10,29 @@ from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
 
+# store local copy of contract data
+global DatabaseNtA
+global DatabaseAtN
+DatabaseNtA = dict()
+DatabaseAtN = dict()
+def writeDB(name, address):
+    address = str(address)
+    if DatabaseNtA[name] is None:
+        DatabaseNtA[name] = list()
+        DatabaseNtA[name].append(address)
+    else:
+        DatabaseNtA[name].append(address)
+    DatabaseAtN[address] = name
+
+def purgeDB(_address):
+    _name = DatabaseAtN[_address]
+    saved = list()
+    for addr in DatabaseNtA[_name]:
+        if addr != _address:
+            saved.append(addr)
+    DatabaseAtN[_address] = ''
+    DatabaseNtA[_name] = saved
+
 class Owner(object):
     def __init__(self, address, privateKey):
         self.address = address
@@ -157,11 +180,6 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
     methodSignature = server.sha3(text=methodSig)[0:4].hex()
     params = encode_abi(methodArgsTypes, methodArgs)
     payloadData = "0x" + methodSignature + params.hex()
-    estimateData = {
-        "to": contract.address,
-        "value": value,
-        "data": payloadData
-    }
     rawTX = {
         "to": contract.address,
         "data": payloadData,
@@ -171,6 +189,9 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
         "gasPrice": getGasPrice(speed="fast"),
     }
     gas = server.eth.estimateGas(rawTX)
+    print("------------------------GAS------------------------------")
+    print(gas)
+    print("------------------------GAS------------------------------")
     rawTX["gas"] = gas
     signedTX = server.eth.account.signTransaction(
         rawTX,
@@ -237,6 +258,7 @@ def handleArgs(server, owner):
                     methodArgsTypes=["string"],
                 )
                 if len(txHash) == 66:
+                    writeDB(name=args["add"])
                     print("Successfully added by {tx}".format(tx=txHash))
                 else:
                     print("Error while invoking the contract was occured")
@@ -265,6 +287,7 @@ def handleArgs(server, owner):
                     methodArgsTypes=[],
                 )
                 if len(txHash) == 66:
+                    purgeDB(address)
                     print("Successfully deleted by {tx}".format(tx=txHash))
                 else:
                     print("Error while invoking the contract was occured")

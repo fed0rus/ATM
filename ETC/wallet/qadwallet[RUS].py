@@ -42,24 +42,25 @@ class User(object):
 # main functions
 
 def printBalance(account):
-    print("Balance on " + "\"" + account.address[2:] + "\"" + " is " + scaleValue(account.getBalance()))
+    print("Balance on \"{address}\" is {val}".format(address=account.address[2:], val=scaleValue(account.getBalance())))
 
 def printTransaction(to, value):
     if account.getBalance() < value:
         print("No enough funds for payment")
     else:
         txHash = account.sendTx(to, value)
-        print("Payment of " + str(scaleValue(value)) + " to \"" + to[2:] + "\" scheduled")
+        print("Payment of {val} to {addr} scheduled".format(val=str(scaleValue(value)), addr=to[2:]))
         print("Transaction Hash: " + str(txHash.hex()))
 
 def printTxStatus(txHash):
     receipt = cleanTxResponse(server.eth.getTransaction(txHash))
+    print(receipt)
     if receipt is None:
         print("No such transaction in the chain")
     elif receipt["blockHash"] is None:
-        print("Delay in payment of " + scaleValue(receipt["value"]) + " to \"" + (receipt["to"])[2:] + "\"")
+        print("Delay in payment of {val} to {addr}".format(val=scaleValue(receipt["value"]), addr=(receipt["to"])[2:]))
     else:
-        print("Payment of " + scaleValue(receipt["value"]) + " to \"" + (receipt["to"])[2:] + "\" confirmed")
+        print("Payment of {val} to {addr} confirmed".format(val=scaleValue(receipt["value"]), addr=(receipt["to"])[2:]))
 
 # utils
 
@@ -107,6 +108,7 @@ def initParser():
     parser.add_argument("-T", "--tx", help="Transaction hash")
     global args
     args = parser.parse_args()
+    args = vars(args)
 
 
 server = Web3(HTTPProvider("https://sokol.poa.network"))
@@ -117,13 +119,13 @@ initParser()
 
 # determining proper action
 
-if args.tx is None and args.to is None:
-    account = User(args.key)
+if args["tx"] is None and args["to"] is None:
+    account = User(args["key"])
     printBalance(account)
 
-elif args.tx is None:
-    account = User(args.key)
-    printTransaction("0x" + str(args.to), int(args.value))
+elif args["tx"] is None:
+    account = User(args["key"])
+    printTransaction("0x" + str(args["to"]), int(args["value"]))
 
-elif args.key is None and args.value is None:
-    printTxStatus(args.tx)
+elif args["key"] is None and args["value"] is None:
+    printTxStatus(args["tx"])
