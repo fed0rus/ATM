@@ -62,7 +62,7 @@ def getContractSource(ownerAddress):
             require(msg.sender == tx.origin);
             address[] memory saved;
             bytes32 name = addressToCustomerName[msg.sender];
-            addressToCustomerName[msg.sender] = '';
+            addressToCustomerName[msg.sender] = 0;
             bool flag = false;
             uint _length = customerNameToAddress[name].length;
             for (uint i = 0; i < _length; ++i) {
@@ -242,6 +242,8 @@ def handleArgs(server, owner):
                 print("Successfully added by {tx}".format(tx=txHash))
             except ValueError:
                 print("No enough funds to add name")
+            except:
+                print("Name is too long, must be less or equal 32 characters including spaces")
         else:
             print("One account must correspond one name")
 
@@ -275,19 +277,22 @@ def handleArgs(server, owner):
 
     # US 11-13
     elif args["getacc"] is not None:
-        addresses = callContract(
-            contract=getContract(server, owner),
-            methodName="retrieveAddresses",
-            methodArgs=[args["getacc"].encode("utf-8")],
-        )
-        if len(addresses) == 1:
-            print("Registered account is {addr}".format(addr=addresses[0]))
-        elif len(addresses) == 0:
-            print("No account registered for this name")
-        else:
-            print("Registered accounts are:")
-            for addr in addresses:
-                print(addr)
+        try:
+            addresses = callContract(
+                contract=getContract(server, owner),
+                methodName="retrieveAddresses",
+                methodArgs=[args["getacc"].encode("utf-8")],
+            )
+            if len(addresses) == 1:
+                print("Registered account is {addr}".format(addr=addresses[0]))
+            elif len(addresses) == 0:
+                print("No account registered for this name")
+            else:
+                print("Registered accounts are:")
+                for addr in addresses:
+                    print(addr)
+        except:
+            print("Name is too long, must be less or equal 32 characters including spaces")
 
     # US 14-16
     elif args["getname"] is not None:
@@ -318,5 +323,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0x8E424119FeFD89B64ad7a922968A554af1c7aEBd
+# CA: 0xD03d9a51D8A2C690077C47F47c35D034Ef65052D
 # DIR: cd Documents/github/fintech/etc/contract

@@ -31,7 +31,7 @@ contract KYC is Mortal {
         require(msg.sender == tx.origin);
         address[] memory saved;
         bytes32 name = addressToCustomerName[msg.sender];
-        addressToCustomerName[msg.sender] = '';
+        addressToCustomerName[msg.sender] = 0;
         bool flag = false;
         uint _length = customerNameToAddress[name].length;
         for (uint i = 0; i < _length; ++i) {
