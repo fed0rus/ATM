@@ -1,5 +1,4 @@
 import sys
-sys.path.append("C:\Solc")
 sys.path.append("C:\Python_Interpreter\Lib\site-packages")
 
 from eth_abi import encode_abi
@@ -9,6 +8,7 @@ from solc import compile_source
 from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
+
 
 class Owner(object):
     def __init__(self, address, privateKey):
@@ -324,4 +324,4 @@ def main():
 if __name__ == "__main__":
     main()
 # CA: 0xD03d9a51D8A2C690077C47F47c35D034Ef65052D
-# DIR: cd Documents/github/fintech/etc/contract
+# DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
