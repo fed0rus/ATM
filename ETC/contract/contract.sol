@@ -60,7 +60,6 @@ contract KYC is Mortal {
 
     /* function listAll() external returns (mapping(bytes32 => address)) {
 
-fds
     } */
 
     function isAddressUsed(address customerAddress) external view returns (bool) {
