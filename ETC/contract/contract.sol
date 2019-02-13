@@ -16,10 +16,10 @@ contract Mortal {
 
 contract KYC is Mortal {
 
-    mapping (address => string) addressToCustomerName;
-    mapping (string => address[]) customerNameToAddress;
+    mapping (address => bytes32) private addressToCustomerName;
+    mapping (bytes32 => address[]) private customerNameToAddress;
 
-    function addCustomer(string memory customerName) public {
+    function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
         require(msg.sender == tx.origin);
         addressToCustomerName[msg.sender] = customerName;
@@ -30,7 +30,7 @@ contract KYC is Mortal {
         require(msg.sender != address(0));
         require(msg.sender == tx.origin);
         address[] memory saved;
-        string memory name = addressToCustomerName[msg.sender];
+        bytes32 name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = '';
         bool flag = false;
         uint _length = customerNameToAddress[name].length;
@@ -50,25 +50,25 @@ contract KYC is Mortal {
         customerNameToAddress[name] = saved;
     }
 
-    function retrieveName(address customerAddress) public returns (string memory) {
+    function retrieveName(address customerAddress) external view returns (bytes32) {
         return addressToCustomerName[customerAddress];
     }
 
-    function retrieveAddresses(string memory customerName) public returns (address[]) {
+    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
         return customerNameToAddress[customerName];
     }
 
-    function listAll() public returns (mapping(string => address)) {
-        
-    }
+    /* function listAll() external returns (mapping(bytes32 => address)) {
 
-    function isAddressUsed(address customerAddress) public returns (bool) {
-        return bytes(addressToCustomerName[customerAddress]).length != 0;
+    } */
+
+    function isAddressUsed(address customerAddress) external view returns (bool) {
+        return uint(addressToCustomerName[customerAddress]) != 0;
     }
 
     function () external payable {}
 
-    function deleteContract() public ownerOnly {
+    function deleteContract() external ownerOnly {
         selfdestruct(address(owner));
     }
 }

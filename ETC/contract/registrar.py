@@ -47,10 +47,10 @@ def getContractSource(ownerAddress):
 
     contract KYC is Mortal {
 
-        mapping (address => string) addressToCustomerName;
-        mapping (string => address[]) customerNameToAddress;
+        mapping (address => bytes32) private addressToCustomerName;
+        mapping (bytes32 => address[]) private customerNameToAddress;
 
-        function addCustomer(string memory customerName) public {
+        function addCustomer(bytes32 customerName) public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
             addressToCustomerName[msg.sender] = customerName;
@@ -61,7 +61,7 @@ def getContractSource(ownerAddress):
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
             address[] memory saved;
-            string memory name = addressToCustomerName[msg.sender];
+            bytes32 name = addressToCustomerName[msg.sender];
             addressToCustomerName[msg.sender] = '';
             bool flag = false;
             uint _length = customerNameToAddress[name].length;
@@ -81,21 +81,25 @@ def getContractSource(ownerAddress):
             customerNameToAddress[name] = saved;
         }
 
-        function retrieveName(address customerAddress) public returns (string memory) {
+        function retrieveName(address customerAddress) external view returns (bytes32) {
             return addressToCustomerName[customerAddress];
         }
 
-        function retrieveAddresses(string memory customerName) public returns (address[]) {
+        function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
             return customerNameToAddress[customerName];
         }
 
-        function isAddressUsed(address customerAddress) public returns (bool) {
-            return bytes(addressToCustomerName[customerAddress]).length != 0;
+        /* function listAll() external returns (mapping(bytes32 => address)) {
+
+        } */
+
+        function isAddressUsed(address customerAddress) external view returns (bool) {
+            return uint(addressToCustomerName[customerAddress]) != 0;
         }
 
         function () external payable {}
 
-        function deleteContract() public ownerOnly {
+        function deleteContract() external ownerOnly {
             selfdestruct(address(owner));
         }
     }
@@ -230,14 +234,14 @@ def handleArgs(server, owner):
                     server=server,
                     sender=owner,
                     contract=_contract,
-                    methodSig="addCustomer(string)",
+                    methodSig="addCustomer(bytes32)",
                     methodName="addCustomer",
-                    methodArgs=[str(args["add"])],
-                    methodArgsTypes=["string"],
+                    methodArgs=[args["add"].encode("utf-8")],
+                    methodArgsTypes=["bytes32"],
                 )
+                print("Successfully added by {tx}".format(tx=txHash))
             except ValueError:
                 print("No enough funds to add name")
-            print("Successfully added by {tx}".format(tx=txHash))
         else:
             print("One account must correspond one name")
 
@@ -274,7 +278,7 @@ def handleArgs(server, owner):
         addresses = callContract(
             contract=getContract(server, owner),
             methodName="retrieveAddresses",
-            methodArgs=[args["getacc"]],
+            methodArgs=[args["getacc"].encode("utf-8")],
         )
         if len(addresses) == 1:
             print("Registered account is {addr}".format(addr=addresses[0]))
@@ -287,11 +291,15 @@ def handleArgs(server, owner):
 
     # US 14-16
     elif args["getname"] is not None:
-        _name = callContract(
+        _nameRaw = callContract(
             contract=getContract(server, owner),
             methodName="retrieveName",
             methodArgs=[server.toChecksumAddress(args["getname"])]
-        )
+        ).decode("utf-8")
+        _name = ""
+        for letter in _nameRaw:
+            if (ord(letter) != 0):
+                _name += letter
         if _name != "":
             print("Registered account is \"{name}\"".format(name=_name))
         else:
@@ -310,5 +318,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0x922979B074FC62E8ffc68838E33b355Ffd64DA99
+# CA: 0x8E424119FeFD89B64ad7a922968A554af1c7aEBd
 # DIR: cd Documents/github/fintech/etc/contract
