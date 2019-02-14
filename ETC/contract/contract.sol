@@ -16,27 +16,32 @@ contract Mortal {
 
 contract KYC is Mortal {
 
-    mapping (address => bytes32) public addressToCustomerName;
-    mapping (bytes32 => address[]) public customerNameToAddress;
+    mapping (bytes32 => bytes32) public addressToCustomerName;
+    mapping (bytes32 => bytes32[]) public customerNameToAddress;
+    bytes32[] public everAddress;
 
     function addCustomer(bytes32 customerName) public {
-        require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
-        addressToCustomerName[msg.sender] = customerName;
-        customerNameToAddress[customerName].push(msg.sender);
-        existence.push(msg.sender);
+        bytes32 messageSender = bytes32(msg.sender);
+        bytes32 txOrigin = bytes32(tx.origin);
+        require(uint(messageSender) != 0);
+        require(messageSender == txOrigin);
+        addressToCustomerName[messageSender] = customerName;
+        customerNameToAddress[customerName].push(messageSender);
+        everAddress.push(messageSender);
     }
 
     function deleteCustomer() public {
-        require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
-        address[] memory saved;
-        bytes32 name = addressToCustomerName[msg.sender];
-        addressToCustomerName[msg.sender] = 0;
+        bytes32 messageSender = bytes32(msg.sender);
+        bytes32 txOrigin = bytes32(tx.origin);
+        require(uint(messageSender) != 0);
+        require(messageSender == txOrigin);
+        bytes32[] memory saved;
+        bytes32 name = addressToCustomerName[messageSender];
+        addressToCustomerName[messageSender] = 0;
         bool flag = false;
         uint _length = customerNameToAddress[name].length;
         for (uint i = 0; i < _length; ++i) {
-            if (customerNameToAddress[name][i] == msg.sender) {
+            if (customerNameToAddress[name][i] == messageSender) {
                 flag = true;
             }
             else {
@@ -51,18 +56,18 @@ contract KYC is Mortal {
         customerNameToAddress[name] = saved;
     }
 
-    function retrieveName(address customerAddress) external view returns (bytes32) {
+    function retrieveName(bytes32 customerAddress) external view returns (bytes32) {
         return addressToCustomerName[customerAddress];
     }
 
-    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
+    function retrieveAddresses(bytes32 customerName) external view returns (bytes32[]) {
         return customerNameToAddress[customerName];
     }
 
     /* function listAllAddresses() external returns () {
     } */
 
-    function isAddressUsed(address customerAddress) external view returns (bool) {
+    function isAddressUsed(bytes32 customerAddress) external view returns (bool) {
         return uint(addressToCustomerName[customerAddress]) != 0;
     }
 
