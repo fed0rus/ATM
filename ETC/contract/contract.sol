@@ -39,7 +39,7 @@ contract KYC is Mortal {
                 flag = true;
             }
             else {
-                if (flag){
+                if (flag) {
                     saved[i - 1] = customerNameToAddress[name][i];
                 }
                 else {

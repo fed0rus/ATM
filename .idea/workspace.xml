@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/fintech.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fintech.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/contract.sol" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/contract.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,8 +26,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="300" column="38" selection-start-line="300" selection-start-column="38" selection-end-line="300" selection-end-column="38" />
+            <state relative-caret-position="410">
+              <caret line="305" column="23" selection-start-line="305" selection-start-column="23" selection-end-line="305" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -73,7 +72,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="480" />
     <option name="y" value="-10" />
     <option name="width" value="697" />
@@ -313,16 +312,18 @@
       <workItem from="1549979608328" duration="782000" />
       <workItem from="1550076956477" duration="434000" />
       <workItem from="1550105858732" duration="755000" />
+      <workItem from="1550114857507" duration="1211000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="74503000" />
+    <option name="totallyTimeSpent" value="75714000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12632374" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12783661" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -466,8 +467,8 @@
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py" />
     <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="300" column="38" selection-start-line="300" selection-start-column="38" selection-end-line="300" selection-end-column="38" />
+        <state relative-caret-position="410">
+          <caret line="305" column="23" selection-start-line="305" selection-start-column="23" selection-end-line="305" selection-end-column="23" />
         </state>
       </provider>
     </entry>

@@ -14,8 +14,6 @@ class Owner(object):
     def __init__(self, address, privateKey):
         self.address = address
         self.privateKey = privateKey
-    def addContract(self, contract):
-        self.possessedContract = contract
 
 def extractPrivateKey():
     account = open("account.json", 'r')
