@@ -237,7 +237,7 @@ def handleArgs(server, owner):
         flag = callContract(
             contract=_contract,
             methodName="isAddressUsed",
-            methodArgs=[owner.address.encode("utf-8")],
+            methodArgs=[owner.address],
         )
         if not flag:
             try:
@@ -264,7 +264,7 @@ def handleArgs(server, owner):
         flag = callContract(
             contract=_contract,
             methodName="isAddressUsed",
-            methodArgs=[owner.address.encode("utf-8")],
+            methodArgs=[owner.address],
         )
         if flag:
             try:
@@ -294,9 +294,6 @@ def handleArgs(server, owner):
                 methodName="retrieveAddresses",
                 methodArgs=[args["getacc"].encode("utf-8")],
             )
-            # decoding
-            for i in range(len(addresses)):
-                addresses[i] = addresses[i].decode("utf-8")
             if len(addresses) == 1:
                 print("Registered account is {addr}".format(addr=addresses[0]))
             elif len(addresses) == 0:
@@ -313,7 +310,7 @@ def handleArgs(server, owner):
         _nameRaw = callContract(
             contract=getContract(server, owner),
             methodName="retrieveName",
-            methodArgs=[server.toChecksumAddress(args["getname"]).encode("utf-8")]
+            methodArgs=[server.toChecksumAddress(args["getname"])]
         ).decode("utf-8")
         _name = ""
         for letter in _nameRaw:
@@ -324,13 +321,18 @@ def handleArgs(server, owner):
         else:
             print("No name registered for this account")
     elif args["list"] is True:
-        addresses = callContract(
+        addresses, names = callContract(
                 contract=getContract(server, owner),
                 methodName="listAllAddresses",
                 methodArgs=[],
         )
-        print("raw:")
-        print(addresses)
+        for i in range(len(addresses)):
+            _nameRaw = names[i].decode("utf-8")
+            _name = ""
+            for letter in _nameRaw:
+                if (ord(letter) != 0):
+                    _name += letter
+            print("\"{n}\": {a}".format(n=_name, a=addresses[i]))
     else:
         print("Enter a valid command")
 
@@ -343,5 +345,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0xb1c964F88f34199411431190092c8673b12d27D1
+# CA: 0x7CC4B7c250B5E6db9b281679f3baa0d163000b8c
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
