@@ -16,9 +16,8 @@ contract Mortal {
 
 contract KYC is Mortal {
 
-    mapping (address => bytes32) addressToCustomerName;
-    mapping (bytes32 => address[]) customerNameToAddress;
-    address[] existence;
+    mapping (address => bytes32) public addressToCustomerName;
+    mapping (bytes32 => address[]) public customerNameToAddress;
 
     function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
@@ -60,9 +59,8 @@ contract KYC is Mortal {
         return customerNameToAddress[customerName];
     }
 
-    function listAllAddresses() external returns (address[]) {
-        return existence;
-    }
+    /* function listAllAddresses() external returns () {
+    } */
 
     function isAddressUsed(address customerAddress) external view returns (bool) {
         return uint(addressToCustomerName[customerAddress]) != 0;
