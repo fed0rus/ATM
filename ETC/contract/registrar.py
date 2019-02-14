@@ -1,6 +1,3 @@
-import sys
-sys.path.append("C:\Python_Interpreter\Lib\site-packages")
-
 from eth_abi import encode_abi
 import json
 import requests
@@ -27,7 +24,7 @@ def generateAddressFromPrivateKey(privateKey):
 
 def getContractSource(ownerAddress):
     soliditySource = '''
-    pragma solidity ^0.4.24;
+    pragma solidity ^0.4.25;
 
     contract Mortal {
         address owner;
