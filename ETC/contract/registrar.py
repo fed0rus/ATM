@@ -194,7 +194,6 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
 
 def callContract(contract, methodName, methodArgs):
     _args = str(methodArgs)[1:-1]
-    print("contract.functions.{}({}).call()".format(methodName, _args))
     response = eval("contract.functions.{}({}).call()".format(methodName, _args))
     return response
 
