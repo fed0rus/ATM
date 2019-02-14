@@ -18,7 +18,9 @@ contract KYC is Mortal {
 
     mapping (bytes32 => bytes32) public addressToCustomerName;
     mapping (bytes32 => bytes32[]) public customerNameToAddress;
+    mapping (bytes32 => bool) public isUsed;
     bytes32[] public everAddress;
+    bytes32[] private response;
 
     function addCustomer(bytes32 customerName) public {
         bytes32 messageSender = bytes32(msg.sender);
@@ -37,7 +39,7 @@ contract KYC is Mortal {
         require(messageSender == txOrigin);
         bytes32[] memory saved;
         bytes32 name = addressToCustomerName[messageSender];
-        addressToCustomerName[messageSender] = 0;
+        addressToCustomerName[messageSender] = bytes32(0);
         bool flag = false;
         uint _length = customerNameToAddress[name].length;
         for (uint i = 0; i < _length; ++i) {
@@ -54,6 +56,12 @@ contract KYC is Mortal {
             }
         }
         customerNameToAddress[name] = saved;
+        for (uint j = 0; j < everAddress.length; ++j) {
+            if (everAddress[j] == messageSender) {
+                everAddress[j] = bytes32(0);
+                break;
+            }
+        }
     }
 
     function retrieveName(bytes32 customerAddress) external view returns (bytes32) {
@@ -64,8 +72,20 @@ contract KYC is Mortal {
         return customerNameToAddress[customerName];
     }
 
-    /* function listAllAddresses() external returns () {
-    } */
+    function listAllAddresses() external returns (bytes32[]) {
+        uint _l = everAddress.length;
+        for (uint i = 0; i < _l; ++i) {
+            if (uint(everAddress[i]) != 0) {
+                response.push(everAddress[i]);
+                response.push(addressToCustomerName[everAddress[i]]);
+            }
+        }
+        bytes32[] memory r = response;
+        for (uint j = 0; j < 2 * _l; ++j) {
+            response[j] = bytes32(0);
+        }
+        return r;
+    }
 
     function isAddressUsed(bytes32 customerAddress) external view returns (bool) {
         return uint(addressToCustomerName[customerAddress]) != 0;
