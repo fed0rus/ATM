@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 contract Mortal {
     address owner;
@@ -16,30 +16,75 @@ contract Mortal {
 
 contract KYC is Mortal {
 
-    mapping (address => string) addressToCustomerName;
-    mapping (string => address) customerNameToAddress;
+    address[] addresses;
+    bytes32[] names;
 
-    function addCustomer(string memory customerName) public {
+    function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
-        addressToCustomerName[msg.sender] = customerName;
-        customerNameToAddress[customerName] = msg.sender;
+        require(msg.sender == tx.origin);
+        addresses.push(msg.sender);
+        names.push(customerName);
     }
 
     function deleteCustomer() public {
-        addressToCustomerName[msg.sender] = '';
+        require(msg.sender != address(0));
+        require(msg.sender == tx.origin);
+        address[] memory moveAddresses;
+        bytes32[] memory moveNames;
+        bool shift = false;
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == msg.sender) {
+                shift = true;
+            }
+            else {
+                if (shift == false) {
+                    moveAddresses[i] = addresses[i];
+                    moveNames[i] = names[i];
+                }
+                else {
+                    moveAddresses[i - 1] = addresses[i];
+                    moveNames[i - 1] = names[i];
+                }
+            }
+        }
+        addresses = moveAddresses;
+        names = moveNames;
     }
 
-    function retrieveName(address customerAddress) public returns (string memory) {
-        return addressToCustomerName[customerAddress];
+    function retrieveName(address customerAddress) external view returns (bytes32) {
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == customerAddress) {
+                return names[i];
+            }
+        }
     }
 
-    function retrieveAddress(string memory customerName) public returns (address) {
-        return customerNameToAddress[customerName];
+    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
+        address[] memory response;
+        for (uint i = 0; i < names.length; ++i) {
+            if (names[i] == customerName) {
+                response[response.length] = addresses[i];
+            }
+        }
+        return response;
+    }
+
+    function listAllAddresses() external view returns (address[], bytes32[]) {
+        return (addresses, names);
+    }
+
+    function isAddressUsed(address customerAddress) external view returns (bool) {
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == customerAddress) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function () external payable {}
 
-    function deleteContract() public ownerOnly {
+    function deleteContract() external ownerOnly {
         selfdestruct(address(owner));
     }
 }
