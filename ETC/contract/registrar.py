@@ -325,13 +325,16 @@ def handleArgs(server, owner):
                 methodName="listAllAddresses",
                 methodArgs=[],
         )
-        for i in range(len(addresses)):
-            _nameRaw = names[i].decode("utf-8")
-            _name = ""
-            for letter in _nameRaw:
-                if (ord(letter) != 0):
-                    _name += letter
-            print("\"{n}\": {a}".format(n=_name, a=addresses[i]))
+        if (len(addresses) == 0):
+            print("Storage is clear")
+        else:
+            for i in range(len(addresses)):
+                _nameRaw = names[i].decode("utf-8")
+                _name = ""
+                for letter in _nameRaw:
+                    if (ord(letter) != 0):
+                        _name += letter
+                print("\"{n}\": {a}".format(n=_name, a=addresses[i]))
     else:
         print("Enter a valid command")
 
