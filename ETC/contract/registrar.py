@@ -24,7 +24,7 @@ def generateAddressFromPrivateKey(privateKey):
 
 def getContractSource(ownerAddress):
     soliditySource = '''
-    pragma solidity ^0.4.25;
+    pragma solidity ^0.4.24;
 
     contract Mortal {
         address owner;
@@ -42,14 +42,16 @@ def getContractSource(ownerAddress):
 
     contract KYC is Mortal {
 
-        mapping (address => bytes32) private addressToCustomerName;
-        mapping (bytes32 => address[]) private customerNameToAddress;
+        mapping (address => bytes32) addressToCustomerName;
+        mapping (bytes32 => address[]) customerNameToAddress;
+        address[] existence;
 
         function addCustomer(bytes32 customerName) public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
             addressToCustomerName[msg.sender] = customerName;
             customerNameToAddress[customerName].push(msg.sender);
+            existence.push(msg.sender);
         }
 
         function deleteCustomer() public {
@@ -65,7 +67,7 @@ def getContractSource(ownerAddress):
                     flag = true;
                 }
                 else {
-                    if (flag){
+                    if (flag) {
                         saved[i - 1] = customerNameToAddress[name][i];
                     }
                     else {
@@ -84,9 +86,9 @@ def getContractSource(ownerAddress):
             return customerNameToAddress[customerName];
         }
 
-        /* function listAll() external returns (mapping(bytes32 => address)) {
-
-        } */
+        function listAllAddresses() external returns (address[]) {
+            return existence;
+        }
 
         function isAddressUsed(address customerAddress) external view returns (bool) {
             return uint(addressToCustomerName[customerAddress]) != 0;
@@ -212,7 +214,6 @@ def handleArgs(server, owner):
     # US 01-02
     if args["deploy"] is True:
         contract = deployContract(server, owner)
-        owner.addContract(contract)
         print("Contract address: {0}".format(contract.address))
 
     # US 03-06
@@ -251,7 +252,7 @@ def handleArgs(server, owner):
             methodArgs=[owner.address],
         )
         if flag:
-            # try:
+            try:
                 txHash = invokeContract(
                     server=server,
                     sender=owner,
@@ -265,8 +266,8 @@ def handleArgs(server, owner):
                     print("Successfully deleted by {tx}".format(tx=txHash))
                 else:
                     print("Error while invoking the contract was occured")
-            # except ValueError:
-            #         print("No enough funds to delete name")
+            except ValueError:
+                    print("No enough funds to delete name")
         else:
             print("No name found for your account")
 
@@ -305,7 +306,15 @@ def handleArgs(server, owner):
         else:
             print("No name registered for this account")
     elif args["list"] is True:
-        pass
+        addresses = set(
+            callContract(
+                contract=getContract(server, owner),
+                methodName="listAllAddresses",
+                methodArgs=[],
+            )
+        )
+        for addr in addresses:
+            pass
     else:
         print("Enter a valid command")
 
@@ -318,5 +327,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0xD03d9a51D8A2C690077C47F47c35D034Ef65052D
+# CA: 0xEC5d4065298aE54aB2884F5d2bf0b82302b1b1Bd
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
