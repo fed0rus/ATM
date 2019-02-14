@@ -24,7 +24,7 @@ def generateAddressFromPrivateKey(privateKey):
 
 def getContractSource(ownerAddress):
     soliditySource = '''
-    pragma solidity ^0.4.24;
+    pragma solidity ^0.4.25;
 
     contract Mortal {
         address owner;
@@ -42,56 +42,70 @@ def getContractSource(ownerAddress):
 
     contract KYC is Mortal {
 
-        mapping (address => bytes32) addressToCustomerName;
-        mapping (bytes32 => address[]) customerNameToAddress;
-        address[] existence;
+        address[] addresses;
+        bytes32[] names;
 
         function addCustomer(bytes32 customerName) public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
-            addressToCustomerName[msg.sender] = customerName;
-            customerNameToAddress[customerName].push(msg.sender);
-            existence.push(msg.sender);
+            addresses.push(msg.sender);
+            names.push(customerName);
         }
 
         function deleteCustomer() public {
             require(msg.sender != address(0));
             require(msg.sender == tx.origin);
-            address[] memory saved;
-            bytes32 name = addressToCustomerName[msg.sender];
-            addressToCustomerName[msg.sender] = 0;
-            bool flag = false;
-            uint _length = customerNameToAddress[name].length;
-            for (uint i = 0; i < _length; ++i) {
-                if (customerNameToAddress[name][i] == msg.sender) {
-                    flag = true;
+            address[] memory moveAddresses;
+            bytes32[] memory moveNames;
+            bool shift = false;
+            for (uint i = 0; i < addresses.length; ++i) {
+                if (addresses[i] == msg.sender) {
+                    shift = true;
                 }
                 else {
-                    if (flag) {
-                        saved[i - 1] = customerNameToAddress[name][i];
+                    if (shift == false) {
+                        moveAddresses[i] = addresses[i];
+                        moveNames[i] = names[i];
                     }
                     else {
-                        saved[i] = customerNameToAddress[name][i];
+                        moveAddresses[i - 1] = addresses[i];
+                        moveNames[i - 1] = names[i];
                     }
                 }
             }
-            customerNameToAddress[name] = saved;
+            addresses = moveAddresses;
+            names = moveNames;
         }
 
         function retrieveName(address customerAddress) external view returns (bytes32) {
-            return addressToCustomerName[customerAddress];
+            for (uint i = 0; i < addresses.length; ++i) {
+                if (addresses[i] == customerAddress) {
+                    return names[i];
+                }
+            }
         }
 
         function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
-            return customerNameToAddress[customerName];
+            address[] memory response;
+            for (uint i = 0; i < names.length; ++i) {
+                if (names[i] == customerName) {
+                    response[response.length] = addresses[i];
+                }
+            }
+            return response;
         }
 
-        function listAllAddresses() external returns (address[]) {
-            return existence;
+        function listAllAddresses() external view returns (address[], bytes32[]) {
+            return (addresses, names);
         }
 
         function isAddressUsed(address customerAddress) external view returns (bool) {
-            return uint(addressToCustomerName[customerAddress]) != 0;
+            for (uint i = 0; i < addresses.length; ++i) {
+                if (addresses[i] == customerAddress) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function () external payable {}
@@ -180,6 +194,7 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
 
 def callContract(contract, methodName, methodArgs):
     _args = str(methodArgs)[1:-1]
+    print("contract.functions.{}({}).call()".format(methodName, _args))
     response = eval("contract.functions.{}({}).call()".format(methodName, _args))
     return response
 
@@ -222,7 +237,7 @@ def handleArgs(server, owner):
         flag = callContract(
             contract=_contract,
             methodName="isAddressUsed",
-            methodArgs=[owner.address],
+            methodArgs=[owner.address.encode("utf-8")],
         )
         if not flag:
             try:
@@ -249,7 +264,7 @@ def handleArgs(server, owner):
         flag = callContract(
             contract=_contract,
             methodName="isAddressUsed",
-            methodArgs=[owner.address],
+            methodArgs=[owner.address.encode("utf-8")],
         )
         if flag:
             try:
@@ -279,6 +294,9 @@ def handleArgs(server, owner):
                 methodName="retrieveAddresses",
                 methodArgs=[args["getacc"].encode("utf-8")],
             )
+            # decoding
+            for i in range(len(addresses)):
+                addresses[i] = addresses[i].decode("utf-8")
             if len(addresses) == 1:
                 print("Registered account is {addr}".format(addr=addresses[0]))
             elif len(addresses) == 0:
@@ -295,7 +313,7 @@ def handleArgs(server, owner):
         _nameRaw = callContract(
             contract=getContract(server, owner),
             methodName="retrieveName",
-            methodArgs=[server.toChecksumAddress(args["getname"])]
+            methodArgs=[server.toChecksumAddress(args["getname"]).encode("utf-8")]
         ).decode("utf-8")
         _name = ""
         for letter in _nameRaw:
@@ -306,15 +324,13 @@ def handleArgs(server, owner):
         else:
             print("No name registered for this account")
     elif args["list"] is True:
-        addresses = set(
-            callContract(
+        addresses = callContract(
                 contract=getContract(server, owner),
                 methodName="listAllAddresses",
                 methodArgs=[],
-            )
         )
-        for addr in addresses:
-            pass
+        print("raw:")
+        print(addresses)
     else:
         print("Enter a valid command")
 
@@ -327,5 +343,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0xEC5d4065298aE54aB2884F5d2bf0b82302b1b1Bd
+# CA: 0xb1c964F88f34199411431190092c8673b12d27D1
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract

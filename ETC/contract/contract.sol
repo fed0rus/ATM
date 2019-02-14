@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.25;
 
 contract Mortal {
     address owner;
@@ -16,79 +16,70 @@ contract Mortal {
 
 contract KYC is Mortal {
 
-    mapping (bytes32 => bytes32) public addressToCustomerName;
-    mapping (bytes32 => bytes32[]) public customerNameToAddress;
-    mapping (bytes32 => bool) public isUsed;
-    bytes32[] public everAddress;
-    bytes32[] private response;
+    address[] addresses;
+    bytes32[] names;
 
     function addCustomer(bytes32 customerName) public {
-        bytes32 messageSender = bytes32(msg.sender);
-        bytes32 txOrigin = bytes32(tx.origin);
-        require(uint(messageSender) != 0);
-        require(messageSender == txOrigin);
-        addressToCustomerName[messageSender] = customerName;
-        customerNameToAddress[customerName].push(messageSender);
-        everAddress.push(messageSender);
+        require(msg.sender != address(0));
+        require(msg.sender == tx.origin);
+        addresses.push(msg.sender);
+        names.push(customerName);
     }
 
     function deleteCustomer() public {
-        bytes32 messageSender = bytes32(msg.sender);
-        bytes32 txOrigin = bytes32(tx.origin);
-        require(uint(messageSender) != 0);
-        require(messageSender == txOrigin);
-        bytes32[] memory saved;
-        bytes32 name = addressToCustomerName[messageSender];
-        addressToCustomerName[messageSender] = bytes32(0);
-        bool flag = false;
-        uint _length = customerNameToAddress[name].length;
-        for (uint i = 0; i < _length; ++i) {
-            if (customerNameToAddress[name][i] == messageSender) {
-                flag = true;
+        require(msg.sender != address(0));
+        require(msg.sender == tx.origin);
+        address[] memory moveAddresses;
+        bytes32[] memory moveNames;
+        bool shift = false;
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == msg.sender) {
+                shift = true;
             }
             else {
-                if (flag) {
-                    saved[i - 1] = customerNameToAddress[name][i];
+                if (shift == false) {
+                    moveAddresses[i] = addresses[i];
+                    moveNames[i] = names[i];
                 }
                 else {
-                    saved[i] = customerNameToAddress[name][i];
+                    moveAddresses[i - 1] = addresses[i];
+                    moveNames[i - 1] = names[i];
                 }
             }
         }
-        customerNameToAddress[name] = saved;
-        for (uint j = 0; j < everAddress.length; ++j) {
-            if (everAddress[j] == messageSender) {
-                everAddress[j] = bytes32(0);
-                break;
+        addresses = moveAddresses;
+        names = moveNames;
+    }
+
+    function retrieveName(address customerAddress) external view returns (bytes32) {
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == customerAddress) {
+                return names[i];
             }
         }
     }
 
-    function retrieveName(bytes32 customerAddress) external view returns (bytes32) {
-        return addressToCustomerName[customerAddress];
-    }
-
-    function retrieveAddresses(bytes32 customerName) external view returns (bytes32[]) {
-        return customerNameToAddress[customerName];
-    }
-
-    function listAllAddresses() external returns (bytes32[]) {
-        uint _l = everAddress.length;
-        for (uint i = 0; i < _l; ++i) {
-            if (uint(everAddress[i]) != 0) {
-                response.push(everAddress[i]);
-                response.push(addressToCustomerName[everAddress[i]]);
+    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
+        address[] memory response;
+        for (uint i = 0; i < names.length; ++i) {
+            if (names[i] == customerName) {
+                response[response.length] = addresses[i];
             }
         }
-        bytes32[] memory r = response;
-        for (uint j = 0; j < 2 * _l; ++j) {
-            response[j] = bytes32(0);
-        }
-        return r;
+        return response;
     }
 
-    function isAddressUsed(bytes32 customerAddress) external view returns (bool) {
-        return uint(addressToCustomerName[customerAddress]) != 0;
+    function listAllAddresses() external view returns (address[], bytes32[]) {
+        return (addresses, names);
+    }
+
+    function isAddressUsed(address customerAddress) external view returns (bool) {
+        for (uint i = 0; i < addresses.length; ++i) {
+            if (addresses[i] == customerAddress) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function () external payable {}
