@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/fintech.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/fintech.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,8 +27,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="373">
-              <caret line="346" column="25" lean-forward="true" selection-start-line="346" selection-start-column="25" selection-end-line="346" selection-end-column="25" />
+            <state relative-caret-position="291">
+              <caret line="300" column="38" selection-start-line="300" selection-start-column="38" selection-end-line="300" selection-end-column="38" />
             </state>
           </provider>
         </entry>
@@ -50,11 +51,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/ETC/contract/registrar.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/sandbox-RUS/4-2[RUS]/getLogs.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/ETC/contract/account.json" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/ETC/wallet/qadwallet[RUS].py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/ETC/contract/database.json" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/ETC/contract/registrar.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -124,7 +125,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="C:/SOFT/Python3" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -310,17 +311,18 @@
       <workItem from="1549812322434" duration="4982000" />
       <workItem from="1549875716700" duration="8464000" />
       <workItem from="1549979608328" duration="782000" />
+      <workItem from="1550076956477" duration="434000" />
+      <workItem from="1550105858732" duration="755000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="73314000" />
+    <option name="totallyTimeSpent" value="74503000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.123298034" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.12632374" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -444,13 +446,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/eth.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="369" selection-start-line="369" selection-end-line="369" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/eth.py" />
     <entry file="file://$PROJECT_DIR$/ETC/contract/database.json">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -466,24 +462,12 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/main.py" />
+    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py" />
     <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="373">
-          <caret line="346" column="25" lean-forward="true" selection-start-line="346" selection-start-column="25" selection-end-line="346" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1045">
-          <caret line="119" selection-start-line="119" selection-end-line="119" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="42" selection-start-line="42" selection-end-line="42" />
+        <state relative-caret-position="291">
+          <caret line="300" column="38" selection-start-line="300" selection-start-column="38" selection-end-line="300" selection-end-column="38" />
         </state>
       </provider>
     </entry>
