@@ -181,9 +181,11 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
         "gasPrice": getGasPrice(speed="fast"),
     }
     gas = server.eth.estimateGas(rawTX)
-    print("------------------------GAS------------------------------")
-    print(gas)
-    print("------------------------GAS------------------------------")
+    print("-------------------------GAS------------------------------")
+    print("                                                          ")
+    print("\t\t\t{g}".format(g=gas))
+    print("                                                          ")
+    print("-------------------------GAS------------------------------")
     rawTX["gas"] = gas
     signedTX = server.eth.account.signTransaction(
         rawTX,
@@ -349,3 +351,5 @@ if __name__ == "__main__":
     main()
 # CA: 0x7CC4B7c250B5E6db9b281679f3baa0d163000b8c
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
+# pkP: 528e0f81c137cbef013e887048347ea8ad5b7ed9faf018216911aece5b832a28
+# pkS: 8a9cba78c3c1b959a2fa2664a07279c7e3467bbf1d6a8fa1e070b7beb6bed362
