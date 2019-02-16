@@ -111,14 +111,18 @@ def getContract(server, owner):
 def initParser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
-    parser.add_argument("--add", action="store", help="Bind your name with current address")
+    parser.add_argument("--add", action="store", nargs='+', help="Bind your name with current address")
     parser.add_argument("--del", action="store_true", help="Unbind your name from your address")
-    parser.add_argument("--getacc", action="store", help="Retrieve the addresses binded with your name")
+    parser.add_argument("--getacc", action="store", nargs='+', help="Retrieve the addresses binded with your name")
     parser.add_argument("--getname", action="store", help="Retrieve the name binded with your address")
     parser.add_argument("--list", action="store_true", help="List all customers")
     global args
     args = parser.parse_args()
     args = vars(args)
+    if args["add"] is not None and len(args["add"]) > 1:
+        args["add"] = ' '.join(args["add"])
+    elif args["getacc"] is not None and len(args["getacc"]) > 1:
+        args["getacc"] = ' '.join(args["getacc"])
 
 # main mutex
 def handleArgs(server, owner):
