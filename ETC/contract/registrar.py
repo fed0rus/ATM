@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+import sys
+sys.path.append("/usr/local/bin/solc")
 from eth_abi import encode_abi
 import json
 import requests
@@ -6,6 +10,8 @@ from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
 
+with open('account.json') as file:
+    account_config = json.load(file)
 
 class Owner(object):
     def __init__(self, address, privateKey):
@@ -13,10 +19,7 @@ class Owner(object):
         self.privateKey = privateKey
 
 def extractPrivateKey():
-    account = open("account.json", 'r')
-    privateKey = eval(account.read())["account"]
-    account.close()
-    return privateKey
+    return account_config["account"]
 
 def generateAddressFromPrivateKey(privateKey):
     privateKey = "0x" + str(privateKey)
