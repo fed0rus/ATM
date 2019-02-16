@@ -139,6 +139,7 @@ def deployContract(server, owner):
     compiledSource = compile_source(contractSource)
     contractInterface = compiledSource["<stdin>:KYC"]
     contractData["abi"] = contractInterface['abi']
+    print(contractData["abi"])
     rawKYC = server.eth.contract(abi=contractInterface['abi'], bytecode=contractInterface['bin'])
     gasCost = server.eth.estimateGas({"to": None, "value": 0, "data": rawKYC.bytecode})
     tx = {
@@ -333,13 +334,16 @@ def handleArgs(server, owner):
         if (len(addresses) == 0):
             print("Storage is clear")
         else:
+            pool = set()
             for i in range(len(addresses)):
                 _nameRaw = names[i].decode("utf-8")
                 _name = ""
                 for letter in _nameRaw:
                     if (ord(letter) != 0):
                         _name += letter
-                print("\"{n}\": {a}".format(n=_name, a=addresses[i]))
+                pool.add("\"{n}\": {a}".format(n=_name, a=addresses[i]))
+            for k in pool:
+                print(k)
     else:
         print("Enter a valid command")
 
@@ -352,7 +356,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-# CA: 0x7CC4B7c250B5E6db9b281679f3baa0d163000b8c
+# abi: [{'constant': True, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'bytes32'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': True, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'isAddressUsed', 'outputs': [{'name': '', 'type': 'bool'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'bytes32'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': True, 'inputs': [], 'name': 'listAllAddresses', 'outputs': [{'name': '', 'type': 'address[]'}, {'name': '', 'type': 'bytes32[]'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': True, 'inputs': [{'name': 'customerName', 'type': 'bytes32'}], 'name': 'retrieveAddresses', 'outputs': [{'name': '', 'type': 'address[]'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}]
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
-# pkP: 528e0f81c137cbef013e887048347ea8ad5b7ed9faf018216911aece5b832a28
-# pkS: 8a9cba78c3c1b959a2fa2664a07279c7e3467bbf1d6a8fa1e070b7beb6bed362
