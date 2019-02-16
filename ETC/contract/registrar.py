@@ -181,11 +181,11 @@ def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, 
         "gasPrice": getGasPrice(speed="fast"),
     }
     gas = server.eth.estimateGas(rawTX)
-    print("-------------------------GAS------------------------------")
-    print("                                                          ")
-    print("\t\t\t{g}".format(g=gas))
-    print("                                                          ")
-    print("-------------------------GAS------------------------------")
+    # print("-------------------------GAS------------------------------")
+    # print("                                                          ")
+    # print("\t\t\t{g}".format(g=gas))
+    # print("                                                          ")
+    # print("-------------------------GAS------------------------------")
     rawTX["gas"] = gas
     signedTX = server.eth.account.signTransaction(
         rawTX,
