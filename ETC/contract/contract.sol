@@ -53,6 +53,8 @@ contract KYC is Mortal {
             }
         }
         customerNameToAddress[name] = saved;
+        addressLog.push(msg.sender);
+        namesLog.push(bytes32(0));
     }
 
     function retrieveName(address customerAddress) external view returns (bytes32) {

@@ -68,7 +68,7 @@ def deployContract(server, owner):
     return contract
 
 def invokeContract(server, sender, contract, methodSig, methodName, methodArgs, methodArgsTypes, value=0):
-    methodSignature = server.sha3(text=methodSig)[0:4].hex()
+    methodSignature = server.keccak(text=methodSig)[0:4].hex()
     params = encode_abi(methodArgsTypes, methodArgs)
     payloadData = "0x" + methodSignature + params.hex()
     rawTX = {
@@ -251,6 +251,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+
 # abi: [{'constant': True, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'retrieveName', 'outputs': [{'name': '', 'type': 'bytes32'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': True, 'inputs': [{'name': 'customerAddress', 'type': 'address'}], 'name': 'isAddressUsed', 'outputs': [{'name': '', 'type': 'bool'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': False, 'inputs': [{'name': 'customerName', 'type': 'bytes32'}], 'name': 'addCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteContract', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': False, 'inputs': [], 'name': 'deleteCustomer', 'outputs': [], 'payable': False, 'stateMutability': 'nonpayable', 'type': 'function'}, {'constant': True, 'inputs': [], 'name': 'listAllAddresses', 'outputs': [{'name': '', 'type': 'address[]'}, {'name': '', 'type': 'bytes32[]'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'constant': True, 'inputs': [{'name': 'customerName', 'type': 'bytes32'}], 'name': 'retrieveAddresses', 'outputs': [{'name': '', 'type': 'address[]'}], 'payable': False, 'stateMutability': 'view', 'type': 'function'}, {'payable': True, 'stateMutability': 'payable', 'type': 'fallback'}]
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
