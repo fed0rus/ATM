@@ -15,41 +15,20 @@ contract KYC {
     }
 
     mapping (address => bytes32) public addressToCustomerName;
-    mapping (bytes32 => address[]) public customerNameToAddress;
     address[] addressLog;
 
     function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
         addressToCustomerName[msg.sender] = customerName;
-        customerNameToAddress[customerName].push(msg.sender);
         addressLog.push(msg.sender);
     }
 
     function deleteCustomer() public {
         require(msg.sender != address(0));
-        bytes32 name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = bytes32(0);
-        uint _l = customerNameToAddress[name].length;
-        uint j = 0;
-        address[] memory saved = new address[](_l - 1);
-        for (uint i = 0; i < _l; ++i) {
-            if (customerNameToAddress[name][i] != msg.sender) {
-                saved[j] = customerNameToAddress[name][i];
-                ++j;
-            }
-        }
-        customerNameToAddress[name] = saved;
     }
 
-    function retrieveName(address customerAddress) external view returns (bytes32) {
-        return addressToCustomerName[customerAddress];
-    }
-
-    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
-        return customerNameToAddress[customerName];
-    }
-
-    function listAllAddresses() external view returns (address[], bytes32[]) {
+    function getStorage() external view returns (address[], bytes32[]) {
         uint _l = addressLog.length;
         bytes32[] memory names = new bytes32[](_l);
         for (uint i = 0; i < _l; ++i) {
