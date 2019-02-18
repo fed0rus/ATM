@@ -20,7 +20,6 @@ contract KYC is Mortal {
     mapping (address => bytes32) public addressToCustomerName;
     mapping (bytes32 => address[]) public customerNameToAddress;
     address[] addressLog;
-    bytes32[] namesLog;
 
     function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
@@ -28,7 +27,6 @@ contract KYC is Mortal {
         addressToCustomerName[msg.sender] = customerName;
         customerNameToAddress[customerName].push(msg.sender);
         addressLog.push(msg.sender);
-        namesLog.push(customerName);
     }
 
     function deleteCustomer() public {
@@ -53,8 +51,6 @@ contract KYC is Mortal {
             }
         }
         customerNameToAddress[name] = saved;
-        addressLog.push(msg.sender);
-        namesLog.push(bytes32(0));
     }
 
     function retrieveName(address customerAddress) external view returns (bytes32) {
@@ -66,7 +62,12 @@ contract KYC is Mortal {
     }
 
     function listAllAddresses() external view returns (address[], bytes32[]) {
-        return (addressLog, namesLog);
+        bytes32[] memory names;
+        uint _l = addressLog.length;
+        for (uint i = 0; i < _l; ++i) {
+            names[names.length] = addressToCustomerName[addressLog[i]];
+        }
+        return (addressLog, names);
     }
 
     function isAddressUsed(address customerAddress) external view returns (bool) {
