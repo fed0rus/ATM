@@ -34,12 +34,11 @@ def deployContract(server, owner):
         _abi = json.loads(abiFile.read())
 
     rawContract = server.eth.contract(abi=_abi, bytecode=_bytecode)
-    # _gas = rawContract.constructor().estimateGas()
-    # print("gas: ", _gas)
+    _gas = rawContract.constructor().estimateGas({"from": owner.address})
     txUnsigned = rawContract.constructor().buildTransaction({
         "from": owner.address,
         "nonce": server.eth.getTransactionCount(owner.address),
-        "gas": 1000000,
+        "gas": _gas,
         "gasPrice": getGasPrice(speed="fast"),
     })
     txSigned = owner.signTransaction(txUnsigned)
@@ -63,37 +62,47 @@ def deployContract(server, owner):
         raise
 
 def invokeContract(server, sender, contract, methodName, methodArgs):
+
     _args = str(methodArgs)[1:-1]
-    invoker = "contract.functions.{methodName}({methodArgs})".format(methodName, _args)
+    invoker = "contract.functions.{methodName}({methodArgs})".format(
+        methodName=methodName,
+        methodArgs=_args,
+    )
+    _gas = eval(invoker).estimateGas({"from": owner.address})
     txUnsigned = eval(invoker).buildTransaction({
         "from": sender.address,
         "nonce": server.eth.getTransactionCount(sender.address),
+        "gas": _gas,
         "gasPrice": getGasPrice(speed="fast"),
     })
-    signedTX = server.eth.account.signTransaction(
-        rawTX,
-        sender.privateKey,
-    )
-    txHash = server.eth.sendRawTransaction(signedTX.rawTransaction).hex()
+    txSigned = sender.signTransaction(txUnsigned)
+    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
     return txHash
 
 def callContract(contract, methodName, methodArgs):
+
     _args = str(methodArgs)[1:-1]
-    response = eval("contract.functions.{}({}).call()".format(methodName, _args))
+    response = "contract.functions.{methodName}({methodArgs})".format(
+        methodName=methodName,
+        methodArgs=_args,
+    )
     return response
 
 def getContract(server, owner):
-    # fetch contract address from database.json
+
     with open("database.json", 'r') as db:
         data = json.load(db)
+    with open("KYC.abi", 'r') as abiFile:
+        _abi = json.loads(abiFile.read())
     contractAddress = data["registrar"]
     _contract = server.eth.contract(address=contractAddress, abi=_abi)
     return _contract
 
 def initParser():
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
-    parser.add_argument("--add", action="store", nargs='+', help="Bind your name with current address")
+    parser.add_argument("--add", action="store", nargs='+', help="Bind your name with your address")
     parser.add_argument("--del", action="store_true", help="Unbind your name from your address")
     parser.add_argument("--getacc", action="store", nargs='+', help="Retrieve the addresses binded with your name")
     parser.add_argument("--getname", action="store", help="Retrieve the name binded with your address")
@@ -101,7 +110,7 @@ def initParser():
     global args
     args = parser.parse_args()
     args = vars(args)
-    if args["add"] is not None :
+    if args["add"] is not None:
         if len(args["add"]) > 1:
             args["add"] = ' '.join(args["add"])
         else:
@@ -133,10 +142,8 @@ def handleArgs(server, owner):
                 server=server,
                 sender=owner,
                 contract=_contract,
-                methodSig="addCustomer(bytes32)",
                 methodName="addCustomer",
                 methodArgs=[args["add"].encode("utf-8")],
-                methodArgsTypes=["bytes32"],
             )
             print("Successfully added by {tx}".format(tx=txHash))
         # except ValueError:

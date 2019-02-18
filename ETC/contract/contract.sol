@@ -74,6 +74,6 @@ contract KYC {
     function () external payable {}
 
     function deleteContract() external ownerOnly {
-        selfdestruct(address(owner));
+        selfdestruct(owner);
     }
 }
