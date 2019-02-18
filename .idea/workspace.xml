@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="dc38c59c-2636-4165-927e-c761a7a6bb0e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ETC/contract/database.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/KYC.abi" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/KYC.abi" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/KYC.bin" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/KYC.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/contract.sol" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/contract.sol" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/database.json" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/database.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ETC/contract/registrar.py" beforeDir="false" afterPath="$PROJECT_DIR$/ETC/contract/registrar.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -26,8 +30,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="423">
-              <caret line="255" column="7" selection-start-line="255" selection-start-column="7" selection-end-line="255" selection-end-column="54" />
+            <state relative-caret-position="5000">
+              <caret line="264" column="7" selection-start-line="264" selection-start-column="7" selection-end-line="264" selection-end-column="54" />
             </state>
           </provider>
         </entry>
@@ -80,7 +84,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="676" />
     <option name="width" value="697" />
     <option name="height" value="735" />
@@ -93,7 +97,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -115,18 +118,13 @@
             <path>
               <item name="fintech" type="b2602c69:ProjectViewProjectNode" />
               <item name="fintech" type="462c0819:PsiDirectoryNode" />
-              <item name="ETC" type="462c0819:PsiDirectoryNode" />
-              <item name="wallet" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="fintech" type="b2602c69:ProjectViewProjectNode" />
-              <item name="fintech" type="462c0819:PsiDirectoryNode" />
               <item name="sandbox-RUS" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -208,17 +206,17 @@
       <workItem from="1550114857507" duration="1211000" />
       <workItem from="1550119102910" duration="544000" />
       <workItem from="1550407284219" duration="177000" />
+      <workItem from="1550483177410" duration="84000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="76435000" />
+    <option name="totallyTimeSpent" value="76519000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="676" y="0" width="697" height="735" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.34850863" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.3540091" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -355,8 +353,8 @@
     <entry file="file://C:/Python_Interpreter/Lib/site-packages/web3/providers/rpc.py" />
     <entry file="file://$PROJECT_DIR$/ETC/contract/registrar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="423">
-          <caret line="255" column="7" selection-start-line="255" selection-start-column="7" selection-end-line="255" selection-end-column="54" />
+        <state relative-caret-position="5000">
+          <caret line="264" column="7" selection-start-line="264" selection-start-column="7" selection-end-line="264" selection-end-column="54" />
         </state>
       </provider>
     </entry>

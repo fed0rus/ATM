@@ -1,6 +1,6 @@
 pragma solidity ^0.4.25;
 
-contract Mortal {
+contract KYC {
 
     address owner;
 
@@ -13,9 +13,6 @@ contract Mortal {
         require(msg.sender == owner);
         _;
     }
-}
-
-contract KYC is Mortal {
 
     mapping (address => bytes32) public addressToCustomerName;
     mapping (bytes32 => address[]) public customerNameToAddress;
