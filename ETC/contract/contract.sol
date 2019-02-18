@@ -57,10 +57,10 @@ contract KYC {
     }
 
     function listAllAddresses() external view returns (address[], bytes32[]) {
-        bytes32[] memory names;
         uint _l = addressLog.length;
+        bytes32[] memory names = new bytes32[](_l);
         for (uint i = 0; i < _l; ++i) {
-            names[names.length] = addressToCustomerName[addressLog[i]];
+            names[i] = addressToCustomerName[addressLog[i]];
         }
         return (addressLog, names);
     }
