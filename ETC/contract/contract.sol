@@ -20,7 +20,6 @@ contract KYC {
 
     function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
         addressToCustomerName[msg.sender] = customerName;
         customerNameToAddress[customerName].push(msg.sender);
         addressLog.push(msg.sender);
@@ -28,7 +27,6 @@ contract KYC {
 
     function deleteCustomer() public {
         require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
         address[] memory saved;
         bytes32 name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = bytes32(0);

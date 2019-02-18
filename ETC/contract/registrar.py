@@ -68,7 +68,7 @@ def invokeContract(server, sender, contract, methodName, methodArgs):
         methodName=methodName,
         methodArgs=_args,
     )
-    _gas = eval(invoker).estimateGas({"from": owner.address})
+    _gas = eval(invoker).estimateGas({"from": sender.address})
     txUnsigned = eval(invoker).buildTransaction({
         "from": sender.address,
         "nonce": server.eth.getTransactionCount(sender.address),
@@ -80,13 +80,12 @@ def invokeContract(server, sender, contract, methodName, methodArgs):
     return txHash
 
 def callContract(contract, methodName, methodArgs):
-
     _args = str(methodArgs)[1:-1]
-    response = "contract.functions.{methodName}({methodArgs})".format(
+    response = "contract.functions.{methodName}({methodArgs}).call()".format(
         methodName=methodName,
         methodArgs=_args,
     )
-    return response
+    return eval(response)
 
 def getContract(server, owner):
 
@@ -137,19 +136,19 @@ def handleArgs(server, owner):
             methodArgs=[owner.address],
         )
         if not flag:
-        # try:
-            txHash = invokeContract(
-                server=server,
-                sender=owner,
-                contract=_contract,
-                methodName="addCustomer",
-                methodArgs=[args["add"].encode("utf-8")],
-            )
-            print("Successfully added by {tx}".format(tx=txHash))
-        # except ValueError:
-        #     print("No enough funds to add name")
-        # except:
-        #     print("Name is too long, must be less or equal 32 characters including spaces")
+            try:
+                txHash = invokeContract(
+                    server=server,
+                    sender=owner,
+                    contract=_contract,
+                    methodName="addCustomer",
+                    methodArgs=[args["add"].encode("utf-8")],
+                )
+                print("Successfully added by {tx}".format(tx=txHash))
+            except ValueError:
+                print("No enough funds to add name")
+            except:
+                print("Name is too long, must be less or equal 32 characters including spaces")
         else:
             print("One account must correspond one name")
 
@@ -167,10 +166,8 @@ def handleArgs(server, owner):
                     server=server,
                     sender=owner,
                     contract=_contract,
-                    methodSig="deleteCustomer()",
                     methodName="deleteCustomer",
                     methodArgs=[],
-                    methodArgsTypes=[],
                 )
                 if len(txHash) == 66:
                     print("Successfully deleted by {tx}".format(tx=txHash))
