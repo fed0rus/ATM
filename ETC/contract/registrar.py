@@ -245,3 +245,4 @@ if __name__ == "__main__":
     main()
 
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
+# compile: solc --abi --bin --overwrite -o ./ contract.sol
