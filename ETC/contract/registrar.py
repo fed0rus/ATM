@@ -256,4 +256,4 @@ if __name__ == "__main__":
 # 4: a4e0cff1d182aae58968328b5c77135145559ea1cb16745f547d051eef6c1563   0xA977514a69F55bD19f08e9396eE83878909B51b1
 # 5: e2155dd85e55d34556f9c1d0181d2b222db7ba31e7a02940b92518c192b637e9   0x6b778547270172bC178819752c048e84c008E42A
 # DIR: cd .\Documents\Code\GitHub\fintech\ETC\contract
-# compile: solc --abi --bin --overwrite -o ./ contract.sol
+# compile: solc --abi --bin --optimize --overwrite -o ./ contract.sol

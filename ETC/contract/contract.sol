@@ -1,8 +1,8 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.4;
 
 contract KYC {
 
-    address owner;
+    address payable owner;
 
     constructor() public {
         require(msg.sender != address(0));
@@ -25,10 +25,10 @@ contract KYC {
 
     function deleteCustomer() public {
         require(msg.sender != address(0));
-        addressToCustomerName[msg.sender] = bytes32(0);
+        delete addressToCustomerName[msg.sender];
     }
 
-    function getStorage() external view returns (address[], bytes32[]) {
+    function getStorage() external view returns (address[] memory, bytes32[] memory) {
         uint _l = addressLog.length;
         bytes32[] memory names = new bytes32[](_l);
         for (uint i = 0; i < _l; ++i) {
