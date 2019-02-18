@@ -27,22 +27,15 @@ contract KYC {
 
     function deleteCustomer() public {
         require(msg.sender != address(0));
-        address[] memory saved;
         bytes32 name = addressToCustomerName[msg.sender];
         addressToCustomerName[msg.sender] = bytes32(0);
-        bool flag = false;
         uint _l = customerNameToAddress[name].length;
+        uint j = 0;
+        address[] memory saved = new address[](_l - 1);
         for (uint i = 0; i < _l; ++i) {
-            if (customerNameToAddress[name][i] == msg.sender) {
-                flag = true;
-            }
-            else {
-                if (flag) {
-                    saved[i - 1] = customerNameToAddress[name][i];
-                }
-                else {
-                    saved[i] = customerNameToAddress[name][i];
-                }
+            if (customerNameToAddress[name][i] != msg.sender) {
+                saved[j] = customerNameToAddress[name][i];
+                ++j;
             }
         }
         customerNameToAddress[name] = saved;

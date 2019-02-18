@@ -218,19 +218,25 @@ def handleArgs(server, owner):
                 methodName="listAllAddresses",
                 methodArgs=[],
         )
-        if (len(addresses) == 0):
+        pool = set()
+        for i in range(len(addresses)):
+            _nameRaw = names[i].decode("utf-8")
+            _name = ""
+            for letter in _nameRaw:
+                if (ord(letter) != 0):
+                    _name += letter
+            pool.add("\"{n}\": {a}".format(n=_name, a=addresses[i]))
+        cleanPool = []
+        for k in pool:
+            if k[:3] == "\"\":":
+                continue
+            else:
+                cleanPool.append(k)
+        if (len(cleanPool) == 0):
             print("Storage is clear")
         else:
-            pool = set()
-            for i in range(len(addresses)):
-                _nameRaw = names[i].decode("utf-8")
-                _name = ""
-                for letter in _nameRaw:
-                    if (ord(letter) != 0):
-                        _name += letter
-                pool.add("\"{n}\": {a}".format(n=_name, a=addresses[i]))
-            for k in pool:
-                print(k)
+            for pure in cleanPool:
+                print(pure)
     else:
         print("Enter a valid command")
 
