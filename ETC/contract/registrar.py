@@ -181,19 +181,18 @@ def handleArgs(server, owner):
     # US 11-13
     elif args["getacc"] is not None:
         try:
-            addresses = callContract(
+            addresses, names = callContract(
                 contract=getContract(server, owner),
-                methodName="retrieveAddresses",
-                methodArgs=[args["getacc"].encode("utf-8")],
+                methodName="getStorage",
+                methodArgs=[],
             )
-            if len(addresses) == 1:
-                print("Registered account is {addr}".format(addr=addresses[0]))
-            elif len(addresses) == 0:
-                print("No account registered for this name")
-            else:
-                print("Registered accounts are:")
-                for addr in addresses:
-                    print(addr)
+            ans = []
+            for k in range(len(addresses) - 1, -1, -1):
+                if names[k] == args["getacc"]:
+                    ans.append(addresses[k])
+            if len(ans) == 0:
+                print("")
+
         except:
             print("Name is too long, must be less or equal 32 characters including spaces")
 

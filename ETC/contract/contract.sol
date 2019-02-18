@@ -9,11 +9,6 @@ contract KYC {
         owner = msg.sender;
     }
 
-    modifier ownerOnly {
-        require(msg.sender == owner);
-        _;
-    }
-
     mapping (address => bytes32) public addressToCustomerName;
     address[] addressLog;
 
@@ -43,7 +38,8 @@ contract KYC {
 
     function () external payable {}
 
-    function deleteContract() external ownerOnly {
+    function deleteContract() external {
+        require(msg.sender == owner);
         selfdestruct(owner);
     }
 }
