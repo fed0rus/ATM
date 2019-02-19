@@ -187,12 +187,22 @@ def handleArgs(server, owner):
                 methodArgs=[],
             )
             ans = []
-            for k in range(len(addresses) - 1, -1, -1):
-                if names[k] == args["getacc"]:
+            for k in range(len(addresses)):
+                _name = ''
+                for letter in names[k].decode("utf-8"):
+                    if ord(letter) != 0:
+                        _name += letter
+                if _name == args["getacc"]:
                     ans.append(addresses[k])
             if len(ans) == 0:
-                print("")
-
+                print("No account registered for this name")
+            elif len(ans) == 1:
+                print("Registered account is {}".format(ans[0]))
+            else:
+                ans = set(ans)
+                print("Registered accounts are:")
+                for k in ans:
+                    print(k)
         except:
             print("Name is too long, must be less or equal 32 characters including spaces")
 
@@ -214,7 +224,7 @@ def handleArgs(server, owner):
     elif args["list"] is True:
         addresses, names = callContract(
                 contract=getContract(server, owner),
-                methodName="listAllAddresses",
+                methodName="getStorage",
                 methodArgs=[],
         )
         pool = set()
