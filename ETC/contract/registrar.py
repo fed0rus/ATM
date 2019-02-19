@@ -214,6 +214,7 @@ def handleArgs(server, owner):
             methodName="getStorage",
             methodArgs=[],
         )
+        _nameRaw = ''
         for k in range(len(addresses)):
             if addresses[k] == args["getname"]:
                 _nameRaw = names[k].decode("utf-8")
