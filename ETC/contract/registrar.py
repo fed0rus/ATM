@@ -186,20 +186,21 @@ def handleArgs(server, owner):
                 methodName="getStorage",
                 methodArgs=[],
             )
-            ans = []
+            ans = set()
             for k in range(len(addresses)):
                 _name = ''
                 for letter in names[k].decode("utf-8"):
                     if ord(letter) != 0:
                         _name += letter
                 if _name == args["getacc"]:
-                    ans.append(addresses[k])
+                    ans.add(addresses[k])
             if len(ans) == 0:
                 print("No account registered for this name")
             elif len(ans) == 1:
-                print("Registered account is {}".format(ans[0]))
+                for addr in ans:
+                    print("Registered account is {}".format(addr))
             else:
-                ans = set(ans)
+
                 print("Registered accounts are:")
                 for k in ans:
                     print(k)
@@ -208,11 +209,15 @@ def handleArgs(server, owner):
 
     # US 14-16
     elif args["getname"] is not None:
-        _nameRaw = callContract(
+        addresses, names = callContract(
             contract=getContract(server, owner),
-            methodName="retrieveName",
-            methodArgs=[server.toChecksumAddress(args["getname"])]
-        ).decode("utf-8")
+            methodName="getStorage",
+            methodArgs=[],
+        )
+        for k in range(len(addresses)):
+            if addresses[k] == args["getname"]:
+                _nameRaw = names[k].decode("utf-8")
+                break
         _name = ""
         for letter in _nameRaw:
             if (ord(letter) != 0):
@@ -221,6 +226,7 @@ def handleArgs(server, owner):
             print("Registered account is \"{name}\"".format(name=_name))
         else:
             print("No name registered for this account")
+
     elif args["list"] is True:
         addresses, names = callContract(
                 contract=getContract(server, owner),
