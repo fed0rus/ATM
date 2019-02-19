@@ -1,90 +1,45 @@
-pragma solidity ^0.4.25;
+pragma solidity ^0.5.4;
 
-contract Mortal {
-    address owner;
+contract KYC {
+
+    address payable owner;
 
     constructor() public {
-        require(0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69 != address(0));
-        owner = 0xf4bF63D658BE2288697cCbE2c5697d9f19Af4e69;
+        require(msg.sender != address(0));
+        owner = msg.sender;
     }
 
-    modifier ownerOnly {
-        require(msg.sender == owner);
-        _;
-    }
-}
-
-contract KYC is Mortal {
-
-    address[] addresses;
-    bytes32[] names;
+    mapping (address => bytes32) public addressToCustomerName;
+    address[] addressLog;
 
     function addCustomer(bytes32 customerName) public {
         require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
-        addresses.push(msg.sender);
-        names.push(customerName);
+        addressToCustomerName[msg.sender] = customerName;
+        addressLog.push(msg.sender);
     }
 
     function deleteCustomer() public {
         require(msg.sender != address(0));
-        require(msg.sender == tx.origin);
-        address[] memory moveAddresses;
-        bytes32[] memory moveNames;
-        bool shift = false;
-        for (uint i = 0; i < addresses.length; ++i) {
-            if (addresses[i] == msg.sender) {
-                shift = true;
-            }
-            else {
-                if (shift == false) {
-                    moveAddresses[i] = addresses[i];
-                    moveNames[i] = names[i];
-                }
-                else {
-                    moveAddresses[i - 1] = addresses[i];
-                    moveNames[i - 1] = names[i];
-                }
-            }
-        }
-        addresses = moveAddresses;
-        names = moveNames;
+        delete addressToCustomerName[msg.sender];
     }
 
-    function retrieveName(address customerAddress) external view returns (bytes32) {
-        for (uint i = 0; i < addresses.length; ++i) {
-            if (addresses[i] == customerAddress) {
-                return names[i];
-            }
+    function getStorage() external view returns (address[] memory, bytes32[] memory) {
+        uint _l = addressLog.length;
+        bytes32[] memory names = new bytes32[](_l);
+        for (uint i = 0; i < _l; ++i) {
+            names[i] = addressToCustomerName[addressLog[i]];
         }
-    }
-
-    function retrieveAddresses(bytes32 customerName) external view returns (address[]) {
-        address[] memory response;
-        for (uint i = 0; i < names.length; ++i) {
-            if (names[i] == customerName) {
-                response[response.length] = addresses[i];
-            }
-        }
-        return response;
-    }
-
-    function listAllAddresses() external view returns (address[], bytes32[]) {
-        return (addresses, names);
+        return (addressLog, names);
     }
 
     function isAddressUsed(address customerAddress) external view returns (bool) {
-        for (uint i = 0; i < addresses.length; ++i) {
-            if (addresses[i] == customerAddress) {
-                return true;
-            }
-        }
-        return false;
+        return uint(addressToCustomerName[customerAddress]) != 0;
     }
 
     function () external payable {}
 
-    function deleteContract() external ownerOnly {
-        selfdestruct(address(owner));
+    function deleteContract() external {
+        require(msg.sender == owner);
+        selfdestruct(owner);
     }
 }
