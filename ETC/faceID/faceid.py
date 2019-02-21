@@ -1,7 +1,7 @@
 import cv2
 import requests
 import argparse
-
+import numpy as np
 
 
 def SetArgs():
@@ -49,17 +49,17 @@ def GetVideoFrames(videoName):
     return result
 
 def GetOctetStream(image):
-    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-    #TODO: imencode's params
-    ret, buf = cv2.imencode('', image)
+    ret, buf = cv2.imencode('.jpg', image)
+    return buf
 
-def MakeRequest(func):
+def MakeRequest(func, buf):     ##IF func==detect/  !!!
     headers = {
         'Content-Type': 'application/octet-stream',
         'Ocp-Apim-Subscription-Key': GetKey(),
     }
     params = {
         'returnFaceId':True,
+        'returnFaceRectangle':False,
     }
     baseUrl = GetBaseUrl() + func
     req = requests.post(
@@ -74,25 +74,19 @@ def Detect(videoFrames):
     result = []
     for frame in videoFrames:
         image = GetOctetStream(frame)
-        req = MakeRequest('detect/')
+        req = MakeRequest('detect/', image)
         result.append(req[0]['faceId'])
     return result
 
 
-
-
 def main():
-    # privateKey = GetKey()
-    # groupId = GetGroupId()
     args = SetArgs()
-    # baseUrl = GetBaseUrl()
     if ('name' != None):
         personName = args['name'][0]
         videoName = args['name'][1]
         videoFrames = GetVideoFrames(videoName)
-
-        ids = Detect(videoFrames)
-        print(ids)
+        ids = Detect(videoFrames)       ##IDS OF VIDEOGUY'S FACE
+        #TODO: cheking list of faces and do appropriate things
 
 
 if (__name__ == '__main__'):
