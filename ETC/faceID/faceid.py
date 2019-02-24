@@ -61,7 +61,7 @@ def GetVideoFrames(videoName):
         else:
             frames.append(frame)
     for i in range(0, len(frames), len(frames) // 5):
-        if (len(result) == 4):
+        if (len(result) == 4 or len(frames) < 5):
             break
         result.append(frames[i])
     result.append(frames[-1])
@@ -199,7 +199,7 @@ def GetList():
     params = {
         'personGroupId' : GetGroupId(),
     }
-    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
     req = requests.get(
         baseUrl,
         params=params,
