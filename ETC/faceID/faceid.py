@@ -115,7 +115,6 @@ def main():
         videoName = args['name'][1]
         videoFrames = GetVideoFrames(videoName)
         ids = Detect(videoFrames)       ##IDS OF VIDEOGUY'S FACE
-        print(ids)
         if (len(ids) != 5):
             print('Video does not contain any face')
         else:
