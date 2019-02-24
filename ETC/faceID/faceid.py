@@ -108,7 +108,7 @@ def CreateGroup():
         'personGroupId' : GetGroupId(),
     }
     data = {
-        'name' : 'myexample',
+        'name' : GetGroupId(),
     }
     baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
     req = requests.put(
@@ -191,6 +191,7 @@ def GetFace(personId):
 
 
 # WTF? IT IS NOT SUPPORTED??
+# But it is list's information without persons' information now
 def GetList():
     headers = {
         'Ocp-Apim-Subscription-Key': GetKey(),
@@ -198,7 +199,7 @@ def GetList():
     params = {
         'personGroupId' : GetGroupId(),
     }
-    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
     req = requests.get(
         baseUrl,
         params=params,
