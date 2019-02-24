@@ -19,7 +19,19 @@ def SetArgs():
         '--rw',
         action='store_true',
     )
-
+    parser.add_argument(
+        '--deleteg',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--del',
+        nargs='+',
+        type=str,
+    )
+    parser.add_argument(
+        '--list',
+        action='store_true',
+    )
     args = parser.parse_args()
     return vars(args)
 
@@ -82,7 +94,7 @@ def Detect(videoFrames):
     result = []
     for frame in videoFrames:
         image = GetOctetStream(frame)
-        req = MakeRequest(image)
+        req = MakeDetectRequest(image)
         if (len(req) != 0):
             result.append(req[0]['faceId'])
     return result
@@ -107,6 +119,99 @@ def CreateGroup():
     )
     return req.json()
 
+def DeleteGroup():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'presonGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
+    req = requests.delete(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+    return req.json()
+
+def CreateFace(name):
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+    }
+    data = {
+        'name' : name,
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
+    req = requests.post(
+        baseUrl,
+        params=params,
+        headers=headers,
+        json=data,
+    )
+    return req.json()
+
+def DeleteFace(name):
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId': GetGroupId(),
+
+    }
+    data = {
+        'name': name,
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
+    req = requests.post(
+        baseUrl,
+        params=params,
+        headers=headers,
+        json=data,
+    )
+
+def GetFace(personId):
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+        'personId' : personId,
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons/' + personId
+    req = requests.get(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+    return req.json()
+
+
+
+# WTF? IT IS NOT SUPPORTED??
+def GetList():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
+    req = requests.get(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+    return req.json()
+
+
+#TODO
+def AddFaces():
+    return None
+
+
 
 def main():
     args = SetArgs()
@@ -118,12 +223,58 @@ def main():
         if (len(ids) != 5):
             print('Video does not contain any face')
         else:
-            #TODO: Face add
-            pass
+            persons = dict()
+            if (os.path.isfile('persons.txt') == False):
+                currId = CreateFace(personName)
+                persons[personName] = currId['personId']
+                AddFaces()
+                f = open('persons.txt', 'w')
+                f.write(str(persons))
+                f.close()
+            else:
+                f = open('persons.txt', 'r')
+                persons = eval(f.read())
+                f.close()
+                if (persons.get(personName) == None):
+                    currId = CreateFace(personName)
+                    persons[personName] = currId['personId']
+                    AddFaces()
+                else:
+                    AddFaces()
+                f = open('persons.txt', 'w')
+                f.write(str(persons))
+                f.close()
+    if (args['del'] != None):
+        personName = args['del'][0]
+        persons = dict()
+        if (os.path.isfile('persons.txt') == False):
+            f = open('persons.txt', 'w')
+            f.write(str(persons))
+            f.close()
+            print('No person with name "' + str(personName) + '"')
+        else:
+            f = open('persons.txt', 'r')
+            persons = eval(f.read())
+            f.close()
+            if (persons.get(personName) == None):
+                print('No person with name "' + str(personName) + '"')
+            else:
+                DeleteFace(persons[personName])
+                print('Person with id ' + str(persons[personName]) + ' deleted')
+                persons.pop(personName, None)
+            f = open('persons.txt', 'w')
+            f.write(str(persons))
+            f.close()
+    if (args['list'] == True):
+        req = GetList()
+        print(req)
 
 
     if (args['create'] == True):
         req = CreateGroup()
+        print(req)
+    if (args['deleteg'] == True):
+        req = DeleteGroup()
         print(req)
 
     # WRITING
