@@ -58,7 +58,7 @@ def GetVideoFrames(videoName):
 
 def GetOctetStream(image):
     ret, buf = cv2.imencode('.jpg', image)
-    return buf
+    return buf.tobytes()
 
 def MakeDetectRequest(buf):
     headers = {
@@ -74,7 +74,7 @@ def MakeDetectRequest(buf):
         baseUrl,
         params=params,
         headers=headers,
-        data=buf.tobytes(),
+        data=buf,
     )
     return req.json()
 
