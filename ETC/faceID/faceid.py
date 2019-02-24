@@ -207,9 +207,31 @@ def GetList():
     return req.json()
 
 
-#TODO
-def AddFaces():
-    return None
+def MakeAddRequest(image, personId):
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+        'Content-Type' : 'application/octet-stream',
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+        'personId' : personId,
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons/' + personId + '/persistedFaces'
+    req = requests.post(
+        baseUrl,
+        params=params,
+        headers=headers,
+        data = image,
+    )
+    return req.json()
+
+def AddFaces(videoFrames, personId):
+    result = []
+    for frame in videoFrames:
+        image = GetOctetStream(frame)
+        currId = MakeAddRequest(image, personId)
+        result.append(currId['persistedFaceId'])
+    return result
 
 
 
@@ -227,7 +249,13 @@ def main():
             if (os.path.isfile('persons.txt') == False):
                 currId = CreateFace(personName)
                 persons[personName] = currId['personId']
-                AddFaces()
+                ids = AddFaces(videoFrames, persons[personName])
+                print('5 frames extracted')
+                print('PersonId: ' + persons[personName])
+                print('FaceIds')
+                print('=======')
+                for id in ids:
+                    print(id)
                 f = open('persons.txt', 'w')
                 f.write(str(persons))
                 f.close()
@@ -238,9 +266,21 @@ def main():
                 if (persons.get(personName) == None):
                     currId = CreateFace(personName)
                     persons[personName] = currId['personId']
-                    AddFaces()
+                    ids = AddFaces(videoFrames, persons[personName])
+                    print('5 frames extracted')
+                    print('PersonId: ' + persons[personName])
+                    print('FaceIds')
+                    print('=======')
+                    for id in ids:
+                        print(id)
                 else:
-                    AddFaces()
+                    ids = AddFaces(videoFrames, persons[personName])
+                    print('5 frames extracted')
+                    print('PersonId: ' + persons[personName])
+                    print('FaceIds')
+                    print('=======')
+                    for id in ids:
+                        print(id)
                 f = open('persons.txt', 'w')
                 f.write(str(persons))
                 f.close()
