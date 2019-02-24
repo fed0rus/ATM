@@ -32,6 +32,12 @@ def SetArgs():
         '--list',
         action='store_true',
     )
+
+    ##################################
+    #             train              #
+    #            identify            #
+    ##################################
+
     args = parser.parse_args()
     return vars(args)
 
