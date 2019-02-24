@@ -2,7 +2,7 @@ import cv2
 import requests
 import argparse
 import numpy as np
-
+import os
 
 def SetArgs():
     parser = argparse.ArgumentParser()
@@ -10,6 +10,14 @@ def SetArgs():
         '--name',
         nargs='+',
         type=str,
+    )
+    parser.add_argument(
+        '--create',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--rw',
+        action='store_true',
     )
 
     args = parser.parse_args()
@@ -52,7 +60,7 @@ def GetOctetStream(image):
     ret, buf = cv2.imencode('.jpg', image)
     return buf
 
-def MakeRequest(func, buf):     ##IF func==detect/  !!!
+def MakeDetectRequest(buf):
     headers = {
         'Content-Type': 'application/octet-stream',
         'Ocp-Apim-Subscription-Key': GetKey(),
@@ -61,7 +69,7 @@ def MakeRequest(func, buf):     ##IF func==detect/  !!!
         'returnFaceId':True,
         'returnFaceRectangle':False,
     }
-    baseUrl = GetBaseUrl() + func
+    baseUrl = GetBaseUrl() + 'detect/'
     req = requests.post(
         baseUrl,
         params=params,
@@ -74,20 +82,64 @@ def Detect(videoFrames):
     result = []
     for frame in videoFrames:
         image = GetOctetStream(frame)
-        req = MakeRequest('detect/', image)
-        result.append(req[0]['faceId'])
+        req = MakeRequest(image)
+        if (len(req) != 0):
+            result.append(req[0]['faceId'])
     return result
+
+def CreateGroup():
+    headers = {
+        'Content-Type' : 'application/json',
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+    }
+    data = {
+        'name' : 'myexample',
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
+    req = requests.put(
+        baseUrl,
+        params=params,
+        headers=headers,
+        json=data,
+    )
+    return req.json()
 
 
 def main():
     args = SetArgs()
-    if ('name' != None):
+    if (args['name'] != None):
         personName = args['name'][0]
         videoName = args['name'][1]
         videoFrames = GetVideoFrames(videoName)
         ids = Detect(videoFrames)       ##IDS OF VIDEOGUY'S FACE
-        #TODO: cheking list of faces and do appropriate things
+        print(ids)
+        if (len(ids) != 5):
+            print('Video does not contain any face')
+        else:
+            #TODO: Face add
+            pass
 
+
+    if (args['create'] == True):
+        req = CreateGroup()
+        print(req)
+
+    # WRITING
+    if (args['rw'] == True):
+        if (os.path.isfile('persons.txt')):
+            f = open('persons.txt', 'r')
+            data = f.read()
+            f.close()
+            f = open('persons.txt', 'w')
+            f.write(data + 'lol2nd\n')
+            f.close()
+        else:
+            f = open('persons.txt', 'w')
+            data = f.write('lol\n')
+            f.close()
 
 if (__name__ == '__main__'):
     main()
