@@ -32,11 +32,14 @@ def SetArgs():
         '--list',
         action='store_true',
     )
-
-    ##################################
-    #             train              #
-    #            identify            #
-    ##################################
+    parser.add_argument(
+        '--train',
+        action='store_true',
+    )
+    parser.add_argument(
+        '--identify',
+        type=str,
+    )
 
     args = parser.parse_args()
     return vars(args)
@@ -66,7 +69,7 @@ def GetVideoFrames(videoName):
             break
         else:
             frames.append(frame)
-    for i in range(0, len(frames), len(frames) // 5):
+    for i in range(0, len(frames), len(frames) // 4):
         if (len(result) == 4 or len(frames) < 5):
             break
         result.append(frames[i])
@@ -123,7 +126,10 @@ def CreateGroup():
         headers=headers,
         json=data,
     )
-    return req.json()
+    if (str(req) == '<Response [200]>'):
+        return 'Success'
+    else:
+        return req
 
 def DeleteGroup():
     headers = {
@@ -138,7 +144,10 @@ def DeleteGroup():
         params=params,
         headers=headers,
     )
-    return req.json()
+    if (str(req) == '<Response [200]>'):
+        return 'Success'
+    else:
+        return req
 
 def CreateFace(name):
     headers = {
@@ -239,10 +248,79 @@ def AddFaces(videoFrames, personId):
         result.append(currId['persistedFaceId'])
     return result
 
+def Train():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/train'
+    req = requests.post(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+
+def GetTrainingStatus():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'personGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/training'
+    req = requests.get(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+    return req.json()
+
+def GetVideoFramesForId(videoName):
+    vcap = cv2.VideoCapture(videoName)
+    result = []
+    frames = []
+    while (True):
+        ret, frame = vcap.read()
+        if (frame is None):
+            break
+        else:
+            frames.append(frame)
+    for i in range(0, len(frames), len(frames) // 2):
+        if (len(result) == 2):
+            break
+        result.append(frames[i])
+    result.append(frames[-1])
+    vcap.release()
+    return result
+
+def Identify(videoFrames):
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    ids = Detect(videoFrames)
+    data = {
+        'faceIds' : ids,
+        'personGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + '/identify'
+    req = requests.post(
+        baseUrl,
+        headers=headers,
+        json=data,
+    )
+    return req.json()
 
 
 def main():
     args = SetArgs()
+    # create names-id storage (if it isn't existing)
+    if (os.path.isfile('persons.txt') == False):
+        f = open('persons.txt', 'w')
+        f.write('{}')
+        f.close()
+
     if (args['name'] != None):
         personName = args['name'][0]
         videoName = args['name'][1]
@@ -252,7 +330,10 @@ def main():
             print('Video does not contain any face')
         else:
             persons = dict()
-            if (os.path.isfile('persons.txt') == False):
+            f = open('persons.txt', 'r')
+            persons = eval(f.read())
+            f.close()
+            if (persons.get(personName) == None):
                 currId = CreateFace(personName)
                 persons[personName] = currId['personId']
                 ids = AddFaces(videoFrames, persons[personName])
@@ -262,65 +343,88 @@ def main():
                 print('=======')
                 for id in ids:
                     print(id)
-                f = open('persons.txt', 'w')
-                f.write(str(persons))
-                f.close()
             else:
-                f = open('persons.txt', 'r')
-                persons = eval(f.read())
-                f.close()
-                if (persons.get(personName) == None):
-                    currId = CreateFace(personName)
-                    persons[personName] = currId['personId']
-                    ids = AddFaces(videoFrames, persons[personName])
-                    print('5 frames extracted')
-                    print('PersonId: ' + persons[personName])
-                    print('FaceIds')
-                    print('=======')
-                    for id in ids:
-                        print(id)
-                else:
-                    ids = AddFaces(videoFrames, persons[personName])
-                    print('5 frames extracted')
-                    print('PersonId: ' + persons[personName])
-                    print('FaceIds')
-                    print('=======')
-                    for id in ids:
-                        print(id)
-                f = open('persons.txt', 'w')
-                f.write(str(persons))
-                f.close()
+                ids = AddFaces(videoFrames, persons[personName])
+                print('5 frames extracted')
+                print('PersonId: ' + persons[personName])
+                print('FaceIds')
+                print('=======')
+                for id in ids:
+                    print(id)
+            f = open('persons.txt', 'w')
+            f.write(str(persons))
+            f.close()
     if (args['del'] != None):
         personName = args['del'][0]
         persons = dict()
-        if (os.path.isfile('persons.txt') == False):
-            f = open('persons.txt', 'w')
-            f.write(str(persons))
-            f.close()
+        f = open('persons.txt', 'r')
+        persons = eval(f.read())
+        f.close()
+        if (persons.get(personName) == None):
             print('No person with name "' + str(personName) + '"')
         else:
-            f = open('persons.txt', 'r')
-            persons = eval(f.read())
-            f.close()
-            if (persons.get(personName) == None):
-                print('No person with name "' + str(personName) + '"')
-            else:
-                DeleteFace(persons[personName])
-                print('Person with id ' + str(persons[personName]) + ' deleted')
-                persons.pop(personName, None)
-            f = open('persons.txt', 'w')
-            f.write(str(persons))
-            f.close()
+            DeleteFace(persons[personName])
+            print('Person with id ' + str(persons[personName]) + ' deleted')
+            persons.pop(personName, None)
+        f = open('persons.txt', 'w')
+        f.write(str(persons))
+        f.close()
     if (args['list'] == True):
         req = GetList()
         print(req)
+    if (args['train'] == True):
+        req = Train()
+        f = open('persons.txt', 'r')
+        persons = eval(f.read())
+        f.close()
+        coun = 0
+        for i, j in persons.items():
+            coun += 1
+        print('Training task for ' + str(coun) + ' persons started')
+        f = open('persons.txt', 'w')
+        f.write(str(persons))
+        f.close()
+    if (args['identify'] != None):
+        req = GetTrainingStatus()
+        if (req['status'] == 'succeeded'):
+            videoName = args['identify']
+            videoFrames = GetVideoFramesForId(videoName)
+            result = Identify(videoFrames)
+            candidates = dict()
+            for id in result:
+                for candidate in id['candidates']:
+                    if candidate['confidence'] < 0.5:
+                        if (candidates.get(candidate['personId']) != None):
+                            candidates.pop(candidate['personId'], None)
+                    else:
+                        if (candidates.get(candidate['personId']) == None):
+                            candidates[candidate['personId']] = candidate['confidence']
+                        else:
+                            candidates[candidate['personId']] += candidate['confidence']
+            if (len(candidates) == 0):
+                print('The person cannot be identified')
+            else:
+                maxValue = 0
+                bestCandidate = ''
+                for i, j in candidates.items():
+                    if (j > maxValue):
+                        maxValue = j
+                        bestCandidate = i
+                print('The person is ' + str(bestCandidate))
+            print(result)
+        else:
+            print('The system is not ready yet')
 
-
+    ###################################
+    # methods only for me
     if (args['create'] == True):
         req = CreateGroup()
         print(req)
     if (args['deleteg'] == True):
         req = DeleteGroup()
+        f = open('persons.txt', 'w')
+        f.write('{}')
+        f.close()
         print(req)
 
     # WRITING
@@ -336,6 +440,7 @@ def main():
             f = open('persons.txt', 'w')
             data = f.write('lol\n')
             f.close()
+    ###################################
 
 if (__name__ == '__main__'):
     main()
