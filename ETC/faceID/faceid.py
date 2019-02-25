@@ -410,8 +410,17 @@ def main():
                     if (j > maxValue):
                         maxValue = j
                         bestCandidate = i
-                print('The person is ' + str(bestCandidate))
-            print(result)
+                candidateName = ''
+                f = open('persons.txt', 'r')
+                persons = eval(f.read())
+                f.close()
+                for person, id in persons.items():
+                    if (id == bestCandidate):
+                        candidateName = person
+                print('The person is "' + candidateName + '"')
+                f = open('persons.txt', 'w')
+                f.write(str(persons))
+                f.close()
         else:
             print('The system is not ready yet')
 
