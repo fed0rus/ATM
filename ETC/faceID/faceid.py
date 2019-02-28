@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import cv2
 import requests
 import argparse
@@ -57,7 +58,7 @@ def GetGroupId():
     return groupId
 
 def GetBaseUrl():
-    return 'https://eastasia.api.cognitive.microsoft.com/face/v1.0/'
+    return 'https://westeurope.api.cognitive.microsoft.com/face/v1.0/'
 
 def GetVideoFrames(videoName):
     vcap = cv2.VideoCapture(videoName)
@@ -69,6 +70,8 @@ def GetVideoFrames(videoName):
             break
         else:
             frames.append(frame)
+    if (len(frames) < 5):
+        return result
     for i in range(0, len(frames), len(frames) // 4):
         if (len(result) == 4 or len(frames) < 5):
             break
@@ -129,7 +132,7 @@ def CreateGroup():
     if (str(req) == '<Response [200]>'):
         return 'Success'
     else:
-        return req
+        return req.json()
 
 def DeleteGroup():
     headers = {
@@ -168,23 +171,19 @@ def CreateFace(name):
     )
     return req.json()
 
-def DeleteFace(name):
+def DeleteFace(personId):
     headers = {
         'Ocp-Apim-Subscription-Key': GetKey(),
     }
     params = {
         'personGroupId': GetGroupId(),
-
+        'personId' : personId,
     }
-    data = {
-        'name': name,
-    }
-    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
-    req = requests.post(
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons/' + personId
+    req = requests.delete(
         baseUrl,
         params=params,
         headers=headers,
-        json=data,
     )
 
 def GetFace(personId):
@@ -203,20 +202,13 @@ def GetFace(personId):
     )
     return req.json()
 
-
-
-# WTF? IT IS NOT SUPPORTED??
 def GetList():
     headers = {
         'Ocp-Apim-Subscription-Key': GetKey(),
     }
-    params = {
-        'personGroupId' : GetGroupId(),
-    }
     baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
     req = requests.get(
         baseUrl,
-        params=params,
         headers=headers,
     )
     return req.json()
@@ -312,21 +304,22 @@ def Identify(videoFrames):
     )
     return req.json()
 
-
+# TODO not use storage file
+#      use GetList() instead of this
 def main():
     args = SetArgs()
-    # create names-id storage (if it isn't existing)
-    if (os.path.isfile('persons.txt') == False):
-        f = open('persons.txt', 'w')
-        f.write('{}')
-        f.close()
+
+    CreateGroup()
 
     if (args['name'] != None):
-        personName = args['name'][0]
-        videoName = args['name'][1]
+        personName = ''
+        for i in range(len(args['name']) - 1):
+            personName += args['name'][i] + ' '
+        personName = personName[:len(personName) - 1]
+        videoName = args['name'][-1]
         videoFrames = GetVideoFrames(videoName)
         ids = Detect(videoFrames)       ##IDS OF VIDEOGUY'S FACE
-        if (len(ids) != 5):
+        if (len(ids) < 3):
             print('Video does not contain any face')
         else:
             persons = dict()
@@ -355,7 +348,10 @@ def main():
             f.write(str(persons))
             f.close()
     if (args['del'] != None):
-        personName = args['del'][0]
+        personName = ''
+        for i in range(len(args['del'])):
+            personName += args['del'][i] + ' '
+        personName = personName[:len(personName) - 1]
         persons = dict()
         f = open('persons.txt', 'r')
         persons = eval(f.read())
@@ -450,6 +446,5 @@ def main():
             data = f.write('lol\n')
             f.close()
     ###################################
-
 if (__name__ == '__main__'):
     main()
