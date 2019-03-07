@@ -28,8 +28,8 @@ def SetArgs():
         type=str,
     )
     parser.add_argument(
-        '--find',
-        type=str,
+        '--deleteg',
+        action='store_true',
     )
 
     args = parser.parse_args()
@@ -303,11 +303,15 @@ def Identify(videoFrames):
 
 def Find(videoName):
     req = GetTrainingStatus()
+    if (str(req) == "{'error': {'code': 'PersonGroupNotTrained', 'message': 'Person group not trained.'}}"):
+        return 'Success'
+    if (str(req).count("{'error': {'code': 'PersonGroupNotFound'") != 0):
+        return 'Success'
     if (req.get('status') != None):
         if (req['status'] == 'succeeded'):
             videoFrames = GetVideoFrames(videoName)
             if (len(videoFrames) < 5):
-                print('The person cannot be identified')
+                return 'Forbidden'
             else:
                 result = Identify(videoFrames)
                 candidates = dict()
@@ -322,7 +326,7 @@ def Find(videoName):
                         candidates = dict()
                         break
                 if (len(candidates) == 0):
-                    print('The person cannot be identified')
+                    return 'Success'
                 else:
                     maxValue = 0
                     bestCandidate = ''
@@ -331,36 +335,71 @@ def Find(videoName):
                             maxValue = j
                             bestCandidate = i
                     if (maxValue >= 2.5):
-                        f = open('person.json', 'w')
-                        ans = '{"id": "' + bestCandidate + '"}'
-                        f.write(ans)
-                        f.close()
-                        print("The person's id is " + '"' + bestCandidate + '"')
+                        return 'Forbidden'
                     else:
-                        print('The person cannot be identified')
-
-
-
+                        return 'Success'
         else:
-            print('The system is not ready yet')
+            return 'SystemProblem'
     else:
-        print('The system is not ready yet')
+        return 'SystemProblem'
 
+def SafetySimpleAdd(videoName):
+    videoFrames = GetVideoFrames(videoName)
+    ids = Detect(videoFrames)  ##IDS OF VIDEOGUY'S FACE
+    if (len(ids) < 3):
+        print('Video does not contain any face')
+    else:
+        req = Find(videoName)
+        if (req == 'SystemProblem'):
+            print('The system is not ready yet')
+        if (req == 'Forbidden'):
+            print('This person has already been added')
+        if (req == 'Success'):
+            CreateGroup()
+            currId = CreateFace(str(randrange(10000000000, 100000000000)))['personId']
+            ids = AddFaces(videoFrames, currId)
+            print('5 frames extracted')
+            print('PersonId: ' + currId)
+            print('FaceIds')
+            print('=======')
+            for id in ids:
+                print(id)
+
+
+def DeleteGroup():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    params = {
+        'presonGroupId' : GetGroupId(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId()
+    req = requests.delete(
+        baseUrl,
+        params=params,
+        headers=headers,
+    )
+    if (str(req) == '<Response [200]>'):
+        return 'Success'
+    else:
+        return req
 
 
 def main():
     args = SetArgs()
 
     if (args['simple_add'] != None):
-        SimpleAdd(args['simple_add'])
+        # SimpleAdd(args['simple_add'])
+        SafetySimpleAdd(args['simple_add'])
     if (args['train'] == True):
         Train()
     if (args['list'] == True):
         List()
     if (args['del'] != None):
         DeletePerson(args['del'])
-    if (args['find'] != None):
-        Find(args['find'])
+    if (args['deleteg'] == True):
+        print(DeleteGroup())
+
 
 if __name__ == '__main__':
     main()
