@@ -94,5 +94,6 @@ def main():
 
     print("KYC Registrar: {}".format(KYCAddress))
     print("Payment Handler: {}".format(PHAddress))
+
 if __name__ == "__main__":
     main()

@@ -37,7 +37,7 @@ def scaleValue(value):
     while (value >= 1000 and nowp < 6):
         value /= 1000
         nowp += 1
-    return str(round(value, 6)) + p[nowp]
+    return str(round(value, 6)) + ' ' + p[nowp]
 
 def setArgs():
 
