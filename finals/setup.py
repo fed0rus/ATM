@@ -91,7 +91,6 @@ def main():
     }
     with open("registrar.json", 'w') as db:
         json.dump(data, db)
-
     print("KYC Registrar: {}".format(KYCAddress))
     print("Payment Handler: {}".format(PHAddress))
 
