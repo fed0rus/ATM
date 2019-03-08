@@ -16,7 +16,7 @@ def initParser():
     parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
     parser.add_argument("--owner", action="store", help="Know the owner of the contract")
     parser.add_argument("--chown", action="store", nargs='+', help="Change the owner of the contract")
-    global args
+    parser.add_argument("--send", action="store", nargs='+', help="Send money")
     args = parser.parse_args()
     return vars(args)
 
@@ -34,13 +34,17 @@ def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
 def kycData():
-    _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a031916331790556104328061003e6000396000f3fe608060405260043610610098576000357c0100000000000000000000000000000000000000000000000000000000900480636c7f2b381161006b5780636c7f2b38146101485780637dba20b2146101985780639ee1bd0f146101cc578063a6f9dae1146101e157610098565b806309e6707d1461009a5780635a58cd4c146100ea57806362fe4707146100ff57806366c2a71014610133575b005b3480156100a657600080fd5b506100cd600480360360208110156100bd57600080fd5b5035600160a060020a0316610214565b60408051600160b060020a03199092168252519081900360200190f35b3480156100f657600080fd5b5061009861023f565b34801561010b57600080fd5b506100986004803603602081101561012257600080fd5b5035600160b060020a031916610264565b34801561013f57600080fd5b506100986102e8565b34801561015457600080fd5b5061017c6004803603602081101561016b57600080fd5b5035600160b060020a031916610356565b60408051600160a060020a039092168252519081900360200190f35b3480156101a457600080fd5b5061017c600480360360208110156101bb57600080fd5b5035600160b060020a031916610371565b3480156101d857600080fd5b5061017c610396565b3480156101ed57600080fd5b506100986004803603602081101561020457600080fd5b5035600160a060020a03166103a5565b6002602052600090815260409020547601000000000000000000000000000000000000000000000281565b600054600160a060020a0316331461025657600080fd5b600054600160a060020a0316ff5b33151561027057600080fd5b600160b060020a03198116600090815260016020908152604080832080543373ffffffffffffffffffffffffffffffffffffffff199091168117909155835260029091529020805469ffffffffffffffffffff1916760100000000000000000000000000000000000000000000909204919091179055565b336000908152600260209081526040808320805469ffffffffffffffffffff19811690915576010000000000000000000000000000000000000000000002600160b060020a031916835260019091529020805473ffffffffffffffffffffffffffffffffffffffff19169055565b600160205260009081526040902054600160a060020a031681565b600160b060020a031916600090815260016020526040902054600160a060020a031690565b600054600160a060020a031690565b600054600160a060020a031633146103bc57600080fd5b600054600160a060020a03828116911614156103d757600080fd5b6000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a039290921691909117905556fea165627a7a723058203086c2d293b7a063c56927497b46496d9c99b3fa54a028297f214ecd39f6c9790029"
-    _abi = json.loads('[{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"AtN","outputs":[{"name":"","type":"bytes10"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"phoneNumber","type":"bytes10"}],"name":"addCustomer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"deleteCustomer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes10"}],"name":"NtA","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"number","type":"bytes10"}],"name":"getAddressByNumber","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"whoIsOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+    with open("KYC.bin", 'r') as bin:
+        _bytecode = bin.read()
+    with open("KYC.abi", 'r') as abi:
+        _abi = json.loads(abi.read())
     return _bytecode, _abi
 
 def phData():
-    _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a0319163317905561018c8061003e6000396000f3fe608060405260043610610050577c010000000000000000000000000000000000000000000000000000000060003504635a58cd4c81146100525780639ee1bd0f14610067578063a6f9dae114610098575b005b34801561005e57600080fd5b506100506100cb565b34801561007357600080fd5b5061007c6100f0565b60408051600160a060020a039092168252519081900360200190f35b3480156100a457600080fd5b50610050600480360360208110156100bb57600080fd5b5035600160a060020a03166100ff565b600054600160a060020a031633146100e257600080fd5b600054600160a060020a0316ff5b600054600160a060020a031690565b600054600160a060020a0316331461011657600080fd5b600054600160a060020a038281169116141561013157600080fd5b6000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a039290921691909117905556fea165627a7a72305820526f825b0f9f8428b7535543052e096311f15a10c1a7ae2ddf550741af04d4df0029"
-    _abi = json.loads('[{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"whoIsOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+    with open("PaymentHandler.bin", 'r') as bin:
+        _bytecode = bin.read()
+    with open("PaymentHandler.abi", 'r') as abi:
+        _abi = json.loads(abi.read())
     return _bytecode, _abi
 
 def deployContract(server, owner, flag):
@@ -142,10 +146,9 @@ def returnOwner(server, flag):
     return ownerAddress
 
 def changeOwner(server, owner, newOwner, flag):
-    assert server.isAddress(newOwner), "Invalid address"
+    assert server.isAddress(newOwner), "SWW"
     _contract = getContract(server, flag)
     txHash = invokeContract(server, owner, _contract, methodName="changeOwner", methodArgs=[newOwner])
-    print(txHash)
 
 # ---------ESSENTIALS END---------
 
@@ -173,9 +176,11 @@ if __name__ == "__main__":
 
     # -----------END SET-------------
 
+    # US-001
     if args["deploy"] is not False:
         deploy(server, user)
 
+    # US-002
     elif args["owner"] is not None:
         if args["owner"] == "registrar":
             ownerAddress = returnOwner(server, flag="kyc")
@@ -186,6 +191,7 @@ if __name__ == "__main__":
         else:
             raise ValueError("Enter a valid contract type")
 
+    # US-003
     elif args["chown"] is not None:
 
         if args["chown"][0] == "registrar":
@@ -204,6 +210,20 @@ if __name__ == "__main__":
                 print("Request cannot be executed")
         else:
             raise ValueError("Enter a valid contract type")
+
+    # US-014
+    elif 
+
+
+
+
+
+
+
+
+
+
+
 
 '''
 compile:

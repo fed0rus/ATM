@@ -26,6 +26,7 @@ def setArgs():
         '--find',
         type=str,
     )
+    parser.add_argument("--add", action="store", nargs='+', help="Send a request for registration")
     args = parser.parse_args()
     return vars(args)
 
@@ -94,7 +95,89 @@ def getBalanceByID(server):
     except:
         print("ID is not found")
 
-# ---------RUS END---------
+def getUser(server, _privateKey):
+    return server.eth.account.privateKeyToAccount(_privateKey)
+
+def getGasPrice(speed):
+    try:
+        response = requests.get(_gasPriceURL)
+        return int((response.json())[speed] * 1e9)
+    except:
+        return int(_defaultGasPrice)
+
+def cleanTxResponse(rawReceipt):
+    return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
+
+def encodePN(phoneNumber):
+    return phoneNumber[2:].encode("utf-8")
+
+def kycData():
+    with open("KYC.bin", 'r') as bin:
+        _bytecode = bin.read()
+    with open("KYC.abi", 'r') as abi:
+        _abi = json.loads(abi.read())
+    return _bytecode, _abi
+
+def phData():
+    with open("PaymentHandler.bin", 'r') as bin:
+        _bytecode = bin.read()
+    with open("PaymentHandler.abi", 'r') as abi:
+        _abi = json.loads(abi.read())
+    return _bytecode, _abi
+
+def getContract(server, flag):
+
+    with open("registrar.json", 'r') as db:
+        data = json.load(db)
+    # switch contract type
+    if flag == "kyc":
+        _stub, _abi = kycData()
+    elif flag == "ph":
+        _stub, _abi = phData()
+    contractAddress = data["registrar"]["address"]
+    _contract = server.eth.contract(address=contractAddress, abi=_abi)
+    return _contract
+
+def invokeContract(server, sender, contract, methodName, methodArgs):
+
+    _args = str(methodArgs)[1:-1]
+    invoker = "contract.functions.{methodName}({methodArgs})".format(
+    methodName=methodName,
+    methodArgs=_args,
+    )
+    _gas = eval(invoker).estimateGas({"from": sender.address})
+    txUnsigned = eval(invoker).buildTransaction({
+    "from": sender.address,
+    "nonce": server.eth.getTransactionCount(sender.address),
+    "gas": _gas,
+    "gasPrice": getGasPrice(speed="fast"),
+    })
+    txSigned = sender.signTransaction(txUnsigned)
+    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
+    return txHash
+
+def callContract(contract, methodName, methodArgs=""):
+
+    _args = str(methodArgs)[1:-1]
+    response = "contract.functions.{methodName}({methodArgs}).call()".format(
+    methodName=methodName,
+    methodArgs=_args,
+    )
+    return eval(response)
+
+# ---------------------------
+
+def addRequest(server, PIN, phoneNumber):
+    _contract = getContract(server, flag="kyc")
+    phoneNumber = decodePN(phoneNumber)
+    try:
+        txHash = invokeContract(server, user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
+        print("Registration request sent by {}".format(txHash))
+    except:
+        raise RuntimeError
+
+
+# ----------RUS END----------
 
 # ---------MAG START---------
 
@@ -239,7 +322,7 @@ def Find(videoName):
     else:
         print('The system is not ready yet')
 
-# ---------MAG END---------
+# ----------MAG END-----------
 
 # ---------MAIN MUTEX---------
 
@@ -247,8 +330,17 @@ if __name__ == "__main__":
 
     args = setArgs()
 
+    # US-013
     if args["balance"] is not None:
         server = Web3(HTTPProvider("https://sokol.poa.network"))
         getBalanceByID(server)
+
+    # US-014
+    elif args["add"] is not None:
+        _PIN = args["add"][0]
+        _phoneNumber = args["add"][1]
+
+
+
     elif (args['find'] != None):
         Find(args['find'])

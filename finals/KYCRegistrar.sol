@@ -9,8 +9,14 @@ contract KYC {
         owner = msg.sender;
     }
 
+    struct addReq {
+        bytes10 phoneNumber;
+        address customerAddress;
+    }
+
     mapping (bytes10 => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
     mapping (address => bytes10) public AtN;
+    addReq[] public addRequests;
 
     function whoIsOwner() external view returns (address) {
         return owner;
@@ -26,24 +32,13 @@ contract KYC {
         return NtA[number];
     }
 
-    /* It is assumed that user ??? */
-
-    function addCustomer(bytes10 phoneNumber) public {
+    function addRequest(bytes10 phoneNumber) public {
         require(msg.sender != address(0));
-        NtA[phoneNumber] = msg.sender;
-        AtN[msg.sender] = phoneNumber;
+        addReq memory request;
+        request.phoneNumber = phoneNumber;
+        request.customerAddress = msg.sender;
+        addRequests.push(request);
     }
-
-    function deleteCustomer() public {
-        bytes10 _number = AtN[msg.sender];
-        delete AtN[msg.sender];
-        delete NtA[_number];
-    }
-
-    /* For US-017 */
-
-
-    /* End */
 
     function () external payable {}
 
