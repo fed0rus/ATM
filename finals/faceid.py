@@ -176,14 +176,14 @@ def addRequest(server, user, phoneNumber):
     if not isContract(_contract):
         return "Seems that the contract address is not the registrar contract"
     _user = getUser(server, user.privateKey)
-    response = callContract(_contract, methodName="isAddRequestSent", methodArgs=[user.address])
-    if response is False:
+    status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+    if status == 0:
         if server.eth.getBalance(user.address) <= 0:
             return "No funds to send the request"
         else:
             txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
             return "Registration request sent by {}".format(txHash)
-    else:
+    elif status > 1:
         return "Registration request already sent"
 
 def delRequest(server, user):
@@ -193,17 +193,18 @@ def delRequest(server, user):
     if not isContract(_contract):
         return "Seems that the contract address is not the registrar contract"
     _user = getUser(server, user.privateKey)
-    reged = callContract(_contract, methodName="getNumberByAddress", methodArgs=[user.address])
-    if reged != 0:
-        response = callContract(_contract, methodName="isDelRequestSent", methodArgs=[user.address])
-        if response is False:
-            if server.eth.getBalance(user.address) <= 0:
-                return "No funds to send the request"
-            else:
+    status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+    if status == 1:
+        return "Unregistration request already sent"
+    elif status > 1:
+        if server.eth.getBalance(user.address) <= 0:
+            return "No funds to send the request"
+        else:
+            try:
                 txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
                 return "Registration request sent by {}".format(txHash)
-        else:
-            return "Unregistration request already sent"
+            except:
+                return "Account is not registered yet"
     else:
         return "Account is not registered yet"
 
