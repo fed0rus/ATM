@@ -29,6 +29,7 @@ def setArgs():
     parser.add_argument("--balance", action="store", help="Get the balance of your account")
     parser.add_argument("--del", action="store", help="Delete a request for registration")
     parser.add_argument("--cancel", action="store", help="Cancel any request")
+    parser.add_argument("--send", action="store", nargs='+', help="Send money by a phone number")
     args = parser.parse_args()
     return vars(args)
 
@@ -121,6 +122,19 @@ def phData():
         _abi = json.loads(abi.read())
     return _bytecode, _abi
 
+def send(server, sender, dest, val):
+    txUnsigned = {
+        "from": sender.address,
+        "to": dest,
+        "nonce": server.eth.getTransactionCount(sender.address),
+        "gas": 21000,
+        "gasPrice": getGasPrice(speed="fast"),
+        "value": int(val),
+    }
+    txSigned = sender.signTransaction(txUnsigned)
+    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
+    return txHash
+
 def getContract(server, flag):
 
     try:
@@ -141,15 +155,15 @@ def invokeContract(server, sender, contract, methodName, methodArgs):
 
     _args = str(methodArgs)[1:-1]
     invoker = "contract.functions.{methodName}({methodArgs})".format(
-    methodName=methodName,
-    methodArgs=_args,
+        methodName=methodName,
+        methodArgs=_args,
     )
     _gas = eval(invoker).estimateGas({"from": sender.address})
     txUnsigned = eval(invoker).buildTransaction({
-    "from": sender.address,
-    "nonce": server.eth.getTransactionCount(sender.address),
-    "gas": _gas,
-    "gasPrice": getGasPrice(speed="fast"),
+        "from": sender.address,
+        "nonce": server.eth.getTransactionCount(sender.address),
+        "gas": _gas,
+        "gasPrice": getGasPrice(speed="fast"),
     })
     txSigned = sender.signTransaction(txUnsigned)
     txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
@@ -219,18 +233,17 @@ def cancelRequest(server, user):
     if not isContract(_contract):
         return "Seems that the contract address is not the registrar contract"
     _user = getUser(server, user.privateKey)
+    if server.eth.getBalance(user.address) <= 0:
+        return "No funds to send the request"
     status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
     if status == 0:
         return "No requests found"
     elif status == 1:
-        if server.eth.getBalance(user.address) <= 0:
-            return "No funds to send the request"
-        else:
-            try:
-                txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
-                return "Unregistration canceled by {}".format(txHash)
-            except:
-                return "Account is not registered yet"
+        try:
+            txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
+            return "Unregistration canceled by {}".format(txHash)
+        except:
+            return "Account is not registered yet"
     elif status > 1:
         if server.eth.getBalance(user.address) <= 0:
             return "No funds to send the request"
@@ -240,6 +253,22 @@ def cancelRequest(server, user):
                 return "Registration canceled by {}".format(txHash)
             except:
                 return "Account is not registered yet"
+
+def sendByNumber(server, user, pn, val):
+    _contract = getContract(server, flag="kyc")
+    if _contract == "No contract address":
+        return _contract
+    if not isContract(_contract):
+        return "Seems that the contract address is not the registrar contract"
+    _user = getUser(server, user.privateKey)
+    refinedNumber = int(str(pn)[1:])
+    destAddress = invokeContract(server, _user, _contract, methodName="getAddressByNumber", methodArgs=[refinedNumber])
+    if (server.isAddress(destAddress)):
+        txHash = send(server, _user, destAddress, val)
+        print("Payment of {a} to {d} scheduled".format(a=scaleValue(int(val)), d='+' + str(pn)))
+        print("Transaction Hash: {}".format(txHash))
+    else:
+        raise ValueError
 
 # ----------RUS END----------
 
@@ -519,6 +548,21 @@ if __name__ == "__main__":
             user.generatePrivateKey()
             user.generateAddress()
             print(cancelRequest(server, user))
+        except:
+            print("ID is not found")
+
+    # US-017
+    elif args["send"] is not None:
+        try:
+            with open("person.json", 'r') as person:
+                _UUID = str(json.load(person)["id"])
+            _PIN = args["send"][0]
+            _phoneNumber = args["send"][1]
+            _value = args["send"][2]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            sendByNumber(server, user, _phoneNumber, _value)
         except:
             print("ID is not found")
 
