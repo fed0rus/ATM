@@ -6,11 +6,11 @@ import requests
 from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
-# import cv2
-# import numpy as np
-# import os
-# import dlib
-# from random import randrange
+import cv2
+import numpy as np
+import os
+import dlib
+from random import randrange
 
 # Essentials
 
@@ -18,15 +18,15 @@ def setArgs():
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--balance",
-        action="store",
-        help="Get the balance of your account"
-    )
-    parser.add_argument(
         '--find',
         type=str,
     )
+    parser.add_argument(
+        '--actions',
+        action='store_true',
+    )
     parser.add_argument("--add", action="store", nargs='+', help="Send a request for registration")
+    parser.add_argument("--balance", action="store", help="Get the balance of your account")
     parser.add_argument("--del", action="store", help="Delete a request for registration")
     args = parser.parse_args()
     return vars(args)
@@ -79,19 +79,19 @@ def scaleValue(value):
         return str(int(val)) + " poa" if val - int(val) == 0 else str(val) + " poa"
 
 def getBalanceByID(server):
-    try:
-        with open("person.json", 'r') as person:
-            data = json.load(person)
-            id = str(data["id"])
-        PIN = args["balance"]
-        user = User(id, PIN)
-        user.setServer(server)
-        user.generatePrivateKey()
-        user.generateAddress()
-        balance = scaleValue(server.eth.getBalance(user.address))
-        print("Your balance is {}".format(balance))
-    except:
-        print("ID is not found")
+    # try:
+    with open("person.json", 'r') as person:
+        data = json.load(person)
+        id = str(data["id"])
+    PIN = args["balance"]
+    user = User(id, PIN)
+    user.setServer(server)
+    user.generatePrivateKey()
+    user.generateAddress()
+    balance = scaleValue(server.eth.getBalance(user.address))
+    print("Your balance is {}".format(balance))
+    # except:
+    #     print("ID is not found")
 
 def getUser(server, _privateKey):
     return server.eth.account.privateKeyToAccount(_privateKey)
@@ -227,14 +227,15 @@ def GetBaseUrl():
         serviceUrl = eval(f.read())['serviceUrl']
     return serviceUrl
 
+
 def MakeDetectRequest(buf):
     headers = {
         'Content-Type': 'application/octet-stream',
         'Ocp-Apim-Subscription-Key': GetKey(),
     }
     params = {
-        'returnFaceId':True,
-        'returnFaceRectangle':False,
+        'returnFaceId': True,
+        'returnFaceRectangle': False,
     }
     baseUrl = GetBaseUrl() + 'detect/'
     req = requests.post(
@@ -264,8 +265,8 @@ def Identify(videoFrames):
     }
     ids = Detect(videoFrames)
     data = {
-        'faceIds' : ids,
-        'personGroupId' : GetGroupId(),
+        'faceIds': ids,
+        'personGroupId': GetGroupId(),
     }
     baseUrl = GetBaseUrl() + '/identify'
     req = requests.post(
@@ -300,7 +301,7 @@ def GetTrainingStatus():
         'Ocp-Apim-Subscription-Key': GetKey(),
     }
     params = {
-        'personGroupId' : GetGroupId(),
+        'personGroupId': GetGroupId(),
     }
     baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/training'
     req = requests.get(
@@ -310,47 +311,113 @@ def GetTrainingStatus():
     )
     return req.json()
 
-def Find(videoName):
-    req = GetTrainingStatus()
-    if (req.get('status') != None):
-        if (req['status'] == 'succeeded'):
-            videoFrames = GetVideoFrames(videoName)
-            if (len(videoFrames) < 5):
-                print('The person cannot be identified')
-            else:
-                result = Identify(videoFrames)
-                candidates = dict()
-                for id in result:
-                    if (id != 'error'):
-                        for candidate in id['candidates']:
-                            if (candidates.get(candidate['personId']) == None):
-                                candidates[candidate['personId']] = candidate['confidence']
-                            else:
-                                candidates[candidate['personId']] += candidate['confidence']
-                    else:
-                        candidates = dict()
-                        break
-                if (len(candidates) == 0):
-                    print('The person cannot be identified')
-                else:
-                    maxValue = 0
-                    bestCandidate = ''
-                    for i, j in candidates.items():
-                        if (j > maxValue):
-                            maxValue = j
-                            bestCandidate = i
-                    if (maxValue >= 2.5):
-                        f = open('person.json', 'w')
-                        ans = '{"id": "' + bestCandidate + '"}'
-                        f.write(ans)
-                        f.close()
-                        print("The person's id is " + '"' + bestCandidate + '"')
-                    else:
-                        print('The person cannot be identified')
-        else:
-            print('The system is not ready yet')
+def GetList():
+    headers = {
+        'Ocp-Apim-Subscription-Key': GetKey(),
+    }
+    baseUrl = GetBaseUrl() + 'persongroups/' + GetGroupId() + '/persons'
+    req = requests.get(
+        baseUrl,
+        headers=headers,
+    )
+    return req
+
+def CreateFile(id):
+    f = open('person.json', 'w')
+    f.write('{"id": "' + id + '"}')
+    f.close()
+
+def DeleteFile():
+    if (os.path.isfile('person.json')):
+        os.remove('person.json')
+
+def GetPersonsData():
+    req = GetList()
+    if (str(req) == '<Response [200]>'):
+        req = GetList().json()
+        persons = []
+        for person in req:
+            persons.append({
+                'personId':person['personId'],
+                'name':person['name'],
+                'userData':person['userData']
+            })
+        return persons
     else:
-        print('The system is not ready yet')
+        return 'The group does not exist'
+
+def Find(videoName):
+    videoFrames = GetVideoFrames(videoName)
+    persons = GetPersonsData()
+    f = 1
+    for person in persons:
+        if (person['userData'] != 'trained'):
+            f = 0
+    if (f == 0):
+        print('The service is not ready')
+        DeleteFile()
+        return None
+    if (len(videoFrames) < 5):
+        print('The video does not follow requirements')
+        DeleteFile()
+    else:
+        result = Identify(videoFrames)
+        if (len(result) < 5):
+            print('The video does not follow requirements')
+            DeleteFile()
+            return None
+        candidates = dict()
+        for frame in result:
+            for candidate in frame['candidates']:
+                currPersonId = candidate['personId']
+                currConfidence = candidate['confidence']
+                if (candidates.get(currPersonId) == None):
+                    if (currConfidence >= 0.5):
+                        candidates[currPersonId] = currConfidence
+                else:
+                    if (currConfidence >= 0.5):
+                        candidates[currPersonId] += currConfidence
+                    else:
+                        candidates[currPersonId] = -100000
+        if (len(candidates) == 0):
+            print('The person was not found')
+            DeleteFile()
+            return None
+        maxConfidence = 0
+        bestCandidate = ''
+        for candidate, confidence in candidates.items():
+            if (confidence >= 2.5):
+                if (maxConfidence < confidence):
+                    bestCandidate = candidate
+                    maxConfidence = confidence
+        if (maxConfidence < 2.5):
+            print('The person was not found')
+            DeleteFile()
+            return None
+        else:
+            print(bestCandidate + ' identified')
+            CreateFile(bestCandidate)
+            return None
+
+
+def SetActions():
+    f = open('actions.json', 'w')
+    actions = [
+        'yaw right',
+        'yaw left',
+        'roll right',
+        'roll left',
+        'close right eye',
+        'close left eye',
+        'open mouth',
+    ]
+    ans = ''
+    for i in range(7):
+        rand = randrange(len(actions))
+        ans += actions[rand] + '\n'
+        actions.remove(actions[rand])
+    f.write(ans)
+    f.close()
 
 # ----------MAG END-----------
 
@@ -378,7 +445,6 @@ if __name__ == "__main__":
 
     # US-013
     if args["balance"] is not None:
-        server = Web3(HTTPProvider("https://sokol.poa.network"))
         getBalanceByID(server)
 
     # US-014
@@ -414,3 +480,5 @@ if __name__ == "__main__":
 
     elif (args['find'] != None):
         Find(args['find'])
+    elif (args['actions'] == True):
+        SetActions()
