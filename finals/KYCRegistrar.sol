@@ -11,14 +11,11 @@ contract KYC {
 
     event RegistrationRequest(address indexed sender);
 
-    struct addReq {
-        bytes10 phoneNumber;
-        address customerAddress;
-    }
 
     mapping (bytes10 => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
     mapping (address => bytes10) public AtN;
-    addReq[] public addRequests;
+
+    mapping (address => bytes10) public requests;
 
     function whoIsOwner() external view returns (address) {
         return owner;
@@ -38,12 +35,13 @@ contract KYC {
         return AtN[_address];
     }
 
-    function addRequest(bytes10 phoneNumber) public {
+    function isAddRequestSent(address _address) external view returns (bool) {
+        return requests[_address] != bytes10(0);
+    }
+
+    function addRequest(bytes10 _phoneNumber) public {
         require(msg.sender != address(0));
-        addReq memory request;
-        request.phoneNumber = phoneNumber;
-        request.customerAddress = msg.sender;
-        addRequests.push(request);
+        requests[msg.sender] = _phoneNumber;
         emit RegistrationRequest(msg.sender);
     }
 

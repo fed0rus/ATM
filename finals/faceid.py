@@ -36,17 +36,14 @@ class User(object):
 
     def __init__(self, UUID, PIN):
         self.UUID = "0x" + str(UUID.replace('-', ''))
-        self.PIN = str(PIN)
+        self.PIN = [int(k) for k in PIN]
 
     def setServer(self, server):
         self.server = server
 
-    def extractPIN(self):
-        return [int(k) for k in self.PIN]
-
     def generatePrivateKey(self):
         UUID = self.UUID
-        PIN = self.extractPIN()
+        PIN = self.PIN
         privateKey = server.solidityKeccak(["bytes16"], [b''])
         for k in range(4):
             privateKey = Web3.solidityKeccak(["bytes16", "bytes16", "int8"], [privateKey, UUID, PIN[k]]) # ABI-packed, keccak256 hashed
@@ -168,14 +165,16 @@ def callContract(contract, methodName, methodArgs=""):
 
 # ---------------------------
 
-def addRequest(server, PIN, phoneNumber):
+def addRequest(server, user, phoneNumber):
     _contract = getContract(server, flag="kyc")
     phoneNumber = encodePN(phoneNumber)
-    try:
-        txHash = invokeContract(server, user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
+    _user = getUser(server, user.privateKey)
+    response = callContract(_contract, methodName="isAddRequestSent", methodArgs=[user.address])
+    if response is False:
+        txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
         print("Registration request sent by {}".format(txHash))
-    except:
-        raise RuntimeError
+    else:
+        print("Registration request already sent")
 
 # ----------RUS END----------
 
@@ -343,7 +342,6 @@ if __name__ == "__main__":
 
     args = setArgs()
     server = Web3(HTTPProvider(_rpcURL))
-    user = getUser(server, _privateKey)
 
     # -----------END SET-------------
 
@@ -354,11 +352,18 @@ if __name__ == "__main__":
 
     # US-014
     elif args["add"] is not None:
-        _PIN = args["add"][0]
-        _phoneNumber = args["add"][1]
-        assert len(_phoneNumber[2:]) == 10, "Invalid phone number"
-        addRequest(server, _PIN, _phoneNumber)
-
+        try:
+            with open("person.json", 'r') as person:
+                _UUID = str(json.load(person)["id"])
+            _PIN = args["add"][0]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            _phoneNumber = args["add"][1]
+            assert len(_phoneNumber[2:]) == 10, "Invalid phone number"
+            addRequest(server, user, _phoneNumber)
+        except:
+            print("ID is not found")
 
     elif (args['find'] != None):
         Find(args['find'])
