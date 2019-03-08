@@ -6,11 +6,11 @@ import requests
 from web3 import Web3, HTTPProvider
 import argparse
 from eth_account import Account
-import cv2
-import numpy as np
-import os
-import dlib
-from random import randrange
+# import cv2
+# import numpy as np
+# import os
+# import dlib
+# from random import randrange
 
 # Essentials
 
@@ -109,6 +109,7 @@ def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
 def encodePN(phoneNumber):
+
     return phoneNumber[2:].encode("utf-8")
 
 def kycData():
@@ -169,13 +170,12 @@ def callContract(contract, methodName, methodArgs=""):
 
 def addRequest(server, PIN, phoneNumber):
     _contract = getContract(server, flag="kyc")
-    phoneNumber = decodePN(phoneNumber)
+    phoneNumber = encodePN(phoneNumber)
     try:
         txHash = invokeContract(server, user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
         print("Registration request sent by {}".format(txHash))
     except:
         raise RuntimeError
-
 
 # ----------RUS END----------
 
@@ -328,7 +328,24 @@ def Find(videoName):
 
 if __name__ == "__main__":
 
+    # ----------START SET------------
+
+    with open("network.json", 'r') as ethConfig:
+        global _defaultGasPrice
+        global _gasPriceURL
+        global _rpcURL
+        global _privateKey
+        read = json.load(ethConfig)
+        _rpcURL = str(read["rpcUrl"])
+        _privateKey = str(read["privKey"])
+        _gasPriceURL = str(read["gasPriceUrl"])
+        _defaultGasPrice = str(read["defaultGasPrice"])
+
     args = setArgs()
+    server = Web3(HTTPProvider(_rpcURL))
+    user = getUser(server, _privateKey)
+
+    # -----------END SET-------------
 
     # US-013
     if args["balance"] is not None:
@@ -339,7 +356,8 @@ if __name__ == "__main__":
     elif args["add"] is not None:
         _PIN = args["add"][0]
         _phoneNumber = args["add"][1]
-
+        assert len(_phoneNumber[2:]) == 10, "Invalid phone number"
+        addRequest(server, _PIN, _phoneNumber)
 
 
     elif (args['find'] != None):

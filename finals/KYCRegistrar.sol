@@ -9,6 +9,8 @@ contract KYC {
         owner = msg.sender;
     }
 
+    event RegistrationRequest(address indexed sender);
+
     struct addReq {
         bytes10 phoneNumber;
         address customerAddress;
@@ -28,8 +30,12 @@ contract KYC {
         owner = newOwner;
     }
 
-    function getAddressByNumber(bytes10 number) external view returns (address) {
-        return NtA[number];
+    function getAddressByNumber(bytes10 _number) external view returns (address) {
+        return NtA[_number];
+    }
+
+    function getNumberByAddress(address _address) external view returns (bytes10) {
+        return AtN[_address];
     }
 
     function addRequest(bytes10 phoneNumber) public {
@@ -38,6 +44,7 @@ contract KYC {
         request.phoneNumber = phoneNumber;
         request.customerAddress = msg.sender;
         addRequests.push(request);
+        emit RegistrationRequest(msg.sender);
     }
 
     function () external payable {}

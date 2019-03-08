@@ -211,20 +211,6 @@ if __name__ == "__main__":
         else:
             raise ValueError("Enter a valid contract type")
 
-    # US-014
-    elif 
-
-
-
-
-
-
-
-
-
-
-
-
 '''
 compile:
     solc --abi --bin --optimize --overwrite -o ./ KYCRegistrar.sol && solc --abi --bin --optimize --overwrite -o ./ PaymentHandler.sol
