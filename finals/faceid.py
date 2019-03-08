@@ -9,7 +9,7 @@ from eth_account import Account
 import cv2
 import numpy as np
 import os
-import dlib
+# import dlib
 from random import randrange
 
 # Essentials
@@ -293,7 +293,6 @@ def GetBaseUrl():
         serviceUrl = eval(f.read())['serviceUrl']
     return serviceUrl
 
-
 def MakeDetectRequest(buf):
     headers = {
         'Content-Type': 'application/octet-stream',
@@ -519,21 +518,21 @@ if __name__ == "__main__":
 
     # US-014
     elif args["add"] is not None:
-        args["add"][1] = int(str(args["add"][1])[1:])
         try:
             with open("person.json", 'r') as person:
                 _UUID = str(json.load(person)["id"])
         except:
             print("ID is not found")
-        _PIN = args["add"][0]
-        user = User(_UUID, _PIN)
-        user.generatePrivateKey()
-        user.generateAddress()
+
         _phoneNumber = args["add"][1]
-        if len(str(_phoneNumber)) != 11:
-            print("Incorrect phone number")
+        if _phoneNumber[0] == '+' and _phoneNumber[1:].isdigit() and len(_phoneNumber) == 12:
+            _PIN = args["add"][0]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            print(addRequest(server, user, int(_phoneNumber[1:])))
         else:
-            print(addRequest(server, user, _phoneNumber))
+            print("Incorrect phone number")
 
     # US-015
     elif args["del"] is not None:
