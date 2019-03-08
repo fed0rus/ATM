@@ -9,7 +9,7 @@ from eth_account import Account
 import cv2
 import numpy as np
 import os
-import dlib
+# import dlib
 from random import randrange
 
 # Essentials
@@ -28,6 +28,7 @@ def setArgs():
     parser.add_argument("--add", action="store", nargs='+', help="Send a request for registration")
     parser.add_argument("--balance", action="store", help="Get the balance of your account")
     parser.add_argument("--del", action="store", help="Delete a request for registration")
+    parser.add_argument("--cancel", action="store", help="Cancel any request")
     args = parser.parse_args()
     return vars(args)
 
@@ -170,6 +171,7 @@ def isContract(contract):
 # ---------------------------
 
 def addRequest(server, user, phoneNumber):
+
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
@@ -187,6 +189,7 @@ def addRequest(server, user, phoneNumber):
         return "Registration request already sent"
 
 def delRequest(server, user):
+
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
@@ -209,6 +212,7 @@ def delRequest(server, user):
         return "Account is not registered yet"
 
 def cancelRequest(server, user):
+
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
@@ -502,6 +506,19 @@ if __name__ == "__main__":
             user.generatePrivateKey()
             user.generateAddress()
             print(delRequest(server, user))
+        except:
+            print("ID is not found")
+
+    # US-016
+    elif args["cancel"] is not None:
+        try:
+            with open("person.json", 'r') as person:
+                _UUID = str(json.load(person)["id"])
+            _PIN = args["cancel"]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            print(cancelRequest(server, user))
         except:
             print("ID is not found")
 
