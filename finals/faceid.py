@@ -125,8 +125,11 @@ def phData():
 
 def getContract(server, flag):
 
-    with open("registrar.json", 'r') as db:
-        data = json.load(db)
+    try:
+        with open("registrar.json", 'r') as db:
+            data = json.load(db)
+    except:
+        return "No contract address"
     # switch contract type
     if flag == "kyc":
         _stub, _abi = kycData()
@@ -163,18 +166,29 @@ def callContract(contract, methodName, methodArgs=""):
     )
     return eval(response)
 
+def isContract(contract):
+    stub, abi = kycData()
+    return contract.abi == abi
+
 # ---------------------------
 
 def addRequest(server, user, phoneNumber):
     _contract = getContract(server, flag="kyc")
+    if _contract == "No contract address":
+        return _contract
+    if not isContract(_contract):
+        return "Seems that the contract address is not the registrar contract"
     phoneNumber = encodePN(phoneNumber)
     _user = getUser(server, user.privateKey)
     response = callContract(_contract, methodName="isAddRequestSent", methodArgs=[user.address])
     if response is False:
-        txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
-        print("Registration request sent by {}".format(txHash))
+        if server.eth.getBalance(user.address) <= 0:
+            return "No funds to send the request"
+        else:
+            txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
+            return "Registration request sent by {}".format(txHash)
     else:
-        print("Registration request already sent")
+        return "Registration request already sent"
 
 # ----------RUS END----------
 
@@ -194,7 +208,6 @@ def GetBaseUrl():
     with open('faceapi.json') as f:
         serviceUrl = eval(f.read())['serviceUrl']
     return serviceUrl
-
 
 def MakeDetectRequest(buf):
     headers = {
@@ -355,15 +368,17 @@ if __name__ == "__main__":
         try:
             with open("person.json", 'r') as person:
                 _UUID = str(json.load(person)["id"])
-            _PIN = args["add"][0]
-            user = User(_UUID, _PIN)
-            user.generatePrivateKey()
-            user.generateAddress()
-            _phoneNumber = args["add"][1]
-            assert len(_phoneNumber[2:]) == 10, "Invalid phone number"
-            addRequest(server, user, _phoneNumber)
         except:
             print("ID is not found")
+        _PIN = args["add"][0]
+        user = User(_UUID, _PIN)
+        user.generatePrivateKey()
+        user.generateAddress()
+        _phoneNumber = args["add"][1]
+        if len(_phoneNumber[2:]) != 10:
+            print("Incorrect phone number")
+        else:
+            print(addRequest(server, user, _phoneNumber))
 
     elif (args['find'] != None):
         Find(args['find'])
