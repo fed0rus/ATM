@@ -18,6 +18,7 @@ contract KYC {
     mapping (address => uint) public AtN;
 
     mapping (address => uint) public requests;
+    address[] public bulkLog;
     /*
         Status codes:
         == 0:
@@ -53,6 +54,7 @@ contract KYC {
         require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
+        bulkLog.push(msg.sender);
         requests[msg.sender] = _phoneNumber;
         emit RegistrationRequest(msg.sender);
     }
@@ -60,6 +62,7 @@ contract KYC {
     function delRequest() public {
         require(msg.sender != address(0));
         require(AtN[msg.sender] != 0);
+        bulkLog.push(msg.sender);
         requests[msg.sender] = 1;
         emit UnregistrationRequest(msg.sender);
     }
@@ -72,6 +75,7 @@ contract KYC {
             d = true;
         }
         requests[msg.sender] = 0;
+        bulkLog.push(msg.sender);
         if (d) {
             emit UnregistrationCanceled(msg.sender);
         }
