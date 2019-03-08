@@ -12,6 +12,25 @@ import os
 import dlib
 from random import randrange
 
+# Essentials
+
+def setArgs():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--balance",
+        action="store",
+        help="Get the balance of your account"
+    )
+    parser.add_argument(
+        '--find',
+        type=str,
+    )
+    args = parser.parse_args()
+    return vars(args)
+
+# ---------RUS START---------
+
 class User(object):
 
     def __init__(self, UUID, PIN):
@@ -60,21 +79,6 @@ def scaleValue(value):
         val = float("{:.6f}".format((float(value) / 1e18)))
         return str(int(val)) + " poa" if val - int(val) == 0 else str(val) + " poa"
 
-def setArgs():
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--balance", 
-        action="store", 
-        help="Get the balance of your account"
-    )
-    parser.add_argument(
-        '--find',
-        type=str,
-    )
-    args = parser.parse_args()
-    return vars(args)
-
 def getBalanceByID(server):
     try:
         with open("person.json", 'r') as person:
@@ -89,6 +93,10 @@ def getBalanceByID(server):
         print("Your balance is {}".format(balance))
     except:
         print("ID is not found")
+
+# ---------RUS END---------
+
+# ---------MAG START---------
 
 def GetKey():
     with open('faceapi.json') as f:
@@ -231,9 +239,9 @@ def Find(videoName):
     else:
         print('The system is not ready yet')
 
+# ---------MAG END---------
 
-
-
+# ---------MAIN MUTEX---------
 
 if __name__ == "__main__":
 
