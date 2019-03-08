@@ -217,18 +217,25 @@ def cancelRequest(server, user):
     _user = getUser(server, user.privateKey)
     status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
     if status == 0:
-        return "Unregistration request already sent"
+        return "No requests found"
+    elif status == 1:
+        if server.eth.getBalance(user.address) <= 0:
+            return "No funds to send the request"
+        else:
+            try:
+                txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
+                return "Unregistration canceled by {}".format(txHash)
+            except:
+                return "Account is not registered yet"
     elif status > 1:
         if server.eth.getBalance(user.address) <= 0:
             return "No funds to send the request"
         else:
             try:
-                txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
-                return "Registration request sent by {}".format(txHash)
+                txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
+                return "Registration canceled by {}".format(txHash)
             except:
                 return "Account is not registered yet"
-    else:
-        return "Account is not registered yet"
 
 # ----------RUS END----------
 
