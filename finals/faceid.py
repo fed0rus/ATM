@@ -79,19 +79,19 @@ def scaleValue(value):
         return str(int(val)) + " poa" if val - int(val) == 0 else str(val) + " poa"
 
 def getBalanceByID(server):
-    # try:
-    with open("person.json", 'r') as person:
-        data = json.load(person)
-        id = str(data["id"])
-    PIN = args["balance"]
-    user = User(id, PIN)
-    user.setServer(server)
-    user.generatePrivateKey()
-    user.generateAddress()
-    balance = scaleValue(server.eth.getBalance(user.address))
-    print("Your balance is {}".format(balance))
-    # except:
-    #     print("ID is not found")
+    try:
+        with open("person.json", 'r') as person:
+            data = json.load(person)
+            id = str(data["id"])
+        PIN = args["balance"]
+        user = User(id, PIN)
+        user.setServer(server)
+        user.generatePrivateKey()
+        user.generateAddress()
+        balance = scaleValue(server.eth.getBalance(user.address))
+        print("Your balance is {}".format(balance))
+    except:
+        print("ID is not found")
 
 def getUser(server, _privateKey):
     return server.eth.account.privateKeyToAccount(_privateKey)
@@ -208,6 +208,27 @@ def delRequest(server, user):
     else:
         return "Account is not registered yet"
 
+def cancelRequest(server, user):
+    _contract = getContract(server, flag="kyc")
+    if _contract == "No contract address":
+        return _contract
+    if not isContract(_contract):
+        return "Seems that the contract address is not the registrar contract"
+    _user = getUser(server, user.privateKey)
+    status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+    if status == 0:
+        return "Unregistration request already sent"
+    elif status > 1:
+        if server.eth.getBalance(user.address) <= 0:
+            return "No funds to send the request"
+        else:
+            try:
+                txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
+                return "Registration request sent by {}".format(txHash)
+            except:
+                return "Account is not registered yet"
+    else:
+        return "Account is not registered yet"
 # ----------RUS END----------
 
 # ---------MAG START---------
@@ -480,5 +501,6 @@ if __name__ == "__main__":
 
     elif (args['find'] != None):
         Find(args['find'])
+
     elif (args['actions'] == True):
         SetActions()
