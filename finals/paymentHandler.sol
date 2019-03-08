@@ -15,6 +15,7 @@ contract PaymentHandler {
 
     function changeOwner(address payable newOwner) public {
         require(msg.sender == owner);
+        require(newOwner != owner);
         owner = newOwner;
     }
 

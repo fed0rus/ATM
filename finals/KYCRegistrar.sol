@@ -16,13 +16,14 @@ contract KYC {
         return owner;
     }
 
-    function getAddressByNumber(bytes10 number) external view returns (address) {
-        return NtA[number];
-    }
-
     function changeOwner(address payable newOwner) public {
         require(msg.sender == owner);
+        require(newOwner != owner);
         owner = newOwner;
+    }
+
+    function getAddressByNumber(bytes10 number) external view returns (address) {
+        return NtA[number];
     }
 
     /* It is assumed that user ??? */
