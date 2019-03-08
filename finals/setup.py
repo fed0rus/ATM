@@ -6,33 +6,48 @@ import requests
 from web3 import Web3, HTTPProvider
 import argparse
 
-def getUser(server, privateKey):
-    return server.eth.account.privateKeyToAccount(privateKey)
-
-# utils
+# -----------UTILS START------------
 
 HexBytes = lambda x: x
 
+def initParser():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
+    parser.add_argument("--owner", action="store", help="Know the owner of the contract")
+    global args
+    args = parser.parse_args()
+    return vars(args)
+
+def getUser(server, _privateKey):
+    return server.eth.account.privateKeyToAccount(_privateKey)
+
 def getGasPrice(speed):
     try:
-        response = requests.get(gasPriceURL)
+        response = requests.get(_gasPriceURL)
         return int((response.json())[speed] * 1e9)
     except:
-        return int(defaultGasPrice)
+        return int(_defaultGasPrice)
 
 def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
-# essential
+def kycData():
+    _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a031916331790556104178061003e6000396000f3fe608060405260043610610098576000357c0100000000000000000000000000000000000000000000000000000000900480636c7f2b381161006b5780636c7f2b38146101485780637dba20b2146101985780639ee1bd0f146101cc578063a6f9dae1146101e157610098565b806309e6707d1461009a5780635a58cd4c146100ea57806362fe4707146100ff57806366c2a71014610133575b005b3480156100a657600080fd5b506100cd600480360360208110156100bd57600080fd5b5035600160a060020a0316610214565b60408051600160b060020a03199092168252519081900360200190f35b3480156100f657600080fd5b5061009861023f565b34801561010b57600080fd5b506100986004803603602081101561012257600080fd5b5035600160b060020a031916610264565b34801561013f57600080fd5b506100986102e8565b34801561015457600080fd5b5061017c6004803603602081101561016b57600080fd5b5035600160b060020a031916610356565b60408051600160a060020a039092168252519081900360200190f35b3480156101a457600080fd5b5061017c600480360360208110156101bb57600080fd5b5035600160b060020a031916610371565b3480156101d857600080fd5b5061017c610396565b3480156101ed57600080fd5b506100986004803603602081101561020457600080fd5b5035600160a060020a03166103a5565b6002602052600090815260409020547601000000000000000000000000000000000000000000000281565b600054600160a060020a0316331461025657600080fd5b600054600160a060020a0316ff5b33151561027057600080fd5b600160b060020a03198116600090815260016020908152604080832080543373ffffffffffffffffffffffffffffffffffffffff199091168117909155835260029091529020805469ffffffffffffffffffff1916760100000000000000000000000000000000000000000000909204919091179055565b336000908152600260209081526040808320805469ffffffffffffffffffff19811690915576010000000000000000000000000000000000000000000002600160b060020a031916835260019091529020805473ffffffffffffffffffffffffffffffffffffffff19169055565b600160205260009081526040902054600160a060020a031681565b600160b060020a031916600090815260016020526040902054600160a060020a031690565b600054600160a060020a031690565b600054600160a060020a031633146103bc57600080fd5b6000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a039290921691909117905556fea165627a7a723058202aadfa1786f8253e83ae9cbb6b9591320d934424f0a01398192e07d95a5ba9ca0029"
+    _abi = json.loads('[{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"AtN","outputs":[{"name":"","type":"bytes10"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"phoneNumber","type":"bytes10"}],"name":"addCustomer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"deleteCustomer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"bytes10"}],"name":"NtA","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"number","type":"bytes10"}],"name":"getAddressByNumber","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"whoIsOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"changeOwner","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+    return _bytecode, _abi
+
+def phData():
+    _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a0319163317905560b28061003d6000396000f3fe6080604052600436106038577c010000000000000000000000000000000000000000000000000000000060003504635a58cd4c8114603a575b005b348015604557600080fd5b50603860005473ffffffffffffffffffffffffffffffffffffffff163314606b57600080fd5b60005473ffffffffffffffffffffffffffffffffffffffff16fffea165627a7a723058204de0b629eddce83db5a57928cc08051753279fb7bb9f3900483226ae9308ff360029"
+    _abi = json.loads('[{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+    return _bytecode, _abi
 
 def deployContract(server, owner, flag):
     # switch contract type
     if flag == "kyc":
-        _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a0319163317905561039f8061003e6000396000f3fe608060405260043610610050577c0100000000000000000000000000000000000000000000000000000000600035046303dd3d8181146100525780635a58cd4c146101055780636cf4f05a1461011a575b005b34801561005e57600080fd5b506100506004803603602081101561007557600080fd5b81019060208101813564010000000081111561009057600080fd5b8201836020820111156100a257600080fd5b803590602001918460018302840111640100000000831117156100c457600080fd5b91908080601f0160208091040260200160405190810160405280939291908181526020018383808284376000920191909152509295506101cf945050505050565b34801561011157600080fd5b506100506101ff565b34801561012657600080fd5b5061015a6004803603602081101561013d57600080fd5b503573ffffffffffffffffffffffffffffffffffffffff1661023e565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561019457818101518382015260200161017c565b50505050905090810190601f1680156101c15780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b3315156101db57600080fd5b33600090815260016020908152604090912082516101fb928401906102d8565b5050565b60005473ffffffffffffffffffffffffffffffffffffffff16331461022357600080fd5b60005473ffffffffffffffffffffffffffffffffffffffff16ff5b60016020818152600092835260409283902080548451600294821615610100026000190190911693909304601f81018390048302840183019094528383529192908301828280156102d05780601f106102a5576101008083540402835291602001916102d0565b820191906000526020600020905b8154815290600101906020018083116102b357829003601f168201915b505050505081565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061031957805160ff1916838001178555610346565b82800160010185558215610346579182015b8281111561034657825182559160200191906001019061032b565b50610352929150610356565b5090565b61037091905b80821115610352576000815560010161035c565b9056fea165627a7a723058200310d5579140a59f073888aac1fc0fb1a97613009ce897b44f90c3ac14f0adc60029"
-        _abi = json.loads('[{"constant":false,"inputs":[{"name":"phoneNumber","type":"string"}],"name":"addCustomer","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"phonebook","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+        _bytecode, _abi = kycData()
     elif flag == "ph":
-        _bytecode = "608060405234801561001057600080fd5b5033151561001d57600080fd5b60008054600160a060020a0319163317905560b28061003d6000396000f3fe6080604052600436106038577c010000000000000000000000000000000000000000000000000000000060003504635a58cd4c8114603a575b005b348015604557600080fd5b50603860005473ffffffffffffffffffffffffffffffffffffffff163314606b57600080fd5b60005473ffffffffffffffffffffffffffffffffffffffff16fffea165627a7a723058203256ff9f5ae4c2a972ee5608c13f802607ef898e0b363e6e7877d424386181480029"
-        _abi = json.loads('[{"constant":false,"inputs":[],"name":"deleteContract","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"}]')
+        _bytecode, _abi = phData()
     # deployment
     rawContract = server.eth.contract(abi=_abi, bytecode=_bytecode)
     _gas = rawContract.constructor().estimateGas({"from": owner.address})
@@ -56,27 +71,52 @@ def deployContract(server, owner, flag):
     else:
         raise
 
-def initParser():
+def getContract(server, flag):
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
-    global args
-    args = parser.parse_args()
-    args = vars(args)
+    with open("registrar.json", 'r') as db:
+        data = json.load(db)
+    # switch contract type
+    if flag == "kyc":
+        _stub, _abi = kycData()
+    elif flag == "ph":
+        _stub, _abi = phData()
+    contractAddress = data["registrar"]["address"]
+    _contract = server.eth.contract(address=contractAddress, abi=_abi)
+    return _contract
 
-def main():
+def invokeContract(server, sender, contract, methodName, methodArgs):
 
-    initParser()
-    with open("network.json", 'r') as ethConfig:
-        global defaultGasPrice
-        global gasPriceURL
-        read = json.load(ethConfig)
-        rpcURL = str(read["rpcUrl"])
-        privateKey = str(read["privKey"])
-        gasPriceURL = str(read["gasPriceUrl"])
-        defaultGasPrice = str(read["defaultGasPrice"])
-    server = Web3(HTTPProvider(rpcURL))
-    owner = getUser(server, privateKey)
+    _args = str(methodArgs)[1:-1]
+    invoker = "contract.functions.{methodName}({methodArgs})".format(
+    methodName=methodName,
+    methodArgs=_args,
+    )
+    _gas = eval(invoker).estimateGas({"from": sender.address})
+    txUnsigned = eval(invoker).buildTransaction({
+    "from": sender.address,
+    "nonce": server.eth.getTransactionCount(sender.address),
+    "gas": _gas,
+    "gasPrice": getGasPrice(speed="fast"),
+    })
+    txSigned = sender.signTransaction(txUnsigned)
+    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
+    return txHash
+
+def callContract(contract, methodName, methodArgs=""):
+
+    _args = str(methodArgs)[1:-1]
+    response = "contract.functions.{methodName}({methodArgs}).call()".format(
+    methodName=methodName,
+    methodArgs=_args,
+    )
+    return eval(response)
+
+# -----------UTILS END------------
+
+# ---------ESSENTIALS START---------
+
+def deploy(server, owner):
+
     KYCAddress, sb1 = deployContract(server, owner, flag="kyc")
     PHAddress, sb2 = deployContract(server, owner, flag="ph")
     data = {
@@ -94,6 +134,51 @@ def main():
     print("KYC Registrar: {}".format(KYCAddress))
     print("Payment Handler: {}".format(PHAddress))
 
+def returnOwner(server, flag):
+
+    _contract = getContract(server, flag)
+    ownerAddress = callContract(_contract, methodName="whoIsOwner")
+    return ownerAddress
+
+
+# ---------ESSENTIALS END---------
+
+
+# ----------MAIN MUTEX------------
+
 if __name__ == "__main__":
-    main()
-# stub
+
+    # ----------START SET------------
+
+    with open("network.json", 'r') as ethConfig:
+        global _defaultGasPrice
+        global _gasPriceURL
+        global _rpcURL
+        global _privateKey
+        read = json.load(ethConfig)
+        _rpcURL = str(read["rpcUrl"])
+        _privateKey = str(read["privKey"])
+        _gasPriceURL = str(read["gasPriceUrl"])
+        _defaultGasPrice = str(read["defaultGasPrice"])
+
+    args = initParser()
+    server = Web3(HTTPProvider(_rpcURL))
+    user = getUser(server, _privateKey)
+
+    # -----------END SET-------------
+
+    if args["deploy"] is not False:
+        deploy(server, user)
+
+    elif args["owner"] is not None:
+        if args["owner"] == "registrar":
+            ownerAddress = returnOwner(server, flag="kyc")
+            print("Admin account: {}".format(ownerAddress))
+        elif args["owner"] == "payments":
+            ownerAddress = returnOwner(server, flag="ph")
+            print("Admin account: {}".format(ownerAddress))
+        else:
+            raise ValueError("Enter a valid contract type")
+
+
+# compile: solc --abi --bin --optimize --overwrite -o ./ contract.sol

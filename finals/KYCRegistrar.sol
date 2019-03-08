@@ -9,37 +9,38 @@ contract KYC {
         owner = msg.sender;
     }
 
-    mapping (string => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
-    mapping (address => string) public AtN;
+    mapping (bytes10 => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
+    mapping (address => bytes10) public AtN;
 
-    function whoIsOwner() external returns (address) {
+    function whoIsOwner() external view returns (address) {
         return owner;
     }
 
-    function changeOwner(address newOwner) public {
+    function getAddressByNumber(bytes10 number) external view returns (address) {
+        return NtA[number];
+    }
+
+    function changeOwner(address payable newOwner) public {
         require(msg.sender == owner);
         owner = newOwner;
     }
 
     /* It is assumed that user ??? */
 
-    function addCustomer(string memory phoneNumber) public {
+    function addCustomer(bytes10 phoneNumber) public {
         require(msg.sender != address(0));
         NtA[phoneNumber] = msg.sender;
         AtN[msg.sender] = phoneNumber;
     }
 
     function deleteCustomer() public {
-        string _number = AtN[msg.sender];
+        bytes10 _number = AtN[msg.sender];
         delete AtN[msg.sender];
         delete NtA[_number];
     }
 
     /* For US-017 */
 
-    function getAddressByNumber(string memory number) external returns (address) {
-        return NtA[number];
-    }
 
     /* End */
 
