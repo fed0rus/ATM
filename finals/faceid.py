@@ -229,6 +229,7 @@ def cancelRequest(server, user):
                 return "Account is not registered yet"
     else:
         return "Account is not registered yet"
+
 # ----------RUS END----------
 
 # ---------MAG START---------
@@ -247,7 +248,6 @@ def GetBaseUrl():
     with open('faceapi.json') as f:
         serviceUrl = eval(f.read())['serviceUrl']
     return serviceUrl
-
 
 def MakeDetectRequest(buf):
     headers = {
@@ -419,7 +419,6 @@ def Find(videoName):
             print(bestCandidate + ' identified')
             CreateFile(bestCandidate)
             return None
-
 
 def SetActions():
     f = open('actions.json', 'w')
