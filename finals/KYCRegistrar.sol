@@ -20,7 +20,7 @@ contract KYC {
     mapping (address => uint) public requests;
     address[] public bulkLog;
 
-    modifier cleanLog {
+    /* modifier cleanLog {
         _;
         uint _l = bulkLog.length;
         address[] memory saved;
@@ -30,7 +30,7 @@ contract KYC {
             }
         }
         bulkLog = saved;
-    }
+    } */
     /*
         Status codes:
         == 0:
@@ -61,7 +61,7 @@ contract KYC {
         return requests[_address];
     }
 
-    function addRequest(uint _phoneNumber) public cleanLog {
+    function addRequest(uint _phoneNumber) public {
         require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
@@ -70,7 +70,7 @@ contract KYC {
         emit RegistrationRequest(msg.sender);
     }
 
-    function delRequest() public cleanLog {
+    function delRequest() public {
         require(msg.sender != address(0));
         require(AtN[msg.sender] != 0);
         bulkLog.push(msg.sender);
@@ -78,7 +78,7 @@ contract KYC {
         emit UnregistrationRequest(msg.sender);
     }
 
-    function cancelRequest() public cleanLog {
+    function cancelRequest() public {
         require(msg.sender != address(0));
         require(requests[msg.sender] != 0);
         bool d = false;

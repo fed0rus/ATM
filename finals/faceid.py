@@ -188,7 +188,7 @@ def isContract(contract):
 # ---------------------------
 
 def addRequest(server, user, phoneNumber):
-
+    print(phoneNumber)
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
