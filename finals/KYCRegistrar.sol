@@ -19,6 +19,18 @@ contract KYC {
 
     mapping (address => uint) public requests;
     address[] public bulkLog;
+
+    modifier cleanLog {
+        _;
+        uint _l = bulkLog.length;
+        address[] memory saved;
+        for (uint i = 0; i < _l; ++i) {
+            if (requests[bulkLog[i]] != 0) {
+                saved[saved.length] = bulkLog[i];
+            }
+        }
+        bulkLog = saved;
+    }
     /*
         Status codes:
         == 0:
@@ -27,7 +39,7 @@ contract KYC {
             delete request
         > 1:
             add request
-     */
+    */
     function whoIsOwner() external view returns (address) {
         return owner;
     }
@@ -39,7 +51,6 @@ contract KYC {
     }
 
     function getAddressByNumber(uint _number) external view returns (address) {
-        return NtA[_number];
     }
 
     function getNumberByAddress(address _address) external view returns (uint) {
@@ -50,7 +61,7 @@ contract KYC {
         return requests[_address];
     }
 
-    function addRequest(uint _phoneNumber) public {
+    function addRequest(uint _phoneNumber) public cleanLog {
         require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
@@ -59,7 +70,7 @@ contract KYC {
         emit RegistrationRequest(msg.sender);
     }
 
-    function delRequest() public {
+    function delRequest() public cleanLog {
         require(msg.sender != address(0));
         require(AtN[msg.sender] != 0);
         bulkLog.push(msg.sender);
@@ -67,7 +78,7 @@ contract KYC {
         emit UnregistrationRequest(msg.sender);
     }
 
-    function cancelRequest() public {
+    function cancelRequest() public cleanLog {
         require(msg.sender != address(0));
         require(requests[msg.sender] != 0);
         bool d = false;
@@ -82,6 +93,32 @@ contract KYC {
         else {
             emit RegistrationCanceled(msg.sender);
         }
+    }
+
+    function listAdd() external view returns (address[] memory, uint[] memory) {
+        uint _bl = bulkLog.length;
+        address[] memory addr;
+        uint[] memory numb;
+        for (uint i = 0; i < _bl; ++i) {
+            if (requests[bulkLog[i]] > 1) {
+                addr[addr.length] = bulkLog[i];
+                numb[numb.length] = requests[bulkLog[i]];
+            }
+        }
+        return (addr, numb);
+    }
+
+    function listDel() external view returns (address[] memory, uint[] memory) {
+        uint _bl = bulkLog.length;
+        address[] memory addr;
+        uint[] memory numb;
+        for (uint i = 0; i < _bl; ++i) {
+            if (requests[bulkLog[i]] == 1) {
+                addr[addr.length] = bulkLog[i];
+                numb[numb.length] = requests[bulkLog[i]];
+            }
+        }
+        return (addr, numb);
     }
 
     function () external payable {}

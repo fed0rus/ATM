@@ -12,6 +12,7 @@ def initParser():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", action="store", help="List all the requests")
+    parser.add_argument("--confirm", action="store", help="Confirm the request")
     args = parser.parse_args()
     return vars(args)
 
@@ -40,4 +41,4 @@ if __name__ == "__main__":
 
     # -----------END SET-------------
 
-    if args["list"] is not None:
+    if args["confirm"] is not None:
