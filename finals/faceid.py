@@ -27,6 +27,7 @@ def setArgs():
         type=str,
     )
     parser.add_argument("--add", action="store", nargs='+', help="Send a request for registration")
+    parser.add_argument("--del", action="store", help="Delete a request for registration")
     args = parser.parse_args()
     return vars(args)
 
@@ -105,10 +106,6 @@ def getGasPrice(speed):
 def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
-def encodePN(phoneNumber):
-
-    return phoneNumber[2:].encode("utf-8")
-
 def kycData():
     with open("KYC.bin", 'r') as bin:
         _bytecode = bin.read()
@@ -178,7 +175,6 @@ def addRequest(server, user, phoneNumber):
         return _contract
     if not isContract(_contract):
         return "Seems that the contract address is not the registrar contract"
-    phoneNumber = encodePN(phoneNumber)
     _user = getUser(server, user.privateKey)
     response = callContract(_contract, methodName="isAddRequestSent", methodArgs=[user.address])
     if response is False:
@@ -189,6 +185,27 @@ def addRequest(server, user, phoneNumber):
             return "Registration request sent by {}".format(txHash)
     else:
         return "Registration request already sent"
+
+def delRequest(server, user):
+    _contract = getContract(server, flag="kyc")
+    if _contract == "No contract address":
+        return _contract
+    if not isContract(_contract):
+        return "Seems that the contract address is not the registrar contract"
+    _user = getUser(server, user.privateKey)
+    reged = callContract(_contract, methodName="getNumberByAddress", methodArgs=[user.address])
+    if reged != 0:
+        response = callContract(_contract, methodName="isDelRequestSent", methodArgs=[user.address])
+        if response is False:
+            if server.eth.getBalance(user.address) <= 0:
+                return "No funds to send the request"
+            else:
+                txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
+                return "Registration request sent by {}".format(txHash)
+        else:
+            return "Unregistration request already sent"
+    else:
+        return "Account is not registered yet"
 
 # ----------RUS END----------
 
@@ -365,6 +382,7 @@ if __name__ == "__main__":
 
     # US-014
     elif args["add"] is not None:
+        args["add"][1] = int(str(args["add"][1])[1:])
         try:
             with open("person.json", 'r') as person:
                 _UUID = str(json.load(person)["id"])
@@ -375,10 +393,23 @@ if __name__ == "__main__":
         user.generatePrivateKey()
         user.generateAddress()
         _phoneNumber = args["add"][1]
-        if len(_phoneNumber[2:]) != 10:
+        if len(str(_phoneNumber)) != 11:
             print("Incorrect phone number")
         else:
             print(addRequest(server, user, _phoneNumber))
+
+    # US-015
+    elif args["del"] is not None:
+        try:
+            with open("person.json", 'r') as person:
+                _UUID = str(json.load(person)["id"])
+            _PIN = args["del"]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            print(delRequest(server, user))
+        except:
+            print("ID is not found")
 
     elif (args['find'] != None):
         Find(args['find'])
