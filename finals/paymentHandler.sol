@@ -9,7 +9,14 @@ contract PaymentHandler {
         owner = msg.sender;
     }
 
-    /* stub */
+    function whoIsOwner() external view returns (address) {
+        return owner;
+    }
+
+    function changeOwner(address payable newOwner) public {
+        require(msg.sender == owner);
+        owner = newOwner;
+    }
 
     function () external payable {}
 
