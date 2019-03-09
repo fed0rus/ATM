@@ -153,13 +153,10 @@ def send(server, sender, dest, val):
         "nonce": server.eth.getTransactionCount(sender.address),
         "gas": 21000,
         "gasPrice": getGasPrice(speed="fast"),
-        "value": int(val),
+        "value": val,
     }
     txSigned = sender.signTransaction(txUnsigned)
-    try:
-        txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
-    except:
-        return "No funds to send the payment"
+    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
     return txHash
 
 def getContract(server, flag):
@@ -267,6 +264,7 @@ def cancelRequest(server, user):
 
     if server.eth.getBalance(user.address) <= 0:
         return "No funds to send the request"
+
     if (checkContract(server, _contract)):
         status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
         if status == 0:
@@ -283,24 +281,24 @@ def cancelRequest(server, user):
         return "Seems that the contract address is not the registrar contract"
 
 def sendByNumber(server, user, pn, val):
+
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
-    if not isContract(_contract):
-        return "Seems that the contract address is not the registrar contract"
+
     _user = getUser(server, user.privateKey)
+
+    if server.eth.getBalance(user.address) < int(val) + 21000 * getGasPrice(speed="fast"):
+        return "No funds to send the payment"
+
     refinedNumber = int(str(pn)[1:])
-    destAddress = invokeContract(server, _user, _contract, methodName="getAddressByNumber", methodArgs=[refinedNumber])
+    # ???
+    destAddress = invokeContract(server, _user, _contract, methodName="getAddress", methodArgs=[refinedNumber])
     if destAddress == 0:
-        print("No account with the phone number {}".format(pn))
-    elif (server.isAddress(destAddress)):
-        txHash = send(server, _user, destAddress, val)
-        if txHash == "No funds to send the payment":
-            print(txHash)
-        print("Payment of {a} to {d} scheduled".format(a=scaleValue(int(val)), d=pn))
-        print("Transaction Hash: {}".format(txHash))
+        return "No account with the phone number {}".format(pn)
     else:
-        raise ValueError
+        txHash = send(server, _user, destAddress, int(val))
+        return "Payment of {a} to {d} scheduled\nTransaction Hash: {t}".format(a=scaleValue(int(val)), d=pn, t=txHash)
 
 # ----------RUS END----------
 
@@ -574,36 +572,35 @@ if __name__ == "__main__":
 
     elif args["cancel"] is not None:
 
-            _UUID = getUUID()
-            if _UUID == -1:
-                print("ID is not found")
-            else:
-                _PIN = args["cancel"]
-                user = User(_UUID, _PIN)
-                user.generatePrivateKey()
-                user.generateAddress()
-                print(cancelRequest(server, user))
+        _UUID = getUUID()
+        if _UUID == -1:
+            print("ID is not found")
+        else:
+            _PIN = args["cancel"]
+            user = User(_UUID, _PIN)
+            user.generatePrivateKey()
+            user.generateAddress()
+            print(cancelRequest(server, user))
     # ------ACCEPTANCE ZONE END------
 
     # -------DANGER ZONE START-------
-    
-    # US-017
-    # elif args["send"] is not None:
-    #     try:
-    #         with open("person.json", 'r') as person:
-    #             _UUID = str(json.load(person)["id"])
-    #         _PIN = args["send"][0]
-    #         _phoneNumber = args["send"][1]
-    #         if len(str(_phoneNumber)) != 11:
-    #             print("Incorrect phone number")
-    #         else:
-    #             _value = args["send"][2]
-    #             user = User(_UUID, _PIN)
-    #             user.generatePrivateKey()
-    #             user.generateAddress()
-    #             sendByNumber(server, user, _phoneNumber, _value)
-    #     except:
-    #         print("ID is not found")
+
+    elif args["send"] is not None:
+
+        _UUID = getUUID()
+        if _UUID == -1:
+            print("ID is not found")
+        else:
+            _PIN = args["send"][0]
+            _phoneNumber = args["send"][1]
+            if _phoneNumber[0] == '+' and _phoneNumber[1:].isdigit() and len(_phoneNumber) == 12:
+                _value = args["send"][2]
+                user = User(_UUID, _PIN)
+                user.generatePrivateKey()
+                user.generateAddress()
+                print(sendByNumber(server, user, _phoneNumber, _value))
+            else:
+                print("Incorrect phone number")
 
     # --------DANGER ZONE END--------
 

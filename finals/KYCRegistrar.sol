@@ -53,9 +53,14 @@ contract KYC {
         return AtN[_address];
     }
 
+    function getAddress(uint _pn) external view returns (address) {
+        return NtA[_pn];
+    }
+
     function addRequest(uint _phoneNumber) public {
         /* For --del testing */
-        /* AtN[0x84F89561c38b380e97aed3F6f8f28263C60925F2] = _phoneNumber; */
+        /* AtN[0x84F89561c38b380e97aed3F6f8f28263C60925F2] = _phoneNumber;
+        NtA[_phoneNumber] = 0x84F89561c38b380e97aed3F6f8f28263C60925F2; */
         require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
