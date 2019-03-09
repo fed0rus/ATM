@@ -12,7 +12,7 @@ from eth_account import Account
 import cv2
 import numpy as np
 import os
-import dlib
+# import dlib
 from random import randrange
 
 # Essentials
@@ -337,14 +337,14 @@ def checkContract(server, contract):
     ''' % (ownerAddress, ownerAddress)
     with open("checkContract.sol", 'w') as file:
         file.write(source)
-    compiled_registrar = check_output(["solc", "--optimize", "--bin", "--abi", "./checkContract.sol"]).decode()
+    compiled_registrar = check_output(["solc", "--abi", "--bin", "--optimize", "-o", "./ checkContract.sol"]).decode()
     start = compiled_registrar.find("Binary:")
     end = compiled_registrar.find("Contract JSON ABI")
     suspicion = compiled_registrar[start +11:end - 4]
     suspicion = server.eth.getCode(contract.address).hex()[2:]
-    # print(bytecode)
-    # print("-------------------")
-    # print(suspicion)
+    print(bytecode)
+    print("-------------------")
+    print(suspicion)
     # return bytecode == suspicion
     return True
 
