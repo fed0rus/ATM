@@ -32,7 +32,7 @@ contract KYC {
         == 1:
             delete request
         > 1:
-            add request
+            add request (status is number)
     */
 
     function whoIsOwner() external view returns (address) {
@@ -47,6 +47,10 @@ contract KYC {
 
     function getStatus(address _address) external view returns (uint) {
         return requests[_address];
+    }
+
+    function getNumber(address _address) external view returns (uint) {
+        return AtN[_address];
     }
 
     function addRequest(uint _phoneNumber) public {

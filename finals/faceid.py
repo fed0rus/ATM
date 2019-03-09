@@ -216,17 +216,19 @@ def delRequest(server, user):
     status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
     if status == 1:
         return "Unregistration request already sent"
+    elif status > 1:
+        return "Registration request already sent"
     elif status == 0:
-        return "There are no registration requests"
-    elif status == 1:
-        try:
-            txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
-            return "Unregistration request sent by {}".format(txHash)
-        except:
+        registeredNumber = callContract(_contract, methodName="getNumber", methodArgs=[user.address])
+        if registeredNumber != 0:
+            try:
+                txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
+                return "Unregistration request sent by {}".format(txHash)
+            except:
+                return "Account is not registered yet"
+        else:
             return "Account is not registered yet"
-    else:
-        return "Account is not registered yet"
-#
+
 # def cancelRequest(server, user):
 #
 #     _contract = getContract(server, flag="kyc")
@@ -520,7 +522,7 @@ if __name__ == "__main__":
     if args["balance"] is not None:
         getBalanceByID(server)
 
-    # ------ACCEPTANCE ZONE START----
+    # ------ACCEPTANCE ZONE END------
 
     elif args["add"] is not None:
 
@@ -540,8 +542,8 @@ if __name__ == "__main__":
         except:
             print("ID is not found")
 
-    # US-015
     elif args["del"] is not None:
+
         try:
             with open("person.json", 'r') as person:
                 _UUID = str(json.load(person)["id"])
