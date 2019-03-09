@@ -10,7 +10,7 @@ from eth_account import Account
 import cv2
 import numpy as np
 import os
-import dlib
+# import dlib
 from random import randrange
 
 # Essentials
@@ -96,8 +96,8 @@ def getBalanceByID(server):
     except:
         print("ID is not found")
 
-def getUser(server, _privateKey):
-    return server.eth.account.privateKeyToAccount(_privateKey)
+def getUser(server, privateKey):
+    return server.eth.account.privateKeyToAccount(privateKey)
 
 def getGasPrice(speed):
     try:
@@ -504,10 +504,8 @@ if __name__ == "__main__":
         global _defaultGasPrice
         global _gasPriceURL
         global _rpcURL
-        global _privateKey
         read = json.load(ethConfig)
         _rpcURL = str(read["rpcUrl"])
-        _privateKey = str(read["privKey"])
         _gasPriceURL = str(read["gasPriceUrl"])
         _defaultGasPrice = str(read["defaultGasPrice"])
 
