@@ -20,7 +20,7 @@ contract KYC {
     mapping (address => uint) public requests;
     address[] public bulkLog;
 
-    /* modifier cleanLog {
+    modifier cleanLog {
         _;
         uint _l = bulkLog.length;
         address[] memory saved;
@@ -30,7 +30,7 @@ contract KYC {
             }
         }
         bulkLog = saved;
-    } */
+    }
     /*
         Status codes:
         == 0:
