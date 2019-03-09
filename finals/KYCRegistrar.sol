@@ -95,11 +95,13 @@ contract KYC {
             if (log[i] == msg.sender) {
                 flag = true;
             }
-            if (!flag) {
-                save[i] = log[i];
-            }
             else {
-                save[i - 1] = log[i];
+                if (!flag) {
+                    save[i] = log[i];
+                }
+                else {
+                    save[i - 1] = log[i];
+                }
             }
         }
         log = save;
