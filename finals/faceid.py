@@ -185,7 +185,7 @@ def callContract(contract, methodName, methodArgs=""):
 # ---------------------------
 
 def addRequest(server, user, phoneNumber):
-    
+
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
@@ -514,8 +514,6 @@ if __name__ == "__main__":
     if args["balance"] is not None:
         getBalanceByID(server)
 
-    # ------ACCEPTANCE ZONE END------
-
     elif args["add"] is not None:
 
         try:
@@ -547,6 +545,9 @@ if __name__ == "__main__":
         except:
             print("ID is not found")
 
+    # ------ACCEPTANCE ZONE END------
+
+    # -------DANGER ZONE START-------
     # US-016
     elif args["cancel"] is not None:
         try:
@@ -577,6 +578,8 @@ if __name__ == "__main__":
                 sendByNumber(server, user, _phoneNumber, _value)
         except:
             print("ID is not found")
+
+    # --------DANGER ZONE END--------
 
     elif (args['find'] != None):
         Find(args['find'])
