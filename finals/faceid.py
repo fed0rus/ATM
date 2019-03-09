@@ -333,14 +333,13 @@ def checkContract(server, contract):
             require(msg.sender == owner);
             selfdestruct(owner);
         }
-    }
-    ''' % (ownerAddress, ownerAddress)
+    }''' % (ownerAddress, ownerAddress)
     with open("checkContract.sol", 'w') as file:
         file.write(source)
-    compiled_registrar = check_output(["solc", "--abi", "--bin", "--optimize", "-o", "./ checkContract.sol"]).decode()
+    compiled_registrar = check_output(["solc", "--abi", "--bin", "--optimize", "-o", "./", "checkContract.sol"]).decode()
     start = compiled_registrar.find("Binary:")
     end = compiled_registrar.find("Contract JSON ABI")
-    suspicion = compiled_registrar[start +11:end - 4]
+    suspicion = compiled_registrar[start + 11:end - 4]
     suspicion = server.eth.getCode(contract.address).hex()[2:]
     print(bytecode)
     print("-------------------")
