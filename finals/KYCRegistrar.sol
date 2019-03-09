@@ -13,6 +13,7 @@ contract KYC {
     event UnregistrationRequest(address indexed sender);
     event RegistrationCanceled(address indexed sender);
     event UnregistrationCanceled(address indexed sender);
+    event RegistrationConfirmed(address indexed sender);
 
     mapping (uint => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
     mapping (address => uint) public AtN;
@@ -120,6 +121,22 @@ contract KYC {
         }
         return (addr, numb);
     } */
+
+    function confirmRequest(address applicant) public {
+        require(msg.sender == owner);
+        uint status = requests[applicant];
+        if (status == 1) {
+            number = AtN[applicant];
+            AtN[applicant] = 0;
+            NtA[number] = address(0);
+            emit RegistrationConfirmed(applicant);
+        }
+        else if (status > 1) {
+            AtN[applicant] = requests[applicant];
+            NtA[requests[applicant]] = applicant;
+            emit
+        }
+    }
 
     function () external payable {}
 
