@@ -11,27 +11,15 @@ contract KYC {
 
     event RegistrationRequest(address indexed sender);
     event UnregistrationRequest(address indexed sender);
+
     event RegistrationCanceled(address indexed sender);
     event UnregistrationCanceled(address indexed sender);
-    event RegistrationConfirmed(address indexed sender);
 
-    mapping (uint => address) public NtA; // NtA and AtN stand for "number to address" and vice versa
-    mapping (address => uint) public AtN;
+    event RegistrationConfirmed(address indexed sender);
+    event UngistrationConfirmed(address indexed sender);
 
     mapping (address => uint) public requests;
-    address[] public bulkLog;
 
-    modifier cleanLog {
-        _;
-        uint _l = bulkLog.length;
-        address[] memory saved;
-        for (uint i = 0; i < _l; ++i) {
-            if (requests[bulkLog[i]] != 0) {
-                saved[saved.length] = bulkLog[i];
-            }
-        }
-        bulkLog = saved;
-    }
     /*
         Status codes:
         == 0:
@@ -41,6 +29,7 @@ contract KYC {
         > 1:
             add request
     */
+
     function whoIsOwner() external view returns (address) {
         return owner;
     }
@@ -51,13 +40,6 @@ contract KYC {
         owner = newOwner;
     }
 
-    function getAddressByNumber(uint _number) external view returns (address) {
-    }
-
-    function getNumberByAddress(address _address) external view returns (uint) {
-        return AtN[_address];
-    }
-
     function getStatus(address _address) external view returns (uint) {
         return requests[_address];
     }
@@ -66,15 +48,15 @@ contract KYC {
         require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
-        bulkLog.push(msg.sender);
+        require(AtN[msg.sender] == 0);
         requests[msg.sender] = _phoneNumber;
         emit RegistrationRequest(msg.sender);
     }
 
     function delRequest() public {
         require(msg.sender != address(0));
-        require(AtN[msg.sender] > 1);
-        bulkLog.push(msg.sender);
+        require(requests[msg.sender] == 0)
+        require(AtN[msg.sender] != 0);
         requests[msg.sender] = 1;
         emit UnregistrationRequest(msg.sender);
     }
@@ -82,13 +64,13 @@ contract KYC {
     function cancelRequest() public {
         require(msg.sender != address(0));
         require(requests[msg.sender] != 0);
-        bool d = false;
+        bool switch = false;
         if (requests[msg.sender] == 1) {
-            d = true;
+            switch = true;
         }
         requests[msg.sender] = 0;
         bulkLog.push(msg.sender);
-        if (d) {
+        if (switch) {
             emit UnregistrationCanceled(msg.sender);
         }
         else {
@@ -129,12 +111,15 @@ contract KYC {
             number = AtN[applicant];
             AtN[applicant] = 0;
             NtA[number] = address(0);
-            emit RegistrationConfirmed(applicant);
+            emit UnegistrationConfirmed(applicant);
         }
         else if (status > 1) {
             AtN[applicant] = requests[applicant];
             NtA[requests[applicant]] = applicant;
-            emit
+            emit RegistrationConfirmed(applicant);
+        }
+        else {
+            revert();
         }
     }
 
