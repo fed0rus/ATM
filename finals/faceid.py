@@ -188,94 +188,95 @@ def addRequest(server, user, phoneNumber):
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
-    try:
-        callContract(_contract, methodName="watermark", methodArgs=[])
-        _user = getUser(server, user.privateKey)
-        if server.eth.getBalance(_user.address) <= 0:
-            return "No funds to send the request"
-        status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
-        if status <= 1:
-            txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
-            return "Registration request sent by {}".format(txHash)
-        elif status > 1:
-            return "Registration request already sent"
-    except:
-        return "Seems that the contract address is not the registrar contract"
+
+    _user = getUser(server, user.privateKey)
+
+    if server.eth.getBalance(_user.address) <= 0:
+        return "No funds to send the request"
+
+    status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+    if status == 0:
+        txHash = invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
+        return "Registration request sent by {}".format(txHash)
+    elif status > 1:
+        return "Registration request already sent"
+    elif status == 1:
+        return "Unregistration request already sent. SWW"
 
 def delRequest(server, user):
 
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
-    try:
-        callContract(_contract, methodName="watermark", methodArgs=[])
-        _user = getUser(server, user.privateKey)
-        if server.eth.getBalance(_user.address) <= 0:
-            return "No funds to send the request"
-        status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
-        if status == 1:
-            return "Unregistration request already sent"
-        elif status > 1:
-            try:
-                txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
-                return "Unregistration request sent by {}".format(txHash)
-            except:
-                return "Account is not registered yet"
-        else:
-            return "Account is not registered yet"
-    except:
-        return "Seems that the contract address is not the registrar contract"
 
-def cancelRequest(server, user):
-
-    _contract = getContract(server, flag="kyc")
-    if _contract == "No contract address":
-        return _contract
-    try:
-        callContract(_contract, methodName="watermark", methodArgs=[])
-        _user = getUser(server, user.privateKey)
-        if server.eth.getBalance(user.address) <= 0:
-            return "No funds to send the request"
-        status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
-        if status == 0:
-            return "No requests found"
-        elif status == 1:
-            try:
-                txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
-                return "Unregistration canceled by {}".format(txHash)
-            except:
-                return "Account is not registered yet"
-        elif status > 1:
-            if server.eth.getBalance(user.address) <= 0:
-                return "No funds to send the request"
-            else:
-                try:
-                    txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
-                    return "Registration canceled by {}".format(txHash)
-                except:
-                    return "Account is not registered yet"
-    except:
-        return "Seems that the contract address is not the registrar contract"
-
-def sendByNumber(server, user, pn, val):
-    _contract = getContract(server, flag="kyc")
-    if _contract == "No contract address":
-        return _contract
-    if not isContract(_contract):
-        return "Seems that the contract address is not the registrar contract"
     _user = getUser(server, user.privateKey)
-    refinedNumber = int(str(pn)[1:])
-    destAddress = invokeContract(server, _user, _contract, methodName="getAddressByNumber", methodArgs=[refinedNumber])
-    if destAddress == 0:
-        print("No account with the phone number {}".format(pn))
-    elif (server.isAddress(destAddress)):
-        txHash = send(server, _user, destAddress, val)
-        if txHash == "No funds to send the payment":
-            print(txHash)
-        print("Payment of {a} to {d} scheduled".format(a=scaleValue(int(val)), d=pn))
-        print("Transaction Hash: {}".format(txHash))
+    if server.eth.getBalance(_user.address) <= 0:
+        return "No funds to send the request"
+
+    status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+    if status == 1:
+        return "Unregistration request already sent"
+    elif status == 0:
+        return "There are no registration requests"
+    elif status == 1:
+        try:
+            txHash = invokeContract(server, _user, _contract, methodName="delRequest", methodArgs=[])
+            return "Unregistration request sent by {}".format(txHash)
+        except:
+            return "Account is not registered yet"
     else:
-        raise ValueError
+        return "Account is not registered yet"
+#
+# def cancelRequest(server, user):
+#
+#     _contract = getContract(server, flag="kyc")
+#     if _contract == "No contract address":
+#         return _contract
+#     try:
+#         callContract(_contract, methodName="watermark", methodArgs=[])
+#         _user = getUser(server, user.privateKey)
+#         if server.eth.getBalance(user.address) <= 0:
+#             return "No funds to send the request"
+#         status = callContract(_contract, methodName="getStatus", methodArgs=[user.address])
+#         if status == 0:
+#             return "No requests found"
+#         elif status == 1:
+#             try:
+#                 txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
+#                 return "Unregistration canceled by {}".format(txHash)
+#             except:
+#                 return "Account is not registered yet"
+#         elif status > 1:
+#             if server.eth.getBalance(user.address) <= 0:
+#                 return "No funds to send the request"
+#             else:
+#                 try:
+#                     txHash = invokeContract(server, _user, _contract, methodName="cancelRequest", methodArgs=[])
+#                     return "Registration canceled by {}".format(txHash)
+#                 except:
+#                     return "Account is not registered yet"
+#     except:
+#         return "Seems that the contract address is not the registrar contract"
+
+# def sendByNumber(server, user, pn, val):
+#     _contract = getContract(server, flag="kyc")
+#     if _contract == "No contract address":
+#         return _contract
+#     if not isContract(_contract):
+#         return "Seems that the contract address is not the registrar contract"
+#     _user = getUser(server, user.privateKey)
+#     refinedNumber = int(str(pn)[1:])
+#     destAddress = invokeContract(server, _user, _contract, methodName="getAddressByNumber", methodArgs=[refinedNumber])
+#     if destAddress == 0:
+#         print("No account with the phone number {}".format(pn))
+#     elif (server.isAddress(destAddress)):
+#         txHash = send(server, _user, destAddress, val)
+#         if txHash == "No funds to send the payment":
+#             print(txHash)
+#         print("Payment of {a} to {d} scheduled".format(a=scaleValue(int(val)), d=pn))
+#         print("Transaction Hash: {}".format(txHash))
+#     else:
+#         raise ValueError
 
 # ----------RUS END----------
 
@@ -514,12 +515,15 @@ if __name__ == "__main__":
 
     # -----------END SET-------------
 
-    # US-013
+    # ------ACCEPTANCE ZONE START----
+
     if args["balance"] is not None:
         getBalanceByID(server)
 
-    # US-014
+    # ------ACCEPTANCE ZONE START----
+
     elif args["add"] is not None:
+
         try:
             with open("person.json", 'r') as person:
                 _UUID = str(json.load(person)["id"])
@@ -532,6 +536,7 @@ if __name__ == "__main__":
                 print(addRequest(server, user, int(_phoneNumber[1:])))
             else:
                 print("Incorrect phone number")
+
         except:
             print("ID is not found")
 
