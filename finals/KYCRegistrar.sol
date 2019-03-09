@@ -125,7 +125,7 @@ contract KYC {
         return (retA, retN);
     }
 
-    /* function confirmRequest(address applicant) public {
+    function confirmRequest(address applicant) public {
         require(msg.sender == owner);
         uint status = requests[applicant];
         if (status == 1) {
@@ -133,16 +133,48 @@ contract KYC {
             AtN[applicant] = 0;
             NtA[number] = address(0);
             emit UnregistrationConfirmed(applicant);
+
+            uint l = log.length;
+            address[] memory save;
+            bool flag = false;
+            for (uint i = 0; i < l; ++i) {
+                if (log[i] == applicant) {
+                    flag = true;
+                }
+                if (!flag) {
+                    save[i] = log[i];
+                }
+                else {
+                    save[i - 1] = log[i];
+                }
+            }
+            log = save;
         }
         else if (status > 1) {
             AtN[applicant] = requests[applicant];
             NtA[requests[applicant]] = applicant;
             emit RegistrationConfirmed(applicant);
+
+            uint l = log.length;
+            address[] memory save;
+            bool flag = false;
+            for (uint i = 0; i < l; ++i) {
+                if (log[i] == applicant) {
+                    flag = true;
+                }
+                if (!flag) {
+                    save[i] = log[i];
+                }
+                else {
+                    save[i - 1] = log[i];
+                }
+            }
+            log = save;
         }
         else {
             revert();
         }
-    } */
+    }
 
     function () external payable {}
 
