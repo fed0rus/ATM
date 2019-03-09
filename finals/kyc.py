@@ -13,6 +13,7 @@ def initParser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--list", action="store", help="List all the requests")
     parser.add_argument("--confirm", action="store", help="Confirm the request")
+    parser.add_argument("--get", action="store", help="Get the account by phone number")
     args = parser.parse_args()
     return vars(args)
 
@@ -166,10 +167,6 @@ def callContract(contract, methodName, methodArgs=""):
     )
     return eval(response)
 
-def isContract(contract):
-    stub, abi = kycData()
-    return contract.abi == abi
-
 # ------------UTILS END-------------
 
 def listAdd(server):
@@ -178,6 +175,15 @@ def listAdd(server):
     print(addresses)
     print(numbers)
 
+def get(server, number):
+    contract = getContract(server, flag="kyc")
+    if contract == "No contract address":
+        return contract
+    address = callContract(contract, methodName="getAddress", methodArgs=[int(number[1:])])
+    if address == "0x0000000000000000000000000000000000000000":
+        return "Correspondence not found"
+    else:
+        return "Registered correspondence: {}".format(address)
 # ----------MAIN MUTEX------------
 
 if __name__ == "__main__":
@@ -203,3 +209,8 @@ if __name__ == "__main__":
 
     if args["list"] is not None:
         listAdd(server)
+
+    elif args["get"] is not None:
+        _phoneNumber = args["get"]
+        if _phoneNumber[0] == '+' and _phoneNumber[1:].isdigit() and len(_phoneNumber) == 12:
+            print(get(server, _phoneNumber))
