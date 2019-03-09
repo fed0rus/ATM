@@ -72,7 +72,7 @@ contract KYC {
 
     function delRequest() public {
         require(msg.sender != address(0));
-        require(AtN[msg.sender] != 0);
+        require(AtN[msg.sender] > 1);
         bulkLog.push(msg.sender);
         requests[msg.sender] = 1;
         emit UnregistrationRequest(msg.sender);
@@ -95,7 +95,7 @@ contract KYC {
         }
     }
 
-    function listAdd() external view returns (address[] memory, uint[] memory) {
+    /* function listAdd() external view returns (address[] memory, uint[] memory) {
         uint _bl = bulkLog.length;
         address[] memory addr;
         uint[] memory numb;
@@ -119,12 +119,16 @@ contract KYC {
             }
         }
         return (addr, numb);
-    }
+    } */
 
     function () external payable {}
 
     function deleteContract() external {
         require(msg.sender == owner);
         selfdestruct(owner);
+    }
+
+    function watermark() external pure returns (bool) {
+        return true;
     }
 }
