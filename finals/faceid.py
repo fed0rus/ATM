@@ -185,6 +185,7 @@ def callContract(contract, methodName, methodArgs=""):
 # ---------------------------
 
 def addRequest(server, user, phoneNumber):
+    
     _contract = getContract(server, flag="kyc")
     if _contract == "No contract address":
         return _contract
