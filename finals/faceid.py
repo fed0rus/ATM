@@ -99,6 +99,14 @@ def getBalanceByID(server):
 def getUser(server, privateKey):
     return server.eth.account.privateKeyToAccount(privateKey)
 
+def getUUID():
+    try:
+        with open("person.json", 'r') as person:
+            return str(json.load(person)["id"])
+    except:
+        return -1
+
+
 def getGasPrice(speed):
     try:
         response = requests.get(_gasPriceURL)
@@ -516,9 +524,10 @@ if __name__ == "__main__":
 
     elif args["add"] is not None:
 
-        try:
-            with open("person.json", 'r') as person:
-                _UUID = str(json.load(person)["id"])
+        _UUID = getUUID()
+        if _UUID == -1:
+            print("ID is not found")
+        else:
             _phoneNumber = args["add"][1]
             if _phoneNumber[0] == '+' and _phoneNumber[1:].isdigit() and len(_phoneNumber) == 12:
                 _PIN = args["add"][0]
@@ -529,55 +538,51 @@ if __name__ == "__main__":
             else:
                 print("Incorrect phone number")
 
-        except:
-            print("ID is not found")
-
     elif args["del"] is not None:
 
-        try:
-            with open("person.json", 'r') as person:
-                _UUID = str(json.load(person)["id"])
+        _UUID = getUUID()
+        if _UUID == -1:
+            print("ID is not found")
+        else:
             _PIN = args["del"]
             user = User(_UUID, _PIN)
             user.generatePrivateKey()
             user.generateAddress()
             print(delRequest(server, user))
-        except:
-            print("ID is not found")
 
     # ------ACCEPTANCE ZONE END------
 
     # -------DANGER ZONE START-------
     # US-016
     elif args["cancel"] is not None:
-        try:
-            with open("person.json", 'r') as person:
-                _UUID = str(json.load(person)["id"])
-            _PIN = args["cancel"]
-            user = User(_UUID, _PIN)
-            user.generatePrivateKey()
-            user.generateAddress()
-            print(cancelRequest(server, user))
-        except:
-            print("ID is not found")
 
-    # US-017
-    elif args["send"] is not None:
-        try:
-            with open("person.json", 'r') as person:
-                _UUID = str(json.load(person)["id"])
-            _PIN = args["send"][0]
-            _phoneNumber = args["send"][1]
-            if len(str(_phoneNumber)) != 11:
-                print("Incorrect phone number")
+            _UUID = getUUID()
+            if _UUID == -1:
+                print("ID is not found")
             else:
-                _value = args["send"][2]
+                _PIN = args["cancel"]
                 user = User(_UUID, _PIN)
                 user.generatePrivateKey()
                 user.generateAddress()
-                sendByNumber(server, user, _phoneNumber, _value)
-        except:
-            print("ID is not found")
+                print(cancelRequest(server, user))
+
+    # US-017
+    # elif args["send"] is not None:
+    #     try:
+    #         with open("person.json", 'r') as person:
+    #             _UUID = str(json.load(person)["id"])
+    #         _PIN = args["send"][0]
+    #         _phoneNumber = args["send"][1]
+    #         if len(str(_phoneNumber)) != 11:
+    #             print("Incorrect phone number")
+    #         else:
+    #             _value = args["send"][2]
+    #             user = User(_UUID, _PIN)
+    #             user.generatePrivateKey()
+    #             user.generateAddress()
+    #             sendByNumber(server, user, _phoneNumber, _value)
+    #     except:
+    #         print("ID is not found")
 
     # --------DANGER ZONE END--------
 
