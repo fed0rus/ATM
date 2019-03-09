@@ -16,7 +16,12 @@ contract KYC {
     event UnregistrationCanceled(address indexed sender);
 
     event RegistrationConfirmed(address indexed sender);
-    event UngistrationConfirmed(address indexed sender);
+    event UnregistrationConfirmed(address indexed sender);
+
+    mapping (address => uint) public AtN;
+    mapping (uint => address) public NtA;
+
+    address[] public log;
 
     mapping (address => uint) public requests;
 
@@ -51,67 +56,83 @@ contract KYC {
         require(AtN[msg.sender] == 0);
         requests[msg.sender] = _phoneNumber;
         emit RegistrationRequest(msg.sender);
+        log.push(msg.sender);
     }
 
     function delRequest() public {
         require(msg.sender != address(0));
-        require(requests[msg.sender] == 0)
+        require(requests[msg.sender] == 0);
         require(AtN[msg.sender] != 0);
         requests[msg.sender] = 1;
         emit UnregistrationRequest(msg.sender);
+        log.push(msg.sender);
     }
 
     function cancelRequest() public {
         require(msg.sender != address(0));
         require(requests[msg.sender] != 0);
-        bool switch = false;
+        bool mutex = false;
         if (requests[msg.sender] == 1) {
-            switch = true;
+            mutex = true;
         }
         requests[msg.sender] = 0;
-        bulkLog.push(msg.sender);
-        if (switch) {
+        if (mutex) {
             emit UnregistrationCanceled(msg.sender);
         }
         else {
             emit RegistrationCanceled(msg.sender);
         }
-    }
-
-    /* function listAdd() external view returns (address[] memory, uint[] memory) {
-        uint _bl = bulkLog.length;
-        address[] memory addr;
-        uint[] memory numb;
-        for (uint i = 0; i < _bl; ++i) {
-            if (requests[bulkLog[i]] > 1) {
-                addr[addr.length] = bulkLog[i];
-                numb[numb.length] = requests[bulkLog[i]];
+        uint l = log.length;
+        address[] memory save;
+        bool flag = false;
+        for (uint i = 0; i < l; ++i) {
+            if (log[i] == msg.sender) {
+                flag = true;
+            }
+            if (!flag) {
+                save[i] = log[i];
+            }
+            else {
+                save[i - 1] = log[i];
             }
         }
-        return (addr, numb);
+        log = save;
+    }
+
+    function listAdd() external view returns (address[] memory, uint[] memory) {
+        uint l = log.length;
+        address[] memory retA;
+        uint[] memory retN;
+        for (uint i = 0; i < l; ++i) {
+            if (requests[log[i]] > 1) {
+                retA[retA.length] = log[i];
+                retN[retN.length] = requests[log[i]];
+            }
+        }
+        return (retA, retN);
     }
 
     function listDel() external view returns (address[] memory, uint[] memory) {
-        uint _bl = bulkLog.length;
-        address[] memory addr;
-        uint[] memory numb;
-        for (uint i = 0; i < _bl; ++i) {
-            if (requests[bulkLog[i]] == 1) {
-                addr[addr.length] = bulkLog[i];
-                numb[numb.length] = requests[bulkLog[i]];
+        uint l = log.length;
+        address[] memory retA;
+        uint[] memory retN;
+        for (uint i = 0; i < l; ++i) {
+            if (requests[log[i]] == 1) {
+                retA[retA.length] = log[i];
+                retN[retN.length] = AtN[log[i]];
             }
         }
-        return (addr, numb);
-    } */
+        return (retA, retN);
+    }
 
-    function confirmRequest(address applicant) public {
+    /* function confirmRequest(address applicant) public {
         require(msg.sender == owner);
         uint status = requests[applicant];
         if (status == 1) {
-            number = AtN[applicant];
+            uint number = AtN[applicant];
             AtN[applicant] = 0;
             NtA[number] = address(0);
-            emit UnegistrationConfirmed(applicant);
+            emit UnregistrationConfirmed(applicant);
         }
         else if (status > 1) {
             AtN[applicant] = requests[applicant];
@@ -121,16 +142,12 @@ contract KYC {
         else {
             revert();
         }
-    }
+    } */
 
     function () external payable {}
 
     function deleteContract() external {
         require(msg.sender == owner);
         selfdestruct(owner);
-    }
-
-    function watermark() external pure returns (bool) {
-        return true;
     }
 }
