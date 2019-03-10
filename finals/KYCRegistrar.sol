@@ -137,7 +137,7 @@ contract KYC {
         log = save;
     }
 
-    function listAdd() external view returns (address[] memory, uint[] memory) {
+    /* function listAdd() external view returns (address[] memory, uint[] memory) {
         uint l = log.length;
         address[] memory retA;
         uint[] memory retN;
@@ -161,6 +161,12 @@ contract KYC {
             }
         }
         return (retA, retN);
+    } */
+
+    function listPayments(address caller) external view returns (bool[], uint[], uint[]) {
+        bool[] memory fromTo, 
+        uint[],
+        uint[]
     }
 
     function confirmRequest(address applicant) public {

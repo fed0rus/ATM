@@ -140,13 +140,11 @@ def getValidator(server):
     validator = server.eth.contract(address="0x0B603024EB0d2Da5C5c862a87d84FE9A5a5a905C", abi=ABI)
     return validator
 
-def checkContract(server, contract, flag):
-    validator = getValidator(server)
+def checkContract(Server, contract, flag):
+    checkerServer = Web3(HTTPProvider("https://sokol.poa.network"))
+    validator = getValidator(checkerServer)
     if flag == "kyc":
         status = callContract(validator, methodName="checkValidityKYC", methodArgs=[contract.address])
-        print("status")
-        print(status)
-        print("status")
         if status:
             return True
         return False
@@ -208,8 +206,8 @@ def callContract(contract, methodName, methodArgs=""):
 
     _args = str(methodArgs)[1:-1]
     response = "contract.functions.{methodName}({methodArgs}).call()".format(
-    methodName=methodName,
-    methodArgs=_args,
+        methodName=methodName,
+        methodArgs=_args
     )
     return eval(response)
 
