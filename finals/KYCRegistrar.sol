@@ -84,15 +84,15 @@ contract KYC {
 
     function addRequest(uint _phoneNumber) public {
         /* For --del testing */
-        AtN[0x84F89561c38b380e97aed3F6f8f28263C60925F2] = _phoneNumber;
-        NtA[_phoneNumber] = 0x84F89561c38b380e97aed3F6f8f28263C60925F2;
-        /* require(msg.sender != address(0));
+        /* AtN[0x84F89561c38b380e97aed3F6f8f28263C60925F2] = _phoneNumber;
+        NtA[_phoneNumber] = 0x84F89561c38b380e97aed3F6f8f28263C60925F2; */
+        require(msg.sender != address(0));
         require(_phoneNumber >= 10000000000 && _phoneNumber <= 99999999999);
         require(requests[msg.sender] == 0);
         require(AtN[msg.sender] == 0);
         requests[msg.sender] = _phoneNumber;
         emit RegistrationRequest(msg.sender);
-        log.push(msg.sender); */
+        log.push(msg.sender);
     }
 
     function delRequest() public {
