@@ -65,7 +65,7 @@ contract KYC {
         return NtA[_pn];
     }
 
-    /* function sendMoney(address _to, uint _value) public {
+    function sendMoney(address _to, uint _value) public {
         require(msg.sender != address(0));
         Payment memory p;
         p.from = address(msg.sender);
@@ -75,7 +75,7 @@ contract KYC {
         address payable = address() payable.
         address(p.to).transfer(_value);
         payments.push(p);
-    } */
+    }
 
     function addRequest(uint _phoneNumber) public {
         /* For --del testing */
