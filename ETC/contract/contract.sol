@@ -1,45 +1,30 @@
-pragma solidity >=0.5.4 <0.6.0;
+pragma solidity >=0.5.0 <0.6.0;
 
-contract KYC {
-
-    address payable owner;
+contract Holder {
 
     constructor() public {
         require(msg.sender != address(0));
-        owner = msg.sender;
     }
 
-    mapping (address => bytes32) public addressToCustomerName;
-    address[] addressLog;
+    mapping (address => bool) public list;
 
-    function addCustomer(bytes32 customerName) public {
+    function addValidationKYC(address c) public {
         require(msg.sender != address(0));
-        addressToCustomerName[msg.sender] = customerName;
-        addressLog.push(msg.sender);
+        require(c != address(0));
+        list[c] = true;
     }
 
-    function deleteCustomer() public {
+    function addValidationPH(address c) public {
         require(msg.sender != address(0));
-        delete addressToCustomerName[msg.sender];
+        require(c != address(0));
+        list[c] = true;
     }
 
-    function getStorage() external view returns (address[] memory, bytes32[] memory) {
-        uint _l = addressLog.length;
-        bytes32[] memory names = new bytes32[](_l);
-        for (uint i = 0; i < _l; ++i) {
-            names[i] = addressToCustomerName[addressLog[i]];
-        }
-        return (addressLog, names);
+    function checkValidityKYC(address c) external view returns (bool) {
+        return list[c] != false;
     }
 
-    function isAddressUsed(address customerAddress) external view returns (bool) {
-        return uint(addressToCustomerName[customerAddress]) != 0;
-    }
-
-    function () external payable {}
-
-    function deleteContract() external {
-        require(msg.sender == owner);
-        selfdestruct(owner);
+    function checkValidityPH(address c) external view returns (bool) {
+        return list[c] != false;
     }
 }

@@ -91,20 +91,23 @@ def cleanTxResponse(rawReceipt):
     return eval(str(rawReceipt)[14:-1]) if rawReceipt is not None else None
 
 def getValidator(server):
-    ABI = json.loads('[{"constant":true,"inputs":[{"name":"c","type":"address"}],"name":"checkValidityKYC","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"c","type":"address"}],"name":"addValidationPH","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"c","type":"address"}],"name":"checkValidityPH","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"list","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"c","type":"address"}],"name":"addValidationKYC","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
-    validator = server.eth.contract(address="0x050b86da4348aB90D3339108CDEA201435488BA9", abi=ABI)
+    ABI = json.loads('[{"constant":true,"inputs":[{"name":"c","type":"address"}],"name":"checkValidityKYC","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"c","type":"address"}],"name":"addValidationPH","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"c","type":"address"}],"name":"checkValidityPH","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"list","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"c","type":"address"}],"name":"addValidationKYC","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]')
+    validator = server.eth.contract(address="0x0B603024EB0d2Da5C5c862a87d84FE9A5a5a905C", abi=ABI)
     return validator
 
 def checkContract(server, contract, flag):
     validator = getValidator(server)
     if flag == "kyc":
         status = callContract(validator, methodName="checkValidityKYC", methodArgs=[contract.address])
-        if status == 1:
+        print("status")
+        print(status)
+        print("status")
+        if status:
             return True
         return False
     elif flag == "ph":
         status = callContract(validator, methodName="checkValidityPH", methodArgs=[contract.address])
-        if status == 2:
+        if status:
             return True
         return False
 
