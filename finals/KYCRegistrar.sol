@@ -25,6 +25,14 @@ contract KYC {
 
     mapping (address => uint) public requests;
 
+    struct Payment {
+        address from;
+        address to;
+        uint value;
+        uint time;
+    }
+    Payment[] payments;
+
     /*
         Status codes:
         == 0:
@@ -56,6 +64,18 @@ contract KYC {
     function getAddress(uint _pn) external view returns (address) {
         return NtA[_pn];
     }
+
+    /* function sendMoney(address _to, uint _value) public {
+        require(msg.sender != address(0));
+        Payment memory p;
+        p.from = address(msg.sender);
+        p.to = _to;
+        p.value = _value;
+        p.time = now;
+        address payable = address() payable.
+        address(p.to).transfer(_value);
+        payments.push(p);
+    } */
 
     function addRequest(uint _phoneNumber) public {
         /* For --del testing */
