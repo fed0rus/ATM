@@ -8,7 +8,7 @@ contract KYC {
         require(msg.sender != address(0));
         owner = msg.sender;
     }
-    
+
     event RegistrationRequest(address indexed sender);
     event UnregistrationRequest(address indexed sender);
 
@@ -163,11 +163,28 @@ contract KYC {
         return (retA, retN);
     } */
 
-    /* function listPayments(address caller) external view returns (bool[], uint[], uint[]) {
-        bool[] memory fromTo,
-        uint[],
-        uint[]
-    } */
+    function listPayments(address caller) external view returns (bool[] memory, uint[] memory, uint[] memory, uint[] memory) {
+        bool[] memory fromTo; // 1 / 0
+        uint[] memory numbers;
+        uint[] memory values;
+        uint[] memory times;
+        uint l = payments.length;
+        for (uint i = 0; i < l; ++i) {
+            if (payments[i].from == caller) {
+                fromTo[fromTo.length] = true;
+                numbers[numbers.length] = payments[i].to;
+                values[values.length] = payments[i].value;
+                times[times.length] = payments[i].time;
+            }
+            else if (payments[i].to == AtN[caller]) {
+                fromTo[fromTo.length] = false;
+                numbers[numbers.length] = AtN[payments[i].from];
+                values[values.length] = payments[i].value;
+                times[times.length] = payments[i].time;
+            }
+        }
+        return (fromTo, numbers, values, times);
+    }
 
     function confirmRequest(address applicant) public {
         require(msg.sender == owner);
