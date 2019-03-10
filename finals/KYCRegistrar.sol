@@ -65,11 +65,8 @@ contract KYC {
         return NtA[_pn];
     }
 
-<<<<<<< HEAD
+
     function sendMoney(uint _pn, uint _value) public {
-=======
-    function sendMoney(address _to, uint _value) public {
->>>>>>> 697f500cdf9762b3f7449920a41487b6890c8b77
         require(msg.sender != address(0));
         Payment memory p;
         p.from = address(msg.sender);
