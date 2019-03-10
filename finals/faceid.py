@@ -554,6 +554,7 @@ if __name__ == "__main__":
     # ------ACCEPTANCE ZONE START----
 
     if args["balance"] is not None:
+
         getBalanceByID(server)
 
     elif args["add"] is not None:
@@ -595,9 +596,7 @@ if __name__ == "__main__":
             user.generatePrivateKey()
             user.generateAddress()
             print(cancelRequest(server, user))
-    # ------ACCEPTANCE ZONE END------
 
-    # -------DANGER ZONE START-------
 
     elif args["send"] is not None:
 
@@ -616,6 +615,9 @@ if __name__ == "__main__":
             else:
                 print("Incorrect phone number")
 
+    # ------ACCEPTANCE ZONE END------
+
+    # -------DANGER ZONE START-------
     # --------DANGER ZONE END--------
 
     elif (args['find'] != None):
