@@ -71,7 +71,6 @@ contract KYC {
         return NtA[_pn];
     }
 
-
     function sendMoney(uint _pn, uint _value) public {
         require(msg.sender != address(0));
         Payment memory p;
@@ -193,6 +192,7 @@ contract KYC {
             uint number = AtN[applicant];
             AtN[applicant] = 0;
             NtA[number] = address(0);
+            requests[applicant] = 0;
             emit UnregistrationConfirmed(applicant);
 
             uint l = log.length;
@@ -202,11 +202,13 @@ contract KYC {
                 if (log[i] == applicant) {
                     flag = true;
                 }
-                if (!flag) {
-                    save[i] = log[i];
-                }
                 else {
-                    save[i - 1] = log[i];
+                    if (!flag) {
+                        save[i] = log[i];
+                    }
+                    else {
+                        save[i - 1] = log[i];
+                    }
                 }
             }
             log = save;
@@ -214,6 +216,7 @@ contract KYC {
         else if (status > 1) {
             AtN[applicant] = requests[applicant];
             NtA[requests[applicant]] = applicant;
+            requests[applicant] = 0;
             emit RegistrationConfirmed(applicant);
 
             uint l = log.length;
@@ -223,17 +226,16 @@ contract KYC {
                 if (log[i] == applicant) {
                     flag = true;
                 }
-                if (!flag) {
-                    save[i] = log[i];
-                }
                 else {
-                    save[i - 1] = log[i];
+                    if (!flag) {
+                        save[i] = log[i];
+                    }
+                    else {
+                        save[i - 1] = log[i];
+                    }
                 }
             }
             log = save;
-        }
-        else {
-            revert();
         }
     }
 
