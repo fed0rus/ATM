@@ -152,19 +152,6 @@ def checkContract(server, contract, flag):
             return True
     return False
 
-def send(server, sender, dest, val):
-    txUnsigned = {
-        "from": sender.address,
-        "to": dest,
-        "nonce": server.eth.getTransactionCount(sender.address),
-        "gas": 21000,
-        "gasPrice": getGasPrice(speed="fast"),
-        "value": val,
-    }
-    txSigned = sender.signTransaction(txUnsigned)
-    txHash = server.eth.sendRawTransaction(txSigned.rawTransaction).hex()
-    return txHash
-
 def getContract(server, flag):
 
     try:
@@ -305,8 +292,7 @@ def sendByNumber(server, user, pn, val):
     if destAddress == 0:
         return "No account with the phone number {}".format(pn)
     else:
-        txHash = send(server, _user, destAddress, int(val))
-        invokeContract(server, _user, _contract, methodName="addRequest", methodArgs=[phoneNumber])
+        invokeContract(server, _user, _contract, methodName="sendMoney", methodArgs=[phoneNumber])
         return "Payment of {a} to {d} scheduled\nTransaction Hash: {t}".format(a=scaleValue(int(val)), d=pn, t=txHash)
 
 # ----------RUS END----------
