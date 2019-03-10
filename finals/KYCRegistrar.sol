@@ -8,7 +8,7 @@ contract KYC {
         require(msg.sender != address(0));
         owner = msg.sender;
     }
-
+    
     event RegistrationRequest(address indexed sender);
     event UnregistrationRequest(address indexed sender);
 
@@ -163,11 +163,11 @@ contract KYC {
         return (retA, retN);
     } */
 
-    function listPayments(address caller) external view returns (bool[], uint[], uint[]) {
-        bool[] memory fromTo, 
+    /* function listPayments(address caller) external view returns (bool[], uint[], uint[]) {
+        bool[] memory fromTo,
         uint[],
         uint[]
-    }
+    } */
 
     function confirmRequest(address applicant) public {
         require(msg.sender == owner);
@@ -218,6 +218,10 @@ contract KYC {
         else {
             revert();
         }
+    }
+
+    function verify() external pure returns (bool) {
+        return true;
     }
 
     function () external payable {}
