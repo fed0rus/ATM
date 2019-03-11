@@ -34,5 +34,3 @@ def getContract(flag):
 def convertEpoch(unixTime):
     assert type(unixTime) == int
     return datetime.utcfromtimestamp(unixTime).strftime("%H:%M %d.%m.%Y")
-
-print(setUserId())
