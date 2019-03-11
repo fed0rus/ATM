@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # ----------START SET------------
     ethConfig = utilities.getFile("network.json")
     if ethConfig == -1:
-        
+
 
     args = arguments.getArgs()
     server = Web3(HTTPProvider(_rpcURL))
