@@ -28,9 +28,12 @@ def checkNumber(number):
 
 def getContract(flag):
     if flag == "kyc":
-        compiledRegistrar = check_output(["solc", "--optimize", "--bin", "--abi", "-o", "./", "registrar.sol"]).decode()
-        pass
+        check_output(["solc", "--optimize", "--overwrite", "--bin", "--abi", "-o", "./", "Registrar.sol"])
+        with open("Registrar.bin") as bin:
+            return bin.read()
 
 def convertEpoch(unixTime):
     assert type(unixTime) == int
     return datetime.utcfromtimestamp(unixTime).strftime("%H:%M %d.%m.%Y")
+
+print(getContract("kyc"))
