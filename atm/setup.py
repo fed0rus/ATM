@@ -2,7 +2,7 @@ import utilities
 import blockchain
 import arguments
 
-args = arguments.getArgs()
+args = utilities.getArgs()
 
 if __name__ == "__main__":
 
