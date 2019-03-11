@@ -2,12 +2,21 @@ from subprocess import check_output
 from time import sleep
 import json
 import re
+from datetime import datetime
 
-def getFile(filename):
+def setNet():
     try:
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            return data
+        with open("network.json", 'r') as file:
+            config = json.load(file)
+            return config
+    except:
+        return -1
+
+def setUserId():
+    try:
+        with open("person.json", 'r') as file:
+            id = json.load(file)
+            return id
     except:
         return -1
 
@@ -20,6 +29,10 @@ def checkNumber(number):
 def getContract(flag):
     if flag == "kyc":
         compiledRegistrar = check_output(["solc", "--optimize", "--bin", "--abi", "-o", "./", "registrar.sol"]).decode()
-        bytecode = 
+        pass
 
-getContract("kyc")
+def convertEpoch(unixTime):
+    assert type(unixTime) == int
+    return datetime.utcfromtimestamp(unixTime).strftime("%H:%M %d.%m.%Y")
+
+print(setUserId())
