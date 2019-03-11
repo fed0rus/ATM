@@ -13,6 +13,6 @@ def getArgs():
     parser.add_argument("--deploy", action="store_true", help="Deploy a new contract")
     parser.add_argument("--owner", action="store", help="Acquire the owner of the contract")
     parser.add_argument("--chown", action="store", nargs='+', help="Change the owner of the contract")
-    parser.add_argument("--send", action="store", nargs='+', help="Send money")
+
     args = parser.parse_args()
     return vars(args)
