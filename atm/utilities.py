@@ -2,7 +2,6 @@ from subprocess import check_output
 from time import sleep
 import sys
 import json
-import re
 from datetime import datetime
 
 def net():
@@ -10,24 +9,15 @@ def net():
         with open("network.json", 'r') as file:
             config = json.load(file)
             return config
-    except:
-        return -1
-
-def registrar():
-    try:
-        with open("registrar.json", 'r') as file:
-            reg = json.load(file)
-            return reg
-    except:
-        print("No contract address")
-        sys.exit(1)
+    except FileNotFoundError:
+        print("Network configuration file is not found")
 
 def userId():
     try:
         with open("person.json", 'r') as file:
             id = json.load(file)
-            return id
-    except:
+            return "0x" + id["id"].replace('-', '')
+    except FileNotFoundError:
         print("ID is not found")
         sys.exit(1)
 
@@ -58,6 +48,15 @@ def binContract(flag):
             return data
     else:
         raise ValueError
+
+def getContractAddress(flag):
+    try:
+        with open("registrar.json", 'r') as db:
+            data = json.load(db)
+        return (data["registrar"]["address"] if flag == "kyc" else data["payments"]["address"])
+    except FileNotFoundError:
+        print("No contract address")
+        sys.exit(1)
 
 def convertEpoch(unixTime):
     assert type(unixTime) == int
