@@ -28,9 +28,9 @@ def cleanTxResponse(rawReceipt):
 
 def deployContract(server, owner):
 
-    with open("KYC.bin", 'r') as binFile:
+    with open("Holder.bin", 'r') as binFile:
         _bytecode = binFile.read()
-    with open("KYC.abi", 'r') as abiFile:
+    with open("Holder.abi", 'r') as abiFile:
         _abi = json.loads(abiFile.read())
 
     rawContract = server.eth.contract(abi=_abi, bytecode=_bytecode)

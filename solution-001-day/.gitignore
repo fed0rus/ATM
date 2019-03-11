@@ -1,0 +1,10 @@
+archive/
+detected/
+second_stage/
+venv/
+.DS_Store
+.idea/
+__pycache__
+*.json
+*.mov
+shape_predictor_68_face_landmarks.dat
