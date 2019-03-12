@@ -44,9 +44,9 @@ def userId():
 
 def checkNumber(number):
     parsed = re.findall(r"\+\d+", number)
-    if len(parsed) == 0:
-        return False
-    return parsed[0] == number and len(number) == 12
+    if len(parsed) == 0 or parsed[0] != number or len(number) != 12:
+        print("Incorrect phone number")
+        sys.exit(1)
 
 def binContract(flag):
     if flag == "kyc":

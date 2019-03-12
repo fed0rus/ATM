@@ -7,7 +7,7 @@ from web3 import Web3, HTTPProvider
 import utilities
 
 global ethConfig
-# global server
+global server
 ethConfig = utilities.net()
 server = Web3(HTTPProvider(ethConfig["rpcUrl"]))
 

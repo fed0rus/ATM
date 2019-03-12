@@ -1,6 +1,5 @@
 import utilities
 import blockchain
-import arguments
 
 args = utilities.getArgs()
 
