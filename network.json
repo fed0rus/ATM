@@ -1,1 +1,1 @@
-{"rpcUrl": "http://127.0.0.1:8545", "privKey": "528e0f81c137cbef013e887048347ea8ad5b7ed9faf018216911aece5b832a28", "defaultGasPrice": 1000000000, "gasPriceUrl": "http://127.0.0.1:8000"}
+{"rpcUrl": "https://sokol.poa.network", "privKey": "528e0f81c137cbef013e887048347ea8ad5b7ed9faf018216911aece5b832a28", "defaultGasPrice": 1000000000, "gasPriceUrl": "https://gasprice.poa.network/"}
