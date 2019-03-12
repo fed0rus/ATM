@@ -1,3 +1,1 @@
-testdata.json
-atm/__pycache__/
-atm/test/
+/atm/testdata.json
