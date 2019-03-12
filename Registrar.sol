@@ -228,6 +228,10 @@ contract Registrar {
 
     function () external payable {}
 
+    function validate() external pure returns(bool) {
+        return true;
+    }
+
     function deleteContract() external {
         require(msg.sender == owner);
         selfdestruct(owner);

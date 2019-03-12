@@ -19,6 +19,10 @@ contract Handler {
         owner = newOwner;
     }
 
+    function validate() external pure returns(bool) {
+        return true;
+    }
+
     function () external payable {}
 
     function deleteContract() external {
