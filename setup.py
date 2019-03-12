@@ -3,20 +3,27 @@ import blockchain
 
 args = utilities.getArgs()
 
-if args["deploy"] == True:
-    blockchain.allDeploy()
-    registrarAddress = utilities.getContractAddress("kyc")
-    handlerAddress = utilities.getContractAddress("ph")
-    print("KYC Registrar: {}\nPayment Handler: {}".format(registrarAddress, handlerAddress))
+if __name__ == "__main__":
 
-elif args["owner"] is not None:
-    admin = blockchain.whoIsAdmin("kyc")
-    print("Admin account: {}".format(admin))
+    if args["deploy"] == True:
+        blockchain.allDeploy()
+        registrarAddress = utilities.getContractAddress("kyc")
+        handlerAddress = utilities.getContractAddress("ph")
+        print("KYC Registrar: {}\nPayment Handler: {}".format(registrarAddress, handlerAddress))
 
-elif args["chown"] is not None:
-    newOwner = args["chown"][1]
-    blockchain.chown(newOwner)
-    print("New admin account: {}".format(newOwner))
+    elif args["owner"] is not None:
+        admin = blockchain.whoIsAdmin("kyc")
+        print("Admin account: {}".format(admin))
 
-elif args["test"] == True:
-    pass
+    elif args["chown"] is not None:
+        newOwner = args["chown"][1]
+        blockchain.chown(newOwner)
+        print("New admin account: {}".format(newOwner))
+
+    elif args["balance"] is not None:
+        PIN = args["balance"]
+        balance = blockchain.getBalance(PIN)
+        print("Your balance is {}".format(balance))
+
+    elif args["test"] == True:
+        pass

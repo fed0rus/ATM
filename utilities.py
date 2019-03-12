@@ -48,6 +48,20 @@ def checkNumber(number):
         print("Incorrect phone number")
         sys.exit(1)
 
+def normalizeValue(value):
+    if value < 0 or type(value) != int:
+        print("Invalid value")
+        sys.exit(1)
+    if value == 0:
+        return "0 poa"
+    scales = [" wei", " kwei", " mwei", " gwei", " szabo", " finney", " poa"]
+    for s in scales:
+        if s == " poa":
+            return str("{:.6f}".format(value)).strip('0').strip('.') + s
+        if value / 1000 < 1:
+            return str("{:.6f}".format(value)).strip('0').strip('.') + s
+        value /= 1000
+
 def binContract(flag):
     if flag == "kyc":
         data = dict()

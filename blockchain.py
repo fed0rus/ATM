@@ -17,7 +17,13 @@ def getAdmin():
 def whoIsAdmin(flag):
     return call(flag, "whoIsOwner")
 
+def checkPIN(PIN):
+    if len(PIN) != 4 or not PIN.isdigit():
+        print("Invalid PIN")
+        sys.exit(1)
+
 def getUser(PIN):
+    checkPIN(PIN)
     PIN = [int(k) for k in PIN]
     id = utilities.userId()
     a = Web3.solidityKeccak(["bytes16"], [b''])
@@ -26,6 +32,10 @@ def getUser(PIN):
     d = Web3.solidityKeccak(["bytes16", "bytes16", "int8"], [c, id, PIN[2]])
     pk = Web3.solidityKeccak(["bytes16", "bytes16", "int8"], [d, id, PIN[3]])
     return server.eth.account.privateKeyToAccount(pk)
+
+def getBalance(PIN):
+    user = getUser(PIN)
+    return utilities.normalizeValue(server.eth.getBalance(user.address))
 
 def gasPrice():
     try:
