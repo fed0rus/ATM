@@ -17,13 +17,8 @@ def getAdmin():
 def whoIsAdmin(flag):
     return call(flag, "whoIsOwner")
 
-def checkPIN(PIN):
-    if len(PIN) != 4 or not PIN.isdigit():
-        print("Invalid PIN")
-        sys.exit(1)
-
 def getUser(PIN):
-    checkPIN(PIN)
+    utilities.checkPIN(PIN)
     PIN = [int(k) for k in PIN]
     id = utilities.userId()
     a = Web3.solidityKeccak(["bytes16"], [b''])
@@ -32,10 +27,6 @@ def getUser(PIN):
     d = Web3.solidityKeccak(["bytes16", "bytes16", "int8"], [c, id, PIN[2]])
     pk = Web3.solidityKeccak(["bytes16", "bytes16", "int8"], [d, id, PIN[3]])
     return server.eth.account.privateKeyToAccount(pk)
-
-def getBalance(PIN):
-    user = getUser(PIN)
-    return utilities.normalizeValue(server.eth.getBalance(user.address))
 
 def gasPrice():
     try:
@@ -111,7 +102,7 @@ def call(flag, methodName, methodArgs=""):
     rawCall = "contract.functions.{methodName}({methodArgs}).call()".format(methodName=methodName, methodArgs=args)
     return eval(rawCall)
 
-def invoke(flag, sender, methodName, methodArgs, chown=False):
+def invoke(flag, sender, methodName, methodArgs, chown=False, add=False):
     contract = getContract(flag)
     args = str(methodArgs)[1:-1]
     invoker = "contract.functions.{methodName}({methodArgs})".format(methodName=methodName, methodArgs=args)
@@ -149,3 +140,13 @@ def chown(newOwner):
     if tx["status"] != 1:
         print("Transfering ownership failed, but included in {}".format(tx["txHash"]))
         sys.exit(1)
+
+def getBalance(PIN):
+    user = getUser(PIN)
+    return utilities.normalizeValue(server.eth.getBalance(user.address))
+
+def add(PIN, phoneNumber):
+    utilities.checkPIN(PIN)
+    user = getUser(PIN)
+    utilities.checkPhoneNumber(phoneNumber)
+    tx = invoke("kyc", user, "addRequest", [phoneNumber], add=True):

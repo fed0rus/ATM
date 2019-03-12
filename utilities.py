@@ -42,6 +42,10 @@ def userId():
         print("ID is not found")
         sys.exit(1)
 
+def checkPIN(PIN):
+    if len(PIN) != 4 or not PIN.isdigit():
+        print("Invalid PIN")
+
 def checkNumber(number):
     parsed = re.findall(r"\+\d+", number)
     if len(parsed) == 0 or parsed[0] != number or len(number) != 12:
