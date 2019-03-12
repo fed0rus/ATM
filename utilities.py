@@ -56,6 +56,8 @@ def binContract(flag):
             data["bin"] = bin.read()
         with open("Registrar.abi") as abi:
             data["abi"] = abi.read()
+        os.remove("Registrar.bin")
+        os.remove("Registrar.abi")
         return data
 
     elif flag == "ph":
@@ -65,6 +67,8 @@ def binContract(flag):
             data["bin"] = bin.read()
         with open("Handler.abi") as abi:
             data["abi"] = abi.read()
+        os.remove("Handler.bin")
+        os.remove("Handler.abi")
         return data
     else:
         raise ValueError
