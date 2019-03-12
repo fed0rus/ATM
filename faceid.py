@@ -1,19 +1,20 @@
 import utilities
 import blockchain
+import sys
 
 args = utilities.getArgs()
 
 if __name__ == "__main__":
 
     if args["balance"] is not None:
-        PIN = args["balance"]
+        PIN = args["balance"][0]
         balance = blockchain.getBalance(PIN)
         print("Your balance is {}".format(balance))
 
     elif args["add"] is not None:
-        phoneNumber = args["add"][0]
-        PIN = args["add"][1]
-        txHash = blockchain.add(PIN, phoneNumber)
+        PIN = args["add"][0]
+        phoneNumber = args["add"][1]
+        txHash = blockchain.addRequest(PIN, phoneNumber)
         print("Registration request sent by {}".format(txHash))
 
     elif args["test"] == True:

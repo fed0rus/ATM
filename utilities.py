@@ -1,8 +1,10 @@
 from subprocess import check_output
 from time import sleep
+from web3 import Web3, HTTPProvider
 import shutil
 import sys
 import os
+import re
 import json
 import argparse
 from datetime import datetime
@@ -43,14 +45,23 @@ def userId():
         sys.exit(1)
 
 def checkPIN(PIN):
-    if len(PIN) != 4 or not PIN.isdigit():
+    parsed = re.findall(r"\d\d\d\d", PIN)
+    if len(parsed) == 0 or parsed[0] != PIN:
         print("Invalid PIN")
+        sys.exit(1)
 
-def checkNumber(number):
+def isAddress(address):
+    if not Web3.isAddress(address):
+        print("Invalid address")
+        sys.exit(1)
+
+def checkAndRefinePhoneNumber(number):
     parsed = re.findall(r"\+\d+", number)
     if len(parsed) == 0 or parsed[0] != number or len(number) != 12:
         print("Incorrect phone number")
         sys.exit(1)
+    else:
+        return int(number[1:])
 
 def normalizeValue(value):
     if value < 0 or type(value) != int:
@@ -76,7 +87,6 @@ def binContract(flag):
             data["abi"] = abi.read()
         os.remove("Registrar.bin")
         os.remove("Registrar.abi")
-        return data
 
     elif flag == "ph":
         data = dict()
@@ -87,9 +97,8 @@ def binContract(flag):
             data["abi"] = abi.read()
         os.remove("Handler.bin")
         os.remove("Handler.abi")
-        return data
-    else:
-        raise ValueError
+
+    return data
 
 def getContractAddress(flag):
     try:
@@ -101,6 +110,5 @@ def getContractAddress(flag):
         sys.exit(1)
 
 def convertEpoch(unixTime):
-
     assert type(unixTime) == int
     return datetime.utcfromtimestamp(unixTime).strftime("%H:%M %d.%m.%Y")
