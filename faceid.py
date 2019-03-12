@@ -10,5 +10,8 @@ if __name__ == "__main__":
         balance = blockchain.getBalance(PIN)
         print("Your balance is {}".format(balance))
 
+    elif args["add"] is not None:
+        
+
     elif args["test"] == True:
         pass

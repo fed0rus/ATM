@@ -65,6 +65,7 @@ def normalizeValue(value):
 def binContract(flag):
     if flag == "kyc":
         data = dict()
+        
         check_output(["solc", "--optimize", "--overwrite", "--bin", "--abi", "-o", "./", "Registrar.sol"])
         with open("Registrar.bin", 'r') as bin:
             data["bin"] = bin.read()
