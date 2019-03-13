@@ -4,3 +4,4 @@ __pycache__
 screenlog.0
 testdata.json
 *.txt
+.idea
