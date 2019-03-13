@@ -3,3 +3,4 @@ __pycache__
 *.bin
 screenlog.0
 testdata.json
+*.txt
